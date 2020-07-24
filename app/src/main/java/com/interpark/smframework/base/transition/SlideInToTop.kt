@@ -1,0 +1,40 @@
+package com.interpark.smframework.base.transition
+
+import com.interpark.smframework.IDirector
+import com.interpark.smframework.base.SMScene
+import com.interpark.smframework.base.types.EaseCubicActionOut
+import com.interpark.smframework.base.types.FiniteTimeAction
+import com.interpark.smframework.base.types.MoveTo
+import com.interpark.smframework.base.types.Vec2
+
+class SlideInToTop(director:IDirector) : BaseSceneTransition(director) {
+
+    companion object {
+        @JvmStatic
+        fun create(director: IDirector, t:Float, inScene:SMScene):SlideInToTop? {
+            val scene:SlideInToTop = SlideInToTop(director)
+            if (scene.initWithDuration(t, inScene)) {
+                return scene
+            }
+
+            return null
+        }
+    }
+
+    override fun getInAction(): FiniteTimeAction? {
+        _inScene!!.setPosition(
+            getDirector().getWinSize().width / 2,
+            getDirector().getWinSize().height + getDirector().getWinSize().height / 2
+        )
+
+        return EaseCubicActionOut.create(getDirector(), MoveTo.create(getDirector(), _duration, Vec2(getDirector().getWinSize().width/2f, getDirector().getWidth().hashCode()/2f))!!)
+    }
+
+    override fun isNewSceneEnter(): Boolean {
+        return true
+    }
+
+    override fun sceneOrder() {
+        _isInSceneOnTop = true
+    }
+}

@@ -1,26 +1,22 @@
 package com.interpark.smframework
 
-import android.app.ActivityManager
 import android.content.Context
 import android.graphics.RectF
-import android.util.Size
 import androidx.fragment.app.FragmentActivity
 import com.android.volley.RequestQueue
 import com.interpark.smframework.base.SMScene
 import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.types.Scheduler
 import com.interpark.smframework.base.sprite.Sprite
 import com.interpark.smframework.base.sprite.SpriteSet
 import com.interpark.smframework.base.texture.Texture
 import com.interpark.smframework.base.texture.TextureManager
-import com.interpark.smframework.base.types.Mat4
+import com.interpark.smframework.base.types.*
 import com.interpark.smframework.shader.ShaderManager
-import com.interpark.smframework.shader.ShaderProgram
 import com.interpark.smframework.shader.ShaderManager.ProgramType
-import com.interpark.smframework.util.Vec2
+import com.interpark.smframework.shader.ShaderProgram
 
 
-public interface IDirector {
+interface IDirector {
     public enum class SIDE_MENU_STATE {
         CLOSE, OPEN, MOVING,
     }
@@ -45,107 +41,107 @@ public interface IDirector {
     }
 
     // activity & context
-    public fun getActivity(): FragmentActivity
-    public fun getContext(): Context
+    fun getActivity(): FragmentActivity
+    fun getContext(): Context
 
     // screen size, width, height
-    public fun setDisplayRawSize(width: Int, height: Int)
-    public fun getDisplayRawWidth(): Int
-    public fun getDisplayRawHeight(): Int
-    public fun getScreenOrientation(): Int
+    fun setDisplayRawSize(width: Int, height: Int)
+    fun getDisplayRawWidth(): Int
+    fun getDisplayRawHeight(): Int
+    fun getScreenOrientation(): Int
 
     // camera
-//    public fun getPreviewSurfaceView(): PreviewSurfaceView
+//    fun getPreviewSurfaceView(): PreviewSurfaceView
 
     // ScissorTest
-    public fun setScissorEnable(enable: Boolean)
-    public fun isScissorTestEnabled(): Boolean
+    fun enableScissorTest(enable: Boolean)
+    fun isScissorTestEnabled(): Boolean
 
     // view property
-    public fun getWinSize(): Size
-    public fun getWidth(): Int
-    public fun getHeight(): Int
-    public fun getDeviceWidth(): Int
-    public fun getDeviceHeight(): Int
-    public fun getDisplayAdjust(): Float
-    public fun isGLThread(): Boolean
+    fun getWinSize(): Size
+    fun getWidth(): Int
+    fun getHeight(): Int
+    fun getDeviceWidth(): Int
+    fun getDeviceHeight(): Int
+    fun getDisplayAdjust(): Float
+    fun isGLThread(): Boolean
 
-    public fun getRequestQueue(): RequestQueue
-    public fun getActionManager(): ActivityManager
-    public fun getScheduler(): Scheduler
-    public fun getGlobalTime(): Float
+    fun getRequestQueue(): RequestQueue
+    fun getActionManager(): ActionManager
+    fun getScheduler(): Scheduler
+    fun getGlobalTime(): Float
 
-    public fun getFrameBufferId(): Int;
-    public fun setFrameBufferId(frameBufferId: Int)
-    public fun getFrameBufferSprite(): Sprite
+    fun getFrameBufferId(): Int;
+    fun setFrameBufferId(frameBufferId: Int)
+    fun getFrameBufferSprite(): Sprite
 
-    public fun setTouchEventDispatcherEnable(enable: Boolean)
-    public fun getTouchEventDispatcherEnable(): Boolean
+    fun setTouchEventDispatcherEnable(enable: Boolean)
+    fun getTouchEventDispatcherEnable(): Boolean
 
-    public fun getColor(): FloatArray
-    public fun setColor(r: Float, g: Float, b: Float, a: Float)
+    fun getColor(): FloatArray
+    fun setColor(r: Float, g: Float, b: Float, a: Float)
 
-    public fun bindTexture(texture: Texture): Boolean
-    public fun useProgram(type: ProgramType): ShaderProgram
+    fun bindTexture(texture: Texture?): Boolean
+    fun useProgram(type: ProgramType): ShaderProgram?
 
-    public fun pushMatrix(type: MATRIX_STACK_TYPE)
-    public fun popMatrix(type: MATRIX_STACK_TYPE)
-    public fun loadMatrix(type: MATRIX_STACK_TYPE, mat: Mat4)
-    public fun getProjectionMatrix(index: Int): Mat4
-    public fun getMatrix(type: MATRIX_STACK_TYPE): Mat4
-    public fun getFrameBufferMatrix(): Mat4
-
-    public fun getTickCount(): Int
-
-
-
+    fun pushMatrix(type: MATRIX_STACK_TYPE)
+    fun popMatrix(type: MATRIX_STACK_TYPE)
+    fun loadMatrix(type: MATRIX_STACK_TYPE, mat: Mat4)
+    fun getProjectionMatrix(index: Int): Mat4
+    fun getMatrix(type: MATRIX_STACK_TYPE): Mat4
+    fun getFrameBufferMatrix(): Mat4
+//
+    fun getTickCount(): Long
+//
+//
+//
     // primitive
-    public fun drawFillRect(x1: Float, y1: Float, width: Float, height: Float)
-    public fun drawRect(x1: Float, y1: Float, width: Float, height: Float, lineWidth: Float)
-    public fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineWidth: Float)
-    public fun drawCircle(x: Float, y: Float, radius: Float)
-    public fun drawCircle(x: Float, y: Float, radius: Float, aaWidth: Float)
-    public fun drawRing(x: Float, y: Float, radius: Float, thickness: Float)
-    public fun drawRing(x: Float, y: Float, radius: Float, thickness: Float, aaWidth: Float)
-    public fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float)
-    public fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float, aaWidth: Float)
+//    fun drawFillRect(x1: Float, y1: Float, width: Float, height: Float)
+//    fun drawRect(x1: Float, y1: Float, width: Float, height: Float, lineWidth: Float)
+//    fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineWidth: Float)
+//    fun drawCircle(x: Float, y: Float, radius: Float)
+//    fun drawCircle(x: Float, y: Float, radius: Float, aaWidth: Float)
+//    fun drawRing(x: Float, y: Float, radius: Float, thickness: Float)
+//    fun drawRing(x: Float, y: Float, radius: Float, thickness: Float, aaWidth: Float)
+//    fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float)
+//    fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float, aaWidth: Float)
 
 
 
     // scene & layer & menu
-    public fun getShaderManager(): ShaderManager
-    public fun getSpriteSet(): SpriteSet
-    public fun getTextureManager(): TextureManager
-    public fun showProgress(show: Boolean, bounds: RectF)
-    public fun showUploadProgress(show: Boolean, state: Int, bounds: RectF)
+    fun getShaderManager(): ShaderManager
+    fun getSpriteSet(): SpriteSet
+    fun getTextureManager(): TextureManager
+    fun showProgress(show: Boolean, bounds: RectF)
+    fun showUploadProgress(show: Boolean, state: Int, bounds: RectF)
 
-    public fun getTopScene(): SMScene
-    public fun setSharedLayer(layerId: SharedLayer, layer: SMView)
-    public fun getSharedLayer(layerId: SharedLayer): SMView
+    fun getTopScene(): SMScene
+    fun setSharedLayer(layerId: SharedLayer, layer: SMView?)
+    fun getSharedLayer(layerId: SharedLayer): SMView?
 
-    public fun setSideMenuOpenPosition(position: Float)
-    public fun getSideMenuState(): SIDE_MENU_STATE
+    fun setSideMenuOpenPosition(position: Float)
+    fun getSideMenuState(): SIDE_MENU_STATE
 
-    public fun getRunningScene(): SMScene
-    public fun isSendCleanupToScene(): Boolean
+    fun getRunningScene(): SMScene
+    fun isSendCleanupToScene(): Boolean
 
-    public fun replaceScene(scene: SMScene)
-    public fun pushScene(scene: SMScene)
-    public fun popScene()
-    public fun popToRootScene()
-    public fun popToSceneStackLevel(level: Int)
-    public fun setNextScene()
-    public fun popSceneWithTransition(scene: SMScene)
-    public fun runWithScene(scene: SMScene)
-    public fun startSceneAnimation()
-    public fun stopSceneAnimation()
-    public fun getPreviousScene(): SMScene
-    public fun getSceneStackCount(): Int
+    fun replaceScene(scene: SMScene)
+    fun pushScene(scene: SMScene)
+    fun popScene()
+    fun popToRootScene()
+    fun popToSceneStackLevel(level: Int)
+    fun setNextScene()
+    fun popSceneWithTransition(scene: SMScene)
+    fun runWithScene(scene: SMScene)
+    fun startSceneAnimation()
+    fun stopSceneAnimation()
+    fun getPreviousScene(): SMScene?
+    fun getSceneStackCount(): Int
 
-    public fun convertToUI(glPoint: Vec2)
+    fun convertToUI(glPoint: Vec2)
 
-    public fun pause()
-    public fun resume()
-    public fun isPaused(): Boolean
+    fun pause()
+    fun resume()
+    fun isPaused(): Boolean
 
 }
