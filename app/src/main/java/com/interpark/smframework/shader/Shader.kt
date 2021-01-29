@@ -1,4 +1,4 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 class Shader(shaderID:Int) {
     private var _shaderId:Int = shaderID

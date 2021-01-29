@@ -1,4 +1,4 @@
-package com.interpark.smframework.nativeImageProcess
+package com.brokenpc.smframework.nativeImageProcess
 
 import android.graphics.Bitmap
 

@@ -1,15 +1,15 @@
-package com.interpark.smframework
+package com.brokenpc.smframework
 
-import com.interpark.smframework.IDirector.SIDE_MENU_STATE
-import com.interpark.smframework.base.SMScene
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.types.*
-import com.interpark.smframework.util.AppConst
-import com.interpark.smframework.view.EdgeSwipeLayerForSideMenu
-import com.interpark.smframework.view.SMLabel
-import com.interpark.smframework.view.SMTableView
-import com.interpark.smframework.view.SMTableView.NumberOfRowsInSection
-import com.interpark.smframework.view.SMTableView.CellForRowAtIndexPath
+import com.brokenpc.smframework.IDirector.SIDE_MENU_STATE
+import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.types.*
+import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.view.EdgeSwipeLayerForSideMenu
+import com.brokenpc.smframework.view.SMLabel
+import com.brokenpc.smframework.view.SMTableView
+import com.brokenpc.smframework.view.SMTableView.NumberOfRowsInSection
+import com.brokenpc.smframework.view.SMTableView.CellForRowAtIndexPath
 
 class SideMenu : SMView {
 
@@ -159,7 +159,7 @@ class SideMenu : SMView {
 
     interface SIDE_MENU_UPDATE_CALLBACK {
         fun onSideMenuUpdateCallback(
-            state: SIDE_MENU_STATE?,
+            state: SIDE_MENU_STATE,
             position: Float
         )
     }

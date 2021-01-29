@@ -1,7 +1,7 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.opengl.GLES20
-import com.interpark.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.texture.Texture
 import java.nio.FloatBuffer
 
 class ProgAdjustColor : ProgSprite() {

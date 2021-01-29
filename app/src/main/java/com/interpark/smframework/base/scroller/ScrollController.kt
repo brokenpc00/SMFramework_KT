@@ -1,8 +1,8 @@
-package com.interpark.smframework.base.scroller
+package com.brokenpc.smframework.base.scroller
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.types.Dynamics
-import com.interpark.smframework.base.types.Ref
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.types.Dynamics
+import com.brokenpc.smframework.base.types.Ref
 
 class ScrollController(director:IDirector) : Ref(director) {
     private val REST_VELOCITY_TOLERANCE = 0.5f

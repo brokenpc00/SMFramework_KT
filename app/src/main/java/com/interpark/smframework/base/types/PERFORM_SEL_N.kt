@@ -1,6 +1,6 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.base.SMView
+import com.brokenpc.smframework.base.SMView
 
 interface PERFORM_SEL_N {
     fun performSelector(view: SMView?)

@@ -1,6 +1,6 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
+import com.brokenpc.smframework.IDirector
 
 open class CallFunc(director:IDirector) : ActionInstant(director) {
     protected var _function:PERFORM_SEL? = null

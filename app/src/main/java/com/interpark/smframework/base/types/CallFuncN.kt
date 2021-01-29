@@ -1,6 +1,6 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
+import com.brokenpc.smframework.IDirector
 
 class CallFuncN(director:IDirector) : CallFunc(director) {
 

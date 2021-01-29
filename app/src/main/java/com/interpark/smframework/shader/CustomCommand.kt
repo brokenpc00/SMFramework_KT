@@ -1,4 +1,4 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 class CustomCommand() : RenderCommand() {
     var customCommandFunc: CustomCommandFunc? = null

@@ -1,8 +1,8 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.util.MathUtilC
-import com.interpark.smframework.util.OpenGlUtils
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.util.MathUtilC
+import com.brokenpc.smframework.util.OpenGlUtils
 import java.util.*
 import kotlin.math.*
 

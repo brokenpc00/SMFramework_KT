@@ -1,8 +1,8 @@
-package com.interpark.smframework.base.sprite
+package com.brokenpc.smframework.base.sprite
 
 import android.graphics.Paint
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.texture.TextTexture
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.texture.TextTexture
 
 class TextSprite(director:IDirector, texture:TextTexture, cx:Float, cy:Float) : Sprite(director, texture.getBounds().width().toFloat(), texture.getBounds().height().toFloat(), texture.getBounds().width()/2f, texture.getBounds().height()/2f, texture.getBounds().left, texture.getBounds().top, texture) {
     companion object {

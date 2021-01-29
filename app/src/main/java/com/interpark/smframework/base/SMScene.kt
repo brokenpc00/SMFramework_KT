@@ -1,13 +1,13 @@
-package com.interpark.smframework.base
+package com.brokenpc.smframework.base
 
 import android.content.Intent
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.transition.*
-import com.interpark.smframework.base.types.Size
-import com.interpark.smframework.base.types.Vec2
-import com.interpark.smframework.util.AppConst
-import com.interpark.smframework.util.BackPressable
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.transition.*
+import com.brokenpc.smframework.base.types.Size
+import com.brokenpc.smframework.base.types.Vec2
+import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.util.BackPressable
 
 open class SMScene(director: IDirector) : SMView(director), BackPressable {
 

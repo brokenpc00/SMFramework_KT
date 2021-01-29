@@ -1,7 +1,7 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.base.SMView
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.base.SMView
 
 class Color4F : Cloneable {
     var r:Float = 1f

@@ -1,7 +1,7 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.types.tweenfunc.Companion.sineEaseOut
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.types.tweenfunc.Companion.sineEaseOut
 
 class EaseSineOut(director:IDirector) : EaseRateAction(director) {
     companion object {

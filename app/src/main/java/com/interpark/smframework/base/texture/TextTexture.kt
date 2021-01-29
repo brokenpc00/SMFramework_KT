@@ -1,4 +1,4 @@
-package com.interpark.smframework.base.texture
+package com.brokenpc.smframework.base.texture
 
 import android.content.Context
 import android.graphics.*
@@ -10,8 +10,8 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import androidx.core.text.HtmlCompat
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.util.TextTextureUtil
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.util.TextTextureUtil
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max

@@ -1,14 +1,14 @@
-package com.interpark.smframework.base.sprite
+package com.brokenpc.smframework.base.sprite
 
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.DrawNode
-import com.interpark.smframework.base.texture.Texture
-import com.interpark.smframework.shader.ProgSprite
-import com.interpark.smframework.shader.ProgSpriteCircle
-import com.interpark.smframework.shader.ShaderManager
-import com.interpark.smframework.shader.ShaderManager.ProgramType
-import com.interpark.smframework.shader.ShaderProgram
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.DrawNode
+import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.shader.ProgSprite
+import com.brokenpc.smframework.shader.ProgSpriteCircle
+import com.brokenpc.smframework.shader.ShaderManager
+import com.brokenpc.smframework.shader.ShaderManager.ProgramType
+import com.brokenpc.smframework.shader.ShaderProgram
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -61,7 +61,7 @@ open class Sprite : DrawNode {
         texture.incRefCount()
     }
 
-    fun initTextureCoordQuard() {
+    open fun initTextureCoordQuard() {
         val uv:FloatArray = floatArrayOf(
             _tx/_tw, _ty/_th,
             (_tx+_contentSize.width)/_tw, _ty/_th,

@@ -1,8 +1,8 @@
-package com.interpark.smframework.base.sprite
+package com.brokenpc.smframework.base.sprite
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.texture.CanvasTexture
-import com.interpark.smframework.base.texture.Texture
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.texture.CanvasTexture
+import com.brokenpc.smframework.base.texture.Texture
 
 class CanvasSprite(director:IDirector, texture: Texture) : Sprite(director, texture.getWidth().toFloat(), texture.getHeight().toFloat(), 0f, 0f, 0, 0, texture) {
     companion object {

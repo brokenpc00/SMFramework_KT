@@ -1,4 +1,4 @@
-package com.interpark.smframework.base
+package com.brokenpc.smframework.base
 
 import android.graphics.Bitmap
 import java.util.*

@@ -1,14 +1,13 @@
-package com.interpark.smframework.base.texture
+package com.brokenpc.smframework.base.texture
 
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.types.PERFORM_SEL
-import com.interpark.smframework.base.types.Ref
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.types.PERFORM_SEL
+import com.brokenpc.smframework.base.types.Ref
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.max
 
 //import android.graphics.drawable.Drawable
 
@@ -122,249 +121,249 @@ open class TextureManager(director:IDirector) : Ref(director) {
         val key:String = makeCanvasTextureKey(keyName, width, height)
         var texture:Texture? = _textureMap[key]
         if (texture==null) {
-            texture = CanvasTexture(key, width, height)
+            texture = CanvasTexture(_director!!, key, width, height)
             _textureMap[key] = texture
         }
         return texture
     }
 
-//    fun createPreviewTexture(width: Int, height: Int, keyName: String): Texture {
-//        val key:String = makePreviewTextureKey(keyName, width, height)
-//        var texture: Texture? = _textureMap[key]
-//        if (texture==null) {
-//            texture = CameraPreviewTexture(_director, key, width, height)
-//            _textureMap[key] = texture
-//        }
-//        return texture
-//    }
+    fun createPreviewTexture(width: Int, height: Int, keyName: String): Texture {
+        val key:String = makePreviewTextureKey(keyName, width, height)
+        var texture: Texture? = _textureMap[key]
+        if (texture==null) {
+            texture = CameraPreviewTexture(_director!!, key, width, height)
+            _textureMap[key] = texture
+        }
+        return texture
+    }
 
-//    fun createTextureFromBitmap(bitmap: Bitmap, key: String): Texture{
-//        var texture:Texture? = _textureMap[key]
-//        if (texture!=null && texture.getId()==Texture.NO_TEXTURE) {
-//            if (texture is BitmapTexture) {
-//                (texture as BitmapTexture).setBitmap(bitmap)
-//            }
-//        }
-//        if (texture==null) {
-//            texture = BitmapTexture(_director, key, bitmap)
-//            _textureMap[key] = texture
-//        }
-//
-//        return texture
-//    }
+    fun createTextureFromBitmap(bitmap: Bitmap, key: String): Texture {
+        var texture:Texture? = _textureMap[key]
+        if (texture!=null && texture.getId()==Texture.NO_TEXTURE) {
+            if (texture is BitmapTexture) {
+                (texture as BitmapTexture).setBitmap(bitmap)
+            }
+        }
+        if (texture==null) {
+            texture = BitmapTexture(_director!!, key, bitmap)
+            _textureMap[key] = texture
+        }
 
-//    fun createTextureFromResource(resId:Int):Texture {
-//        val key:String = makeResourceTextureKey(resId)
-//        var texture:Texture? = _textureMap[key]
-//        if (texture==null) {
-//            texture = ResourceTexture(_director, key, resId, false, null)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                texture!!.incRefCount()
-//            }
-//        } else {
-//            texture.incRefCount()
-//        }
-//
-//        return texture
-//    }
+        return texture
+    }
 
-//    fun createTextureFromDrawable(drawable: Drawable, loadAsync:Boolean, listener: Texture.OnTextureAsyncLoadListener?): Texture? {
-//        val key:String = makeDrawableTextureKey(drawable)
-//        var texture:Texture? = _textureMap[key]
-//        if (texture==null) {
-//            texture = DrawableTexture(_director, key, drawable, loadAsync, listener)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                if (loadAsync) {
-//                    texture!!.loadTextureAsync(_director!!)
-//                }
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            if (loadAsync && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL {
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//
-//        return texture
-//    }
+    fun createTextureFromResource(resId:Int):Texture {
+        val key:String = makeResourceTextureKey(resId)
+        var texture:Texture? = _textureMap[key]
+        if (texture==null) {
+            texture = ResourceTexture(_director!!, key, resId, false, null)
+            if (texture!!.isValid()) {
+                _textureMap[key] = texture
+                texture!!.incRefCount()
+            }
+        } else {
+            texture.incRefCount()
+        }
 
-//    fun createTextureFromAssets(fileName: String, loadAsync:Boolean, listener:Texture.OnTextureAsyncLoadListener?): Texture? {
-//        val key:String = makeAssetTextureKey(fileName)
-//        var texture:Texture? = _textureMap[key]
-//        if (texture==null) {
-//            texture = AssetTexture(_director, key, fileName, loadAsync, listener)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                if (loadAsync) {
-//                    texture!!.loadTextureAsync(_director)
-//                }
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            if (loadAsync && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//                _director.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//        return texture
-//    }
+        return texture
+    }
 
-//    fun createTextureFromAssets(fileName: String, loadAsync:Boolean, listener: Texture.OnTextureAsyncLoadListener?, width:Int, height: Int):Texture {
-//        val key:String = makeAssetTextureKey(fileName)
-//        var texture:Texture? = _textureMap[key]
-//
-//        if (texture==null) {
-//            texture = AssetTexture(_director!!, key, fileName, loadAsync, listener, width, height)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                if (loadAsync) {
-//                    texture!!.loadTextureAsync(_director!!)
-//                }
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            if (loadAsync && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//
-//        return texture
-//    }
+    fun createTextureFromDrawable(drawable: Drawable, loadAsync:Boolean, listener: Texture.OnTextureAsyncLoadListener?): Texture? {
+        val key:String = makeDrawableTextureKey(drawable)
+        var texture:Texture? = _textureMap[key]
+        if (texture==null) {
+            texture = DrawableTexture(_director!!, key, drawable, loadAsync, listener)
+            if (texture!!.isValid()) {
+                _textureMap[key] = texture
+                if (loadAsync) {
+                    texture!!.loadTextureAsync(_director!!)
+                }
+            } else {
+                texture = null
+            }
+        } else {
+            if (loadAsync && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL {
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
 
-//    fun createTextureFromFile(fileName: String, loadAsync: Boolean, listener: Texture.OnTextureAsyncLoadListener?, degress:Int, maxSideLength: Int): Texture? {
-//        val key:String = makeFileTextureKey(fileName+"_"+maxSideLength+"_")
-//        var texture: Texture? = _textureMap[key]
-//        if (texture==null) {
-//            texture = FileTexture(_director!!, key, fileName, loadAsync, listener, degress, maxSideLength)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                if (loadAsync) {
-//                    texture!!.loadTextureAsync(_director!!)
-//                }
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            if (texture!!.isValid() && loadAsync && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//
-//                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//
-//        return texture
-//    }
+        return texture
+    }
 
-//    fun createFakeAssetsTexture(fileName: String, loadAsync:Boolean, listener: Texture.OnTextureAsyncLoadListener?, srcTexture: Texture): Texture? {
-//        val key:String = makeAssetTextureKey(fileName)
-//        var texture:Texture? = _textureMap[key]
-//
-//        if (texture==null) {
-//            texture = AssetTexture(_director!!, key, fileName, loadAsync, listener, srcTexture)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                if (loadAsync) {
-//                    texture!!.loadTextureAsync(_director!!)
-//                }
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            if (loadAsync && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//
-//        return texture
-//    }
+    fun createTextureFromAssets(fileName: String, loadAsync:Boolean, listener:Texture.OnTextureAsyncLoadListener?): Texture? {
+        val key:String = makeAssetTextureKey(fileName)
+        var texture:Texture? = _textureMap[key]
+        if (texture==null) {
+            texture = AssetTexture(_director!!, key, fileName, loadAsync, listener)
+            if (texture.isValid()) {
+                _textureMap[key] = texture
+                if (loadAsync) {
+                    texture.loadTextureAsync(_director!!)
+                }
+            } else {
+                texture = null
+            }
+        } else {
+            if (loadAsync && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
+        return texture
+    }
 
-//    fun createFakeFileTexture(fileName: String, loadAsync: Boolean, listener: Texture.OnTextureAsyncLoadListener?, degree:Int, maxSideLength: Int, srcTexture: Texture): Texture? {
-//        val key:String = makeFileTextureKey(fileName)
-//        var texture:Texture? = _textureMap[key]
-//
-//        if (texture==null) {
-//            texture = FileTexture(_director!!, key, fileName, loadAsync, listener, degree, maxSideLength, srcTexture)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            texture.setId(srcTexture.getId())
-//            if (texture.isValid() && loadAsync && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//
-//        return texture
-//    }
+    fun createTextureFromAssets(fileName: String, loadAsync:Boolean, listener: Texture.OnTextureAsyncLoadListener?, width:Int, height: Int):Texture? {
+        val key:String = makeAssetTextureKey(fileName)
+        var texture:Texture? = _textureMap[key]
 
-//    fun createTextureFromNetwork(url:String, width: Int, height: Int, listener: Texture.OnTextureAsyncLoadListener?, maxSideLength: Int): Texture? {
-//        val key:String = makeNetworkTextureKey(url)
-//        var texture: Texture? = _textureMap[key]
-//
-//        if (texture==null) {
-//            texture = NetworkTexture(_director!!, key, url, width, height, listener, maxSideLength)
-//            if (texture!!.isValid()) {
-//                _textureMap[key] = texture
-//                texture!!.loadTextureAsync(_director!!)
-//            } else {
-//                texture = null
-//            }
-//        } else {
-//            if (texture.isValid() && listener!=null) {
-//                val l:Texture.OnTextureAsyncLoadListener = listener
-//                val t:Texture = texture
-//
-//                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
-//                    override fun performSelector() {
-//                        l.onTextureLoaded(t)
-//                    }
-//                })
-//            }
-//        }
-//
-//        return texture
-//    }
+        if (texture==null) {
+            texture = AssetTexture(_director!!, key, fileName, loadAsync, listener, width, height)
+            if (texture.isValid()) {
+                _textureMap[key] = texture
+                if (loadAsync) {
+                    texture.loadTextureAsync(_director!!)
+                }
+            } else {
+                texture = null
+            }
+        } else {
+            if (loadAsync && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
+
+        return texture
+    }
+
+    fun createTextureFromFile(fileName: String, loadAsync: Boolean, listener: Texture.OnTextureAsyncLoadListener?, degress:Int, maxSideLength: Int): Texture? {
+        val key:String = makeFileTextureKey(fileName+"_"+maxSideLength+"_")
+        var texture: Texture? = _textureMap[key]
+        if (texture==null) {
+            texture = FileTexture(_director!!, key, fileName, loadAsync, listener, degress, maxSideLength)
+            if (texture.isValid()) {
+                _textureMap[key] = texture
+                if (loadAsync) {
+                    texture.loadTextureAsync(_director!!)
+                }
+            } else {
+                texture = null
+            }
+        } else {
+            if (texture.isValid() && loadAsync && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
+
+        return texture
+    }
+
+    fun createFakeAssetsTexture(fileName: String, loadAsync:Boolean, listener: Texture.OnTextureAsyncLoadListener?, srcTexture: Texture): Texture? {
+        val key:String = makeAssetTextureKey(fileName)
+        var texture:Texture? = _textureMap[key]
+
+        if (texture==null) {
+            texture = AssetTexture(_director!!, key, fileName, loadAsync, listener, srcTexture)
+            if (texture!!.isValid()) {
+                _textureMap[key] = texture
+                if (loadAsync) {
+                    texture!!.loadTextureAsync(_director!!)
+                }
+            } else {
+                texture = null
+            }
+        } else {
+            if (loadAsync && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
+
+        return texture
+    }
+
+    fun createFakeFileTexture(fileName: String, loadAsync: Boolean, listener: Texture.OnTextureAsyncLoadListener?, degree:Int, maxSideLength: Int, srcTexture: Texture): Texture? {
+        val key:String = makeFileTextureKey(fileName)
+        var texture:Texture? = _textureMap[key]
+
+        if (texture==null) {
+            texture = FileTexture(_director!!, key, fileName, loadAsync, listener, degree, maxSideLength, srcTexture)
+            if (texture!!.isValid()) {
+                _textureMap[key] = texture
+            } else {
+                texture = null
+            }
+        } else {
+            texture.setId(srcTexture.getId())
+            if (texture.isValid() && loadAsync && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
+
+        return texture
+    }
+
+    fun createTextureFromNetwork(url:String, width: Int, height: Int, listener: Texture.OnTextureAsyncLoadListener?, maxSideLength: Int): Texture? {
+        val key:String = makeNetworkTextureKey(url)
+        var texture: Texture? = _textureMap[key]
+
+        if (texture==null) {
+            texture = NetworkTexture(_director!!, key, url, width, height, listener, maxSideLength)
+            if (texture.isValid()) {
+                _textureMap[key] = texture
+                texture.loadTextureAsync(_director!!)
+            } else {
+                texture = null
+            }
+        } else {
+            if (texture.isValid() && listener!=null) {
+                val l:Texture.OnTextureAsyncLoadListener = listener
+                val t:Texture = texture
+
+                _director!!.getScheduler().performFunctionInMainThread(object : PERFORM_SEL{
+                    override fun performSelector() {
+                        l.onTextureLoaded(t)
+                    }
+                })
+            }
+        }
+
+        return texture
+    }
 
     fun createTextureFromString(text: String, fontSize: Float, align: Paint.Align, bold: Boolean, italic: Boolean, strikeThru: Boolean, maxWidth:Int, maxLines:Int): Texture? {
         val key:String = makeStringTextureKey(text, fontSize, bold, italic, strikeThru)

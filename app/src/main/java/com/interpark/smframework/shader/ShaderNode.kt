@@ -1,9 +1,9 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.types.Color4F
-import com.interpark.smframework.base.types.Mat4
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.types.Color4F
+import com.brokenpc.smframework.base.types.Mat4
 
 class ShaderNode(director:IDirector) : SMView(director) {
     enum class Quadrant {
@@ -18,7 +18,10 @@ class ShaderNode(director:IDirector) : SMView(director) {
         RIGHT_BOTTOM // 8
     }
 
-    var DEFAULT_ANTI_ALIAS_WIDTH = 1.5f
+    companion object {
+        var DEFAULT_ANTI_ALIAS_WIDTH:Float = 1.5f
+    }
+
 
     override fun draw(m: Mat4, flags: Int) {}
 

@@ -1,16 +1,19 @@
-package com.interpark.smframework.base.shape
+package com.brokenpc.smframework.base.shape
 
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.DrawNode
-import com.interpark.smframework.base.texture.Texture
-import com.interpark.smframework.base.shape.ShapeConstant.LineType
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.DrawNode
+import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.shape.ShapeConstant.LineType
+import com.brokenpc.smframework.shader.ProgSprite
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
-class PrimitiveRoundRectLine(director:IDirector, texture: Texture, thickness: Float, lineType: LineType) : DrawNode(director) {
+class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: Float, lineType: LineType) : DrawNode(director) {
     protected var _uv:FloatBuffer
     private val _vertices:FloatArray
     private val _texcoord:FloatArray
@@ -53,7 +56,95 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture, thickness: Fl
         val w = width/2-cornerRadius
         val h = height/2-cornerRadius
         val textureRoundLength:Float = ((0.25f*2*cornerRadius*PI)/_thickness).toFloat()
-        val textureWidthLength:Float = ((width-2*cornerRadius)/_thickness).toFloat()
-        val textureHeightLength = ((height-2*cornerRadius)/_thickness).toFloat()
+        val textureWidthLength:Float = ((width-2*cornerRadius)/_thickness)
+        val textureHeightLength = ((height-2*cornerRadius)/_thickness)
+        val stepRoundLength = textureRoundLength / CONER_SEGMENT
+
+        var index = 0
+        var tu = 0f
+        for (i in 0 .. CONER_SEGMENT) {
+            val rad:Float = (i* PI*0.5f/ CONER_SEGMENT).toFloat()
+            val ca:Float = cos(rad)
+            val sa:Float = sin(rad)
+
+            val inA = inR*ca
+            val inB = inR*sa
+            val outA = outR*ca
+            val outB = outR*sa
+
+            // left top
+            index = i*4
+            _vertices[index] = -w-inA
+            _vertices[index+1] = -h-inB
+            _vertices[index+2] = -w-outA
+            _vertices[index+3] = -h-outB
+            if (_lineType==LineType.DASH) {
+                tu += i*stepRoundLength
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
+            }
+
+            // right top
+            index += (CONER_SEGMENT+1)*4
+            _vertices[index] = w+inB
+            _vertices[index+1] = -h-inA
+            _vertices[index+2] = w+outB
+            _vertices[index+3] = -h-outA
+            if (_lineType==LineType.DASH) {
+                tu += textureWidthLength+textureRoundLength
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
+            }
+
+            // right bottom
+            index += (CONER_SEGMENT+1)*4
+            _vertices[index] = w+inA
+            _vertices[index+1] = h+inB
+            _vertices[index+2] = w+outA
+            _vertices[index+3] = h+outB
+            if (_lineType==LineType.DASH) {
+                tu += textureHeightLength+textureRoundLength
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
+            }
+
+            // left bottom
+            index += (CONER_SEGMENT+1)*4
+            _vertices[index] = -w-inB
+            _vertices[index+1] = h+inA
+            _vertices[index+2] = -w-outB
+            _vertices[index+3] = h+outA
+            if (_lineType==LineType.DASH) {
+                tu += textureWidthLength+textureRoundLength
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
+            }
+        }
+        index += 4
+        _vertices[index] = _vertices[0]
+        _vertices[index+1] = _vertices[1]
+        _vertices[index+2] = _vertices[2]
+        _vertices[index+3] = _vertices[3]
+        if (_lineType==LineType.DASH) {
+            tu += textureHeightLength
+            _texcoord[index] = tu
+            _texcoord[index+2] = tu
+        }
+
+        _v!!.put(_vertices)
+        _v!!.position(0)
+        if (_lineType==LineType.DASH) {
+            _uv.put(_texcoord)
+            _uv.position(0)
+        }
+    }
+
+    override fun _draw(modelMatrix: FloatArray) {
+        val program = useProgram()
+        if (program!=null) {
+            if ((program as ProgSprite).setDrawParam(_texture!!, _matrix, _v!!, _uv)) {
+                GLES20.glDrawArrays(_drawMode, 0, _numVertices)
+            }
+        }
     }
 }

@@ -1,38 +1,73 @@
-package com.interpark.app
+package com.brokenpc.app
 
+import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.util.DisplayMetrics
+import android.view.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
+import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.FragmentActivity
+import com.brokenpc.smframework.ClassHelper
+import com.brokenpc.smframework.SMSurfaceView
+import com.brokenpc.smframework.base.SceneParams
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : FragmentActivity(), ClassHelper.HelperListener {
 
+    private var _surfaceView:SMSurfaceView? = null
+    private var _displayRawWidth:Int = 0
+    private var _displayRawHeight:Int = 0
+
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        val version:Int = Build.VERSION.SDK_INT
+        if (version>=13) {
+            var size:Point = Point()
+            display!!.getRealSize(size)
+            _displayRawWidth = size.x;
+            _displayRawHeight = size.y;
+        } else {
+            var displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            _displayRawWidth = displayMetrics.widthPixels
+            _displayRawHeight = displayMetrics.heightPixels
         }
+
+        _surfaceView = SMSurfaceView(this)
+        addContentView(_surfaceView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+
+        _surfaceView?.getDirector()?.setDisplayRawSize(_displayRawWidth, _displayRawHeight)
+        ClassHelper.init(this)
+
+        val sceneParam:SceneParams = SceneParams()
+
+
+
+        //DisplayMetrics
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
+    override fun runOnGLThread(runnable: Runnable) {
+        _surfaceView?.queueEvent(runnable)
+        }
+
+    override fun showDialog(title: String, message: String) {
+
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        _surfaceView?.saveInstanceState(outState)
+    }
+
+    override fun onBackPressed() {
+        if (_surfaceView==null || _surfaceView?.onBackPressed()==false) {
+            super.onBackPressed()
         }
     }
 }

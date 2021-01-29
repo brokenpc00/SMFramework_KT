@@ -1,10 +1,10 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.types.Color4F
-import com.interpark.smframework.base.types.Mat4
-import com.interpark.smframework.base.types.Vec2
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.types.Color4F
+import com.brokenpc.smframework.base.types.Mat4
+import com.brokenpc.smframework.base.types.Vec2
 
 open class SMShapeView(director: IDirector) : SMView(director) {
 
@@ -62,11 +62,11 @@ open class SMShapeView(director: IDirector) : SMView(director) {
         }
     }
 
-    fun setCornerRadius(radius:Float) {_cornerRadius = radius}
-    fun setAntiAliasWidth(aaWidth:Float) {_aaWidth = aaWidth}
-    fun setLineWidth(lineWidth:Float) {_lineWidth = lineWidth}
-    fun setConerQuadrant(q:Quadrant) {_quarant = getQuadrantToInt(q)}
-    fun setConerQuadrant(value:Int) {
+    open fun setCornerRadius(radius:Float) {_cornerRadius = radius}
+    open fun setAntiAliasWidth(aaWidth:Float) {_aaWidth = aaWidth}
+    open fun setLineWidth(lineWidth:Float) {_lineWidth = lineWidth}
+    open fun setConerQuadrant(q:Quadrant) {_quarant = getQuadrantToInt(q)}
+    open fun setConerQuadrant(value:Int) {
         _quarant = value
         if (_quarant<0) _quarant = 0
         if (_quarant>8) _quarant = 8

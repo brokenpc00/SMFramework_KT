@@ -1,7 +1,7 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.util.MathUtilC
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.util.MathUtilC
 import kotlin.math.atan2
 import kotlin.math.sqrt
 

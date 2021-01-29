@@ -1,9 +1,9 @@
-package com.interpark.smframework.base.scroller
+package com.brokenpc.smframework.base.scroller
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView.Companion.smoothInterpolate
-import com.interpark.smframework.util.AppConst
-import com.interpark.smframework.base.types.Ref
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView.Companion.smoothInterpolate
+import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.base.types.Ref
 
 open class SMScroller : Ref {
 

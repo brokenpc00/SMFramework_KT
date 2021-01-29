@@ -1,8 +1,8 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.texture.Texture
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.texture.Texture
 import java.nio.FloatBuffer
 
 // raw... base... primary... 3D Sprite

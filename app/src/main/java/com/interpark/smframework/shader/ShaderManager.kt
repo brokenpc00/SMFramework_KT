@@ -1,10 +1,10 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.content.Context
 import android.opengl.GLES20
 import android.util.SparseArray
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.util.IOUtils
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.util.IOUtils
 import java.io.InputStream
 import java.io.InputStreamReader
 

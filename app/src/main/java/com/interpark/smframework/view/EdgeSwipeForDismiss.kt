@@ -1,11 +1,11 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.view.MotionEvent
 import android.view.VelocityTracker
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.scroller.PageScroller
-import com.interpark.smframework.base.types.Vec2
-import com.interpark.smframework.util.AppConst
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.scroller.PageScroller
+import com.brokenpc.smframework.base.types.Vec2
+import com.brokenpc.smframework.util.AppConst
 import kotlin.math.abs
 
 class EdgeSwipeForDismiss(director:IDirector) : EdgeSwipeLayer(director) {

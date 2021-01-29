@@ -1,7 +1,7 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.opengl.GLES20
-import com.interpark.smframework.base.types.Vec2
+import com.brokenpc.smframework.base.types.Vec2
 
 class ProgGeineEffect2 : ProgSprite() {
     private var _uniformAnchor = 0

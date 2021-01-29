@@ -1,9 +1,9 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
 import android.util.SparseArray
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
 import kotlin.math.sign
 
 open class ActionManager(director: IDirector) : Ref(director) {

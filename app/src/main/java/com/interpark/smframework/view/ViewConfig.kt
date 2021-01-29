@@ -1,8 +1,8 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.view.View
 import android.view.ViewConfiguration
-import com.interpark.smframework.IDirector
+import com.brokenpc.smframework.IDirector
 import kotlin.properties.Delegates
 
 class ViewConfig {

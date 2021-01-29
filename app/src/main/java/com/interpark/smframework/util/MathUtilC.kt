@@ -1,7 +1,7 @@
-package com.interpark.smframework.util
+package com.brokenpc.smframework.util
 
-import com.interpark.smframework.base.types.Vec3
-import com.interpark.smframework.base.types.Vec4
+import com.brokenpc.smframework.base.types.Vec3
+import com.brokenpc.smframework.base.types.Vec4
 
 class MathUtilC {
     companion object {

@@ -1,4 +1,4 @@
-package com.interpark.app
+package com.brokenpc.app
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

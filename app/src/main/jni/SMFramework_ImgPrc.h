@@ -11,20 +11,20 @@ extern "C" {
 #endif
 
 JNIEXPORT
-jstring JNICALL Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_stringFromJNI
+jstring JNICALL Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_stringFromJNI
         (JNIEnv *, jclass);
 
 JNIEXPORT
-void Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_callTest
+void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_callTest
         (JNIEnv *, jclass);
 
 JNIEXPORT
-void Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_exitApp
+void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_exitApp
         (JNIEnv *, jclass);
 
 
 JNIEXPORT
-void JNICALL Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_glGrabPixels
+void JNICALL Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_glGrabPixels
         (JNIEnv *, jclass, jint, jint, jobject, jboolean);
 
 #ifdef __cplusplus

@@ -1,9 +1,9 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.shape.PrimitiveRect
-import com.interpark.smframework.base.types.Color4F
-import com.interpark.smframework.base.types.Mat4
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.shape.PrimitiveRect
+import com.brokenpc.smframework.base.types.Color4F
+import com.brokenpc.smframework.base.types.Mat4
 
 class SMSolidRectView(director: IDirector, solidColor: Color4F?=null) : SMShapeView(director)
 {

@@ -1,13 +1,13 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.graphics.Paint.Align
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.UIContainerView
-import com.interpark.smframework.base.sprite.TextSprite
-import com.interpark.smframework.base.types.Color4F
-import com.interpark.smframework.base.types.Mat4
-import com.interpark.smframework.base.types.Vec2
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.UIContainerView
+import com.brokenpc.smframework.base.sprite.TextSprite
+import com.brokenpc.smframework.base.types.Color4F
+import com.brokenpc.smframework.base.types.Mat4
+import com.brokenpc.smframework.base.types.Vec2
 
 class SMLabel(director:IDirector) : UIContainerView(director) {
     private var _textSprite:TextSprite? = null

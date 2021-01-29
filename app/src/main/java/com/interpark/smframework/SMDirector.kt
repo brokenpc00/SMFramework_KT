@@ -1,42 +1,48 @@
-package com.interpark.smframework
+package com.brokenpc.smframework
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.RectF
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.view.MotionEvent
 import android.view.OrientationEventListener
 import androidx.fragment.app.FragmentActivity
+import com.android.volley.BuildConfig
 import com.android.volley.RequestQueue
-import com.interpark.smframework.IDirector.MATRIX_STACK_TYPE
-import com.interpark.smframework.IDirector.SharedLayer
-import com.interpark.smframework.base.SMScene
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.shape.PrimitiveLine
-import com.interpark.smframework.base.shape.PrimitiveRect
-import com.interpark.smframework.base.sprite.CanvasSprite
-import com.interpark.smframework.base.sprite.SpriteSet
-import com.interpark.smframework.base.texture.CanvasTexture
-import com.interpark.smframework.base.texture.Texture
-import com.interpark.smframework.base.texture.TextureManager
-import com.interpark.smframework.base.transition.SwipeBack
-import com.interpark.smframework.base.transition.SwipeDismiss
-import com.interpark.smframework.base.transition.TransitionScene
-import com.interpark.smframework.base.types.*
-import com.interpark.smframework.shader.ShaderManager
-import com.interpark.smframework.shader.ShaderProgram
-import com.interpark.smframework.util.AppConst
-import com.interpark.smframework.util.OpenGlUtils.Companion.getLookAtMatrix
-import com.interpark.smframework.util.OpenGlUtils.Companion.getPerspectiveMatrix
-import com.interpark.smframework.view.EdgeSwipeForDismiss
-import com.interpark.smframework.view.EdgeSwipeLayerForPushBack
-import com.interpark.smframework.view.EdgeSwipeLayerForSideMenu
+import com.brokenpc.smframework.IDirector.MATRIX_STACK_TYPE
+import com.brokenpc.smframework.IDirector.SharedLayer
+import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.shape.PrimitiveCircle
+import com.brokenpc.smframework.base.shape.PrimitiveLine
+import com.brokenpc.smframework.base.shape.PrimitiveRect
+import com.brokenpc.smframework.base.shape.PrimitiveSolidRect
+import com.brokenpc.smframework.base.sprite.CanvasSprite
+import com.brokenpc.smframework.base.sprite.Sprite
+import com.brokenpc.smframework.base.sprite.SpriteSet
+import com.brokenpc.smframework.base.texture.CanvasTexture
+import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.texture.TextureManager
+import com.brokenpc.smframework.base.transition.SwipeBack
+import com.brokenpc.smframework.base.transition.SwipeDismiss
+import com.brokenpc.smframework.base.transition.TransitionScene
+import com.brokenpc.smframework.base.types.*
+import com.brokenpc.smframework.shader.ShaderManager
+import com.brokenpc.smframework.shader.ShaderNode
+import com.brokenpc.smframework.shader.ShaderProgram
+import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.util.OpenGlUtils.Companion.getLookAtMatrix
+import com.brokenpc.smframework.util.OpenGlUtils.Companion.getPerspectiveMatrix
+import com.brokenpc.smframework.view.EdgeSwipeForDismiss
+import com.brokenpc.smframework.view.EdgeSwipeLayerForPushBack
+import com.brokenpc.smframework.view.EdgeSwipeLayerForSideMenu
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.collections.ArrayList
 import kotlin.math.max
-import kotlin.math.sign
 import kotlin.math.tan
 
 class SMDirector : IDirector, GLSurfaceView.Renderer {
@@ -61,6 +67,8 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     private var _primFillBox:PrimitiveRect? = null
     private var _primHollowBox:PrimitiveRect? = null
     private var _primLine:PrimitiveLine? = null
+    private var _primCircle:PrimitiveCircle? = null
+    private var _primSolidRect:PrimitiveSolidRect? = null
 
 
     private lateinit var _shaderManager:ShaderManager
@@ -113,6 +121,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     protected val _modelViewMatrixStack:Stack<Mat4> = Stack()
     protected val _projectionMatrixStackList:Vector<Stack<Mat4>> = Vector()
     protected val _textureMatrixStack:Stack<Mat4> = Stack()
+    protected var _paused:Boolean = false
 
 
     var _touchEventDispather:Boolean = false
@@ -188,6 +197,15 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         }
 
 
+        @JvmStatic
+        fun GLToClipTransform(transformOut:Mat4?) {
+            if (transformOut==null) return
+
+            val director = getDirector()
+            val projection:Mat4 = director.getMatrix(MATRIX_STACK_TYPE.MATRIX_STACK_PROJECTION)
+            val modelview:Mat4 = director.getMatrix(MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW)
+            transformOut.set(projection.multiplyRet(modelview))
+        }
     }
 
     override fun setSharedLayer(layerId: SharedLayer, layer: SMView?) {
@@ -240,6 +258,135 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     override fun isScissorTestEnabled(): Boolean {
         return _scissorTestEnable
     }
+
+    override fun getWinSize(): Size {
+        return Size(_width, _height)
+    }
+
+    override fun setFrameBufferId(frameBufferId: Int) {
+        _frameBufferId = frameBufferId
+    }
+
+    override fun getMatrix(type:MATRIX_STACK_TYPE):Mat4 {
+        return when (type) {
+            MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW -> _modelViewMatrixStack.peek()
+            MATRIX_STACK_TYPE.MATRIX_STACK_PROJECTION -> _projectionMatrixStackList[0].peek()
+            MATRIX_STACK_TYPE.MATRIX_STACK_TEXTURE -> _textureMatrixStack.peek()
+        }
+    }
+
+    override fun showProgress(show: Boolean, bounds: RectF) {
+
+    }
+
+    override fun showUploadProgress(show: Boolean, state: Int, bounds: RectF) {
+
+    }
+
+    override fun setSideMenuOpenPosition(position: Float) {
+        setMenuSwipe()
+        SideMenu.GetSideMenu().setOpenPosition(position)
+    }
+
+    protected fun setMenuSwipe() {
+        if (_sideMenu==null) {
+            _sideMenu = SideMenu.GetSideMenu()
+            _sideMenu!!.setSideMenuListener(null)
+        }
+
+        _sideMenu!!.setSwipeLayer(_menuSwipe!!)
+        _sideMenu!!._sideMenuUpdateCallback = object : SideMenu.SIDE_MENU_UPDATE_CALLBACK {
+            override fun onSideMenuUpdateCallback(
+                state: IDirector.SIDE_MENU_STATE,
+                position: Float
+            ) {
+                sideMenuCallback(state, position)
+            }
+        }
+    }
+
+    fun sideMenuCallback(state:IDirector.SIDE_MENU_STATE, position: Float) {
+        var f:Float = position / _sideMenu!!.getContentSize().width
+        if (f<=0f) {
+
+        } else if (f>1f) {
+            f = 1f
+        }
+
+        if (f>0f) {
+            if (!_dimLayer!!.isVisible()) {
+                _dimLayer!!.setVisible(true)
+            }
+
+            _dimLayer!!.setContentSize(Size(getWinSize().width-position, getWinSize().height))
+            _dimLayer!!.setPositionX(position)
+            _dimLayer!!.setAlpha(0.5f*f)
+        } else {
+            if (_dimLayer!!.isVisible()) {
+                _dimLayer!!.setVisible(false)
+            }
+        }
+
+        var runnsingScene:SMScene? = getRunningScene()
+        var inScene:SMScene? = null
+        if (getRunningScene() is TransitionScene) {
+            val transitionScene:TransitionScene = getRunningScene() as TransitionScene
+            inScene = transitionScene.getInScene()
+            inScene?.setPositionX(getDirector().getWinSize().width/2)
+            runnsingScene?.setPositionX(getDirector().getWinSize().width/2)
+            transitionScene.setPositionX(position+ getDirector().getWinSize().width/2)
+            return
+        }
+    }
+
+    fun onEdgeDismissUpdateCallback(state: Int, position: Float) {
+        var dismiss: SwipeDismiss? = null
+
+        if (getRunningScene() !is SwipeDismiss) {
+            if (position>0) {
+                dismiss = SwipeDismiss.create(this, getPreviousScene()!!)
+                popSceneWithTransition(dismiss!!)
+            }
+        } else {
+            dismiss = getRunningScene() as SwipeDismiss
+            if (!_dismissSwipe!!.isScrollTargeted()) {
+                if (position<=0) {
+                    dismiss.cancel()
+                    _dismissSwipe!!.reset()
+                } else if (position>_dismissSwipe!!.getContentSize().height) {
+                    dismiss.finish()
+                    _dismissSwipe!!.reset()
+                } else {
+                    // touch disable
+                    setTouchEventDispatcherEnable(false)
+                }
+            }
+        }
+
+        if (dismiss!=null) {
+            dismiss.getOutScene()!!.setPositionY(position+ getDirector().getWinSize().height/2)
+            val progress:Float = (dismiss.getOutScene()!!.getPositionY() - getDirector().getWinSize().height/2) / getDirector().getWinSize().height
+
+            val minusScale:Float = 0.6f*progress
+            val newScale:Float = 1.6f - minusScale
+            dismiss.getInScene()!!.setScale(newScale)
+        }
+    }
+
+    override fun getRunningScene(): SMScene? {
+        return _runnginScene
+    }
+
+    override fun getSideMenuState(): IDirector.SIDE_MENU_STATE {
+        setMenuSwipe()
+        return SideMenu.GetSideMenu().getState()!!
+    }
+
+    override fun runWithScene(scene: SMScene) {
+        pushScene(scene)
+        startSceneAnimation()
+    }
+
 
     private fun initMatrixStack() {
         while (!_modelViewMatrixStack.empty()) {
@@ -603,7 +750,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
                             }
                         }
                     } else {
-                        runningScene = getRunningScene()
+                        runningScene = getRunningScene()!!
                         type = runningScene.getSwipeType()
                     }
 
@@ -968,7 +1115,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
                 Mat4.createPerspective(60f, size.width/size.height, 10f, zEye+size.height/2f, matrixPerspective)
 
                 val eye:Vec3 = Vec3(size.width/2, size.height/2, zEye)
-                val center:Vec3 = Vec3(size.width/2,, size.height/2, 0f)
+                val center:Vec3 = Vec3(size.width/2, size.height/2, 0f)
                 val up:Vec3 = Vec3(0f, 1f, 0f)
                 Mat4.createLookAt(eye, center, up, matrixLookup)
                 val proj3d:Mat4 = matrixPerspective.multiplyRet(matrixLookup)
@@ -999,10 +1146,327 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     // primitive
 
     override fun drawFillRect(x: Float, y: Float, width: Float, height: Float) {
-        if ()
+        if (_primFillBox==null) {
+            _primFillBox = PrimitiveRect(this, 1f, 1f, 0f, 0f)
+        }
+        _primFillBox!!.drawScaleXY(x, y, width, height)
+    }
+
+    override fun drawRect(x: Float, y: Float, width: Float, height: Float, lineWidth: Float) {
+        if (_primHollowBox==null) {
+            _primHollowBox = PrimitiveRect(this, 1f, 1f, 0f, 0f, false)
+        }
+        GLES20.glLineWidth(lineWidth)
+        _primHollowBox!!.drawScaleXY(x, y, width, height)
+    }
+
+    override fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineWidth: Float) {
+        if (_primLine==null) {
+            _primLine = PrimitiveLine(this)
+        }
+        GLES20.glLineWidth(lineWidth)
+        _primLine!!.drawLine(x1, y1, x2, y2)
+    }
+
+    override fun drawCircle(x: Float, y: Float, radius: Float) {
+        drawCircle(x, y, radius, 1.5f)
+    }
+
+    override fun drawCircle(x: Float, y: Float, radius: Float, aaWidth: Float) {
+        if (_primCircle==null) {
+            _primCircle = PrimitiveCircle(this)
+        }
+        _primCircle!!.drawCircle(x, y, radius, aaWidth)
+    }
+
+    override fun drawRing(x: Float, y: Float, radius: Float, thickness: Float) {
+        drawRing(x, y, radius, thickness, 1.5f)
+    }
+
+    override fun drawRing(x: Float, y: Float, radius: Float, thickness: Float, aaWidth: Float) {
+        if (_primCircle==null) {
+            _primCircle = PrimitiveCircle(this)
+        }
+        _primCircle!!.drawRing(x, y, radius, thickness, aaWidth)
+    }
+
+    override fun drawSolidRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        cornerRadius: Float
+    ) {
+        drawSolidRect(x, y, width, height, cornerRadius, 1f)
+    }
+
+    override fun drawSolidRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        cornerRadius: Float,
+        aaWidth: Float
+    ) {
+        if (_primSolidRect==null) {
+            _primSolidRect = PrimitiveSolidRect(this)
+        }
+        _primSolidRect!!.draawRect(x, y, width, height, cornerRadius, aaWidth)
+    }
+
+    override fun getSpriteSet(): SpriteSet? {
+        return _spriteSet
     }
 
 
+    override fun getTopScene(): SMScene? {
+        synchronized(_sceneStack) {
+            val numScene:Int = _sceneStack.size
+            if (numScene>0) {
+                return _sceneStack.peek()
+            }
+            return null
+        }
+    }
 
+    private fun getSecondScene(): SMScene? {
+        synchronized(_sceneStack) {
+            val numScene:Int = _sceneStack.size
+            if (numScene>0) {
+                return _sceneStack[numScene-2]
+            }
+            return null
+        }
+    }
 
+    override fun getTextureManager(): TextureManager {
+        return _textureManager
+    }
+
+    override fun setDisplayRawSize(width: Int, height: Int) {
+        _displayRawWidth = width
+        _displayRawHeight = height
+
+        _deviceWidth = _displayRawWidth
+        _deviceHeight = _displayRawHeight
+
+        _width = BASE_SCREEN_WIDTH
+        _height = _displayRawHeight * (BASE_SCREEN_WIDTH / _displayRawWidth)
+
+        _displayAdjust = BASE_SCREEN_WIDTH.toFloat() / _displayRawWidth
+
+        ShaderNode.DEFAULT_ANTI_ALIAS_WIDTH = BASE_SCREEN_WIDTH.toFloat()/width
+
+        beginProjectionMatrix()
+    }
+
+    override fun getDisplayRawWidth(): Int {
+        return _displayRawWidth
+    }
+
+    override fun getDisplayRawHeight(): Int {
+        return _displayRawHeight
+    }
+
+    override fun getRequestQueue(): RequestQueue {
+        return _requestQueue
+    }
+
+    override fun getFrameBufferId(): Int {
+        return _frameBufferId
+    }
+
+    override fun getFrameBufferSprite(): Sprite? {
+        return _frameBuffer
+    }
+
+    override fun getFrameBufferMatrix(): Mat4 {
+        return _frameBufferMat
+    }
+
+    fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent) {
+        _scheduler.performFunctionInMainThread(object : PERFORM_SEL{
+            override fun performSelector() {
+                synchronized(_sceneStack) {
+                    getTopScene()?.onActivityResult(requestCode, resultCode, data)
+                }
+            }
+        })
+    }
+
+    override fun isSendCleanupToScene(): Boolean {
+        return _sendCleanupToScene
+    }
+
+    override fun replaceScene(scene: SMScene) {
+        if (_runnginScene==null) {
+            runWithScene(scene)
+            return
+        }
+
+        if (scene==_nextScene) {
+            return
+        }
+
+        if (_nextScene!=null) {
+            if (_nextScene!!.isRunning()) {
+                _nextScene!!.onExit()
+            }
+
+            _nextScene!!.cleanup()
+            _nextScene = null
+        }
+
+        val index = _sceneStack.size - 1
+        _sendCleanupToScene = true
+
+        _sceneStack[index] = scene
+        _nextScene = scene
+    }
+
+    override fun pushScene(scene: SMScene) {
+        _sendCleanupToScene = false
+        _sceneStack.push(scene)
+        _nextScene = scene
+    }
+
+    override fun popScene() {
+        _sceneStack.pop()
+        val c:Int = _sceneStack.size
+        if (c==0) {
+            _sideMenu?.removeFromParent()
+            _sideMenu = null
+        } else {
+            _sendCleanupToScene = true
+            _nextScene = _sceneStack[c-1]
+        }
+    }
+
+    fun end() {
+        SideMenu.GetSideMenu().clearMenu()
+        _activity?.finish()
+    }
+
+    override fun popToRootScene() {
+        popToSceneStackLevel(1)
+    }
+
+    override fun popToSceneStackLevel(levelt: Int) {
+        var c:Int = _sceneStack.size
+        var level = levelt
+        if (level==0) {
+            end()
+            return
+        }
+
+        if (c in 1..level) {
+            level = c - 1
+        }
+
+        while (c>level) {
+            val current:SMScene = _sceneStack.peek()
+
+            if (current.isRunning()) {
+                current.onExit()
+            }
+
+            current.cleanup()
+
+            _sceneStack.pop()
+            --c
+        }
+
+        _nextScene = _sceneStack.peek()
+        _sendCleanupToScene = true
+    }
+
+    override fun setNextScene() {
+        val runningIsTransition:Boolean = _runnginScene is TransitionScene
+        val newIsTransition = _nextScene is TransitionScene
+
+        if (!newIsTransition) {
+            _runnginScene?.onExitTransitionDidStart()
+            _runnginScene?.onExit()
+
+            if (_sendCleanupToScene) {
+                _runnginScene?.cleanup()
+                _runnginScene?.setState(SMScene.STATE_FINISHING)
+            }
+        }
+
+        _runnginScene = _nextScene
+        _nextScene = null
+
+        if (!runningIsTransition) {
+            _runnginScene?.onEnter()
+            _runnginScene?.onEnterTransitionDidFinish()
+        }
+    }
+
+    override fun getPreviousScene(): SMScene? {
+        val c = _sceneStack.size
+        if (c<=1) return null
+
+        return _sceneStack[c-2]
+    }
+
+    override fun popSceneWithTransition(scene: SMScene) {
+        if (BuildConfig.DEBUG && _runnginScene==null) {
+            error("Assertion Failed")
+        }
+
+        _sceneStack.pop()
+        val c = _sceneStack.size
+        if (c==0) {
+            end()
+        } else {
+            _sendCleanupToScene = true
+            _nextScene = scene
+        }
+    }
+
+    override fun convertToUI(glPoint: Vec2): Vec2 {
+        val transform:Mat4 = Mat4()
+        GLToClipTransform(transform)
+
+        val clipCoord:Vec4 = Vec4()
+        val glCoord:Vec4 = Vec4(glPoint.x, glPoint.y, 0f, 1f)
+
+        transform.transformVector(glCoord, clipCoord)
+
+        clipCoord.x = clipCoord.x / clipCoord.w
+        clipCoord.y = clipCoord.y / clipCoord.w
+        clipCoord.z = clipCoord.z / clipCoord.w
+
+        val glSize:Size = getWinSize()
+        val factor:Float = 1.0f / glCoord.w
+
+        return Vec2(glSize.width * (clipCoord.x * 0.5f + 0.5f) * factor, glSize.height * (-clipCoord.y * 0.5f + 0.5f) * factor)
+    }
+
+    override fun getSceneStackCount(): Int {
+        return _sceneStack.size
+    }
+
+    override fun pause() {
+        if (_paused) {
+            return
+        }
+    }
+
+    override fun isPaused(): Boolean {
+        return _paused
+    }
+
+    override fun resume() {
+
+    }
+
+    override fun startSceneAnimation() {
+        startTimer()
+    }
+
+    override fun stopSceneAnimation() {
+        _invalid = true
+    }
 }

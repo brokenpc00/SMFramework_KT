@@ -1,16 +1,12 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
+import com.brokenpc.smframework.IDirector
 
-open class Ref : Cloneable {
-    constructor(director: IDirector) {
-        _director = director
-    }
+open class Ref(director: IDirector) : Cloneable {
+    protected var _director: IDirector? = director
 
 
     open fun getDirector(): IDirector {
         return _director!!
     }
-
-    protected var _director: IDirector? = director
 }

@@ -1,7 +1,7 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
 
 open class Action(director: IDirector) : Ref(director) {
 

@@ -1,14 +1,14 @@
-package com.interpark.smframework.base
+package com.brokenpc.smframework.base
 
 import android.opengl.GLES20
 import android.opengl.Matrix
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.texture.Texture
-import com.interpark.smframework.base.types.Color4F
-import com.interpark.smframework.base.types.Ref
-import com.interpark.smframework.base.types.Size
-import com.interpark.smframework.shader.ShaderManager.ProgramType
-import com.interpark.smframework.shader.ShaderProgram
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.types.Color4F
+import com.brokenpc.smframework.base.types.Ref
+import com.brokenpc.smframework.base.types.Size
+import com.brokenpc.smframework.shader.ShaderManager.ProgramType
+import com.brokenpc.smframework.shader.ShaderProgram
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

@@ -1,4 +1,4 @@
-package com.interpark.smframework.util
+package com.brokenpc.smframework.util
 
 open class SingletonHolder<out T, in A>(private val constructor: (A) -> T) {
 

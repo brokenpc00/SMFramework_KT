@@ -1,7 +1,7 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.opengl.GLES20
-import com.interpark.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.texture.Texture
 import java.nio.FloatBuffer
 
 class ProgGeineEffect : ProgSprite() {
@@ -28,7 +28,7 @@ class ProgGeineEffect : ProgSprite() {
         _uniformSide = GLES20.glGetUniformLocation(_programId, NAME_SIDE)
     }
 
-    fun setDrawParam(texture: Texture, modelMatrix: FloatArray, v: FloatBuffer, uv: FloatBuffer): Boolean {
+    override fun setDrawParam(texture: Texture, modelMatrix: FloatArray, v: FloatBuffer, uv: FloatBuffer): Boolean {
         if (super.setDrawParam(texture, modelMatrix, v, uv)) {
             GLES20.glUniform1f(_uniformWidth, texture.getWidth().toFloat())
             GLES20.glUniform1f(_uniformHeight, texture.getHeight().toFloat())

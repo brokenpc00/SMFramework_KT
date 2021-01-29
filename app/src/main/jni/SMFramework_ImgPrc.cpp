@@ -15,7 +15,7 @@
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 
 JNIEXPORT
-jstring JNICALL Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_stringFromJNI(
+jstring JNICALL Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_stringFromJNI(
         JNIEnv *env,
         jclass thiz
 )
@@ -25,7 +25,7 @@ jstring JNICALL Java_com_interpark_smframework_nativeImageProcess_ImageProcessin
 }
 
 JNIEXPORT
-void Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_callTest(
+void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_callTest(
         JNIEnv *env,
         jclass thiz
 )
@@ -34,7 +34,7 @@ void Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_callTest(
 }
 
 JNIEXPORT
-void Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_exitApp(
+void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_exitApp(
         JNIEnv *env,
         jclass thiz
 )
@@ -44,7 +44,7 @@ void Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_exitApp(
 
 
 JNIEXPORT
-void JNICALL Java_com_interpark_smframework_nativeImageProcess_ImageProcessing_glGrabPixels(
+void JNICALL Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_glGrabPixels(
         JNIEnv *env,
         jclass obj,
         jint x,

@@ -1,6 +1,6 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
+import com.brokenpc.smframework.IDirector
 import java.time.Duration
 
 open class FiniteTimeAction (director:IDirector, duration: Float=0f): Action(director)

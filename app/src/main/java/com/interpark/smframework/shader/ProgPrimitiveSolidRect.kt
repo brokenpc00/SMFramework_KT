@@ -1,4 +1,4 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.opengl.GLES20
 import java.nio.FloatBuffer

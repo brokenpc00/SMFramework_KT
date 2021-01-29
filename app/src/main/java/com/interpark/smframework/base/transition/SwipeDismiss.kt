@@ -1,8 +1,8 @@
-package com.interpark.smframework.base.transition
+package com.brokenpc.smframework.base.transition
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMScene
-import com.interpark.smframework.base.types.Mat4
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.types.Mat4
 
 class SwipeDismiss(director:IDirector) : SwipeBack(director) {
     companion object {

@@ -1,4 +1,4 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
 import kotlin.math.max
 import kotlin.math.min

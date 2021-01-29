@@ -1,13 +1,13 @@
-package com.interpark.smframework.base.shape
+package com.brokenpc.smframework.base.shape
 
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.DrawNode
-import com.interpark.smframework.base.types.Vec2
-import com.interpark.smframework.shader.ProgPrimitiveCircle
-import com.interpark.smframework.shader.ProgPrimitiveRing
-import com.interpark.smframework.shader.ShaderManager
-import com.interpark.smframework.shader.ShaderManager.ProgramType
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.DrawNode
+import com.brokenpc.smframework.base.types.Vec2
+import com.brokenpc.smframework.shader.ProgPrimitiveCircle
+import com.brokenpc.smframework.shader.ProgPrimitiveRing
+import com.brokenpc.smframework.shader.ShaderManager
+import com.brokenpc.smframework.shader.ShaderManager.ProgramType
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

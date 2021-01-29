@@ -1,10 +1,10 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.view.VelocityTracker
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.scroller.PageScroller
-import com.interpark.smframework.base.types.Vec2
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.scroller.PageScroller
+import com.brokenpc.smframework.base.types.Vec2
 
 open class EdgeSwipeLayer(director:IDirector) : SMView(director) {
     protected var _fakeFlingDirection:Int = 0

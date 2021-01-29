@@ -1,4 +1,4 @@
-package com.interpark.app
+package com.brokenpc.app
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
 class Color4B : Cloneable {
     var r:Int = 0xff

@@ -1,9 +1,9 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
 import android.util.SparseArray
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
 
 open class Scheduler(director: IDirector) : Ref(director) {
 
@@ -27,7 +27,7 @@ open class Scheduler(director: IDirector) : Ref(director) {
 
     protected var _updateHashLocked: Boolean = false
 
-    protected var _functionsToPerform: ArrayList<PERFORM_SEL> = ArrayList(initialCapacity = 30)
+    protected var _functionsToPerform: ArrayList<PERFORM_SEL> = ArrayList(30)
 
 
     companion object {
@@ -63,7 +63,7 @@ open class Scheduler(director: IDirector) : Ref(director) {
         }
 
         if (element.timers==null) {
-            element.timers = ArrayList(initialCapacity = 10)
+            element.timers = ArrayList(10)
         } else {
             for (i in 0 until element.timers?.size!!) {
                 var timer:TimerTargetSelector? = element.timers?.get(i)
@@ -417,7 +417,7 @@ open class Scheduler(director: IDirector) : Ref(director) {
     fun getTimeScale():Float {return _timeScale}
     fun setTimeScale(scale:Float) {_timeScale=scale}
 
-    fun performFunctionInMainThread(func:PERFORM_SEL) {
+    fun performFunctionInMainThread(func: PERFORM_SEL) {
         synchronized(_functionsToPerform) {
             _functionsToPerform.add(func)
         }

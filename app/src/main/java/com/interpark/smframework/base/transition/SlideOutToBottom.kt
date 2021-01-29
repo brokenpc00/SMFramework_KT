@@ -1,9 +1,9 @@
-package com.interpark.smframework.base.transition
+package com.brokenpc.smframework.base.transition
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMScene
-import com.interpark.smframework.base.types.*
-import com.interpark.smframework.view.SMSolidRectView
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.types.*
+import com.brokenpc.smframework.view.SMSolidRectView
 
 class SlideOutToBottom(director:IDirector) : BaseSceneTransition(director) {
 

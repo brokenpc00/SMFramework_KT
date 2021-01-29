@@ -1,9 +1,9 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.SMView.Companion.interpolation
-import com.interpark.smframework.base.types.tweenfunc.TweenType
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.SMView.Companion.interpolation
+import com.brokenpc.smframework.base.types.tweenfunc.TweenType
 
 class TransformAction(director:IDirector) : DelayBaseAction(director) {
     private var _scaleAction = false

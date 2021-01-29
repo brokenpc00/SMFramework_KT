@@ -1,19 +1,19 @@
-package com.interpark.smframework
+package com.brokenpc.smframework
 
 import android.content.Context
 import android.graphics.RectF
 import androidx.fragment.app.FragmentActivity
 import com.android.volley.RequestQueue
-import com.interpark.smframework.base.SMScene
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.sprite.Sprite
-import com.interpark.smframework.base.sprite.SpriteSet
-import com.interpark.smframework.base.texture.Texture
-import com.interpark.smframework.base.texture.TextureManager
-import com.interpark.smframework.base.types.*
-import com.interpark.smframework.shader.ShaderManager
-import com.interpark.smframework.shader.ShaderManager.ProgramType
-import com.interpark.smframework.shader.ShaderProgram
+import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.sprite.Sprite
+import com.brokenpc.smframework.base.sprite.SpriteSet
+import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.texture.TextureManager
+import com.brokenpc.smframework.base.types.*
+import com.brokenpc.smframework.shader.ShaderManager
+import com.brokenpc.smframework.shader.ShaderManager.ProgramType
+import com.brokenpc.smframework.shader.ShaderProgram
 
 
 interface IDirector {
@@ -73,7 +73,7 @@ interface IDirector {
 
     fun getFrameBufferId(): Int;
     fun setFrameBufferId(frameBufferId: Int)
-    fun getFrameBufferSprite(): Sprite
+    fun getFrameBufferSprite(): Sprite?
 
     fun setTouchEventDispatcherEnable(enable: Boolean)
     fun getTouchEventDispatcherEnable(): Boolean
@@ -96,33 +96,33 @@ interface IDirector {
 //
 //
     // primitive
-//    fun drawFillRect(x1: Float, y1: Float, width: Float, height: Float)
-//    fun drawRect(x1: Float, y1: Float, width: Float, height: Float, lineWidth: Float)
-//    fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineWidth: Float)
-//    fun drawCircle(x: Float, y: Float, radius: Float)
-//    fun drawCircle(x: Float, y: Float, radius: Float, aaWidth: Float)
-//    fun drawRing(x: Float, y: Float, radius: Float, thickness: Float)
-//    fun drawRing(x: Float, y: Float, radius: Float, thickness: Float, aaWidth: Float)
-//    fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float)
-//    fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float, aaWidth: Float)
+    fun drawFillRect(x: Float, y: Float, width: Float, height: Float)
+    fun drawRect(x: Float, y: Float, width: Float, height: Float, lineWidth: Float)
+    fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineWidth: Float)
+    fun drawCircle(x: Float, y: Float, radius: Float)
+    fun drawCircle(x: Float, y: Float, radius: Float, aaWidth: Float)
+    fun drawRing(x: Float, y: Float, radius: Float, thickness: Float)
+    fun drawRing(x: Float, y: Float, radius: Float, thickness: Float, aaWidth: Float)
+    fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float)
+    fun drawSolidRect(x: Float, y: Float, width: Float, height: Float, cornerRadius: Float, aaWidth: Float)
 
 
 
     // scene & layer & menu
     fun getShaderManager(): ShaderManager
-    fun getSpriteSet(): SpriteSet
+    fun getSpriteSet(): SpriteSet?
     fun getTextureManager(): TextureManager
     fun showProgress(show: Boolean, bounds: RectF)
     fun showUploadProgress(show: Boolean, state: Int, bounds: RectF)
 
-    fun getTopScene(): SMScene
+    fun getTopScene(): SMScene?
     fun setSharedLayer(layerId: SharedLayer, layer: SMView?)
     fun getSharedLayer(layerId: SharedLayer): SMView?
 
     fun setSideMenuOpenPosition(position: Float)
     fun getSideMenuState(): SIDE_MENU_STATE
 
-    fun getRunningScene(): SMScene
+    fun getRunningScene(): SMScene?
     fun isSendCleanupToScene(): Boolean
 
     fun replaceScene(scene: SMScene)
@@ -138,7 +138,7 @@ interface IDirector {
     fun getPreviousScene(): SMScene?
     fun getSceneStackCount(): Int
 
-    fun convertToUI(glPoint: Vec2)
+    fun convertToUI(glPoint: Vec2): Vec2
 
     fun pause()
     fun resume()

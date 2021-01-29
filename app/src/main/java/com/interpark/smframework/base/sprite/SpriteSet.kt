@@ -1,4 +1,4 @@
-package com.interpark.smframework.base.sprite
+package com.brokenpc.smframework.base.sprite
 
 open class SpriteSet {
 

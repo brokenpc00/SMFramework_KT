@@ -1,10 +1,10 @@
-package com.interpark.smframework.util
+package com.brokenpc.smframework.util
 
 import android.os.Process
 import android.util.Log
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.types.PERFORM_SEL
-import com.interpark.smframework.base.types.Ref
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.types.PERFORM_SEL
+import com.brokenpc.smframework.base.types.Ref
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.concurrent.*
@@ -122,7 +122,7 @@ abstract class SMAsyncTask<Params, Progress, Result>(director: IDirector) : Ref(
 
 
     fun getStatus():Status {return _status}
-    protected abstract fun doInBackground(vararg params: Params): Result
+    protected abstract fun doInBackground(vararg params: Params): Result?
     open protected fun onPreExecute() {}
     open protected fun onPostExecute(result: Result?) {}
     open protected fun onProgressUpdate(vararg value: Progress) {}

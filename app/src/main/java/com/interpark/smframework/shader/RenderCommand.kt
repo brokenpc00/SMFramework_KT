@@ -1,7 +1,7 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.util.Log
-import com.interpark.smframework.base.SMView
+import com.brokenpc.smframework.base.SMView
 
 open class RenderCommand {
     protected var _globalOrder = 0f

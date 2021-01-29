@@ -1,11 +1,11 @@
-package com.interpark.smframework.base.transition
+package com.brokenpc.smframework.base.transition
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMScene
-import com.interpark.smframework.base.types.EaseCubicActionOut
-import com.interpark.smframework.base.types.FiniteTimeAction
-import com.interpark.smframework.base.types.MoveTo
-import com.interpark.smframework.base.types.Vec2
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.types.EaseCubicActionOut
+import com.brokenpc.smframework.base.types.FiniteTimeAction
+import com.brokenpc.smframework.base.types.MoveTo
+import com.brokenpc.smframework.base.types.Vec2
 
 class SlideInToTop(director:IDirector) : BaseSceneTransition(director) {
 

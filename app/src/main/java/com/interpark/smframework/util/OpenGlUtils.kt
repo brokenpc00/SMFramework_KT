@@ -1,4 +1,4 @@
-package com.interpark.smframework.util
+package com.brokenpc.smframework.util
 
 import android.opengl.Matrix
 import kotlin.math.tan

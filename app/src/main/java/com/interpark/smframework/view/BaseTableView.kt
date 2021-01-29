@@ -1,14 +1,14 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.util.SparseArray
 import android.view.VelocityTracker
-import com.interpark.app.BuildConfig
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.scroller.SMScroller
-import com.interpark.smframework.base.scroller._ScrollProtocol
-import com.interpark.smframework.base.types.Rect
-import com.interpark.smframework.base.types.Ref
+import com.brokenpc.app.BuildConfig
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.scroller.SMScroller
+import com.brokenpc.smframework.base.scroller._ScrollProtocol
+import com.brokenpc.smframework.base.types.Rect
+import com.brokenpc.smframework.base.types.Ref
 import java.util.*
 
 open class BaseTableView(director:IDirector) : SMView(director), _ScrollProtocol {

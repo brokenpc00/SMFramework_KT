@@ -1,15 +1,24 @@
-package com.interpark.smframework.base.shape
+package com.brokenpc.smframework.base.shape
 
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.DrawNode
-import com.interpark.smframework.shader.ProgPrimitive
-import com.interpark.smframework.shader.ShaderManager
-import com.interpark.smframework.shader.ShaderProgram
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.DrawNode
+import com.brokenpc.smframework.shader.ProgPrimitive
+import com.brokenpc.smframework.shader.ShaderManager
+import com.brokenpc.smframework.shader.ShaderProgram
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 open class PrimitiveRect(director:IDirector, w:Float, h:Float, cx:Float, cy:Float, fill: Boolean=true) : DrawNode(director) {
+
+    init {
+        setProgramType(ShaderManager.ProgramType.Primitive)
+        if (fill) {
+            initRect(director, w, h, cx, cy)
+        } else {
+            initRectHollow(director, w, h, cx, cy)
+        }
+    }
 
     protected fun initRectHollow(director: IDirector, w: Float, h: Float, cx: Float, cy: Float) {
         _director = director
@@ -35,18 +44,12 @@ open class PrimitiveRect(director:IDirector, w:Float, h:Float, cx:Float, cy:Floa
     }
 
     override fun _draw(modelMatrix: FloatArray) {
-        val program:ShaderProgram = useProgram()
-        if ((program as ProgPrimitive).setDrawParam(_matrix, _v!!)) {
-            GLES20.glDrawArrays(_drawMode, 0, _numVertices)
+        val program = useProgram()
+        if (program!=null) {
+            if ((program as ProgPrimitive).setDrawParam(_matrix, _v!!)) {
+                GLES20.glDrawArrays(_drawMode, 0, _numVertices)
+            }
         }
     }
 
-    init {
-        setProgramType(ShaderManager.ProgramType.Primitive)
-        if (fill) {
-            initRect(director, w, h, cx, cy)
-        } else {
-            initRectHollow(director, w, h, cx, cy)
-        }
-    }
 }

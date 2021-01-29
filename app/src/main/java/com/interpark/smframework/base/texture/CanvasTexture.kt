@@ -1,13 +1,13 @@
-package com.interpark.smframework.base.texture
+package com.brokenpc.smframework.base.texture
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.Matrix
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.types.Mat4
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.types.Mat4
 
-class CanvasTexture(key:String, width:Int, height:Int) : Texture(key, false, null) {
+class CanvasTexture(director: IDirector, key:String, width:Int, height:Int) : Texture(director, key, false, null) {
 
     private var _renderTargetEnabled:Boolean = false
 
@@ -32,7 +32,7 @@ class CanvasTexture(key:String, width:Int, height:Int) : Texture(key, false, nul
 
             if (director.bindTexture(this)) {
                 if (_textureId[0]== NO_TEXTURE) {
-                    loadTexture(null, null)
+                    loadTexture(director, null)
                 }
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, getId())
                 GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, _textureId[0], 0)
@@ -71,7 +71,7 @@ class CanvasTexture(key:String, width:Int, height:Int) : Texture(key, false, nul
         return _matrix
     }
 
-    override fun loadTexture(director: IDirector?, bitmap: Bitmap?): Boolean {
+    override fun loadTexture(director: IDirector, bitmap: Bitmap?): Boolean {
         GLES20.glGenTextures(1, _textureId, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, _textureId[0])
 
@@ -106,7 +106,7 @@ class CanvasTexture(key:String, width:Int, height:Int) : Texture(key, false, nul
         if (turnOn) {
             if (director.bindTexture(this)) {
                 if (_textureId[0]== NO_TEXTURE) {
-                    loadTexture(null, null)
+                    loadTexture(director, null)
                 }
 
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, getId())

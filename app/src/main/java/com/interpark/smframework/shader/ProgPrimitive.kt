@@ -1,7 +1,7 @@
-package com.interpark.smframework.shader
+package com.brokenpc.smframework.shader
 
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
+import com.brokenpc.smframework.IDirector
 import java.nio.FloatBuffer
 
 open class ProgPrimitive : ShaderProgram() {

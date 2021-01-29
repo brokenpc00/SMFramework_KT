@@ -1,4 +1,4 @@
-package com.interpark.smframework.util
+package com.brokenpc.smframework.util
 
 import java.io.*
 import java.nio.MappedByteBuffer

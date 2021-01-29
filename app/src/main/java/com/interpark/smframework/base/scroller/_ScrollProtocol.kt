@@ -1,7 +1,7 @@
-package com.interpark.smframework.base.scroller
+package com.brokenpc.smframework.base.scroller
 
 import android.view.VelocityTracker
-import com.interpark.smframework.base.types.Rect
+import com.brokenpc.smframework.base.types.Rect
 
 interface _ScrollProtocol {
     fun getScroller(): SMScroller?

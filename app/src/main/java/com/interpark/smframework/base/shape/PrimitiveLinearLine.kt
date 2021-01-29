@@ -1,15 +1,15 @@
-package com.interpark.smframework.base.shape
+package com.brokenpc.smframework.base.shape
 
 import android.opengl.GLES20
 import android.opengl.Matrix
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.DrawNode
-import com.interpark.smframework.base.SMView
-import com.interpark.smframework.base.texture.Texture
-import com.interpark.smframework.base.shape.ShapeConstant.LineType
-import com.interpark.smframework.base.types.Vec2
-import com.interpark.smframework.shader.ProgSprite
-import com.interpark.smframework.shader.ShaderManager
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.DrawNode
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.base.shape.ShapeConstant.LineType
+import com.brokenpc.smframework.base.types.Vec2
+import com.brokenpc.smframework.shader.ProgSprite
+import com.brokenpc.smframework.shader.ShaderManager
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -66,7 +66,7 @@ class PrimitiveLinearLine(director:IDirector, texture:Texture, thickness:Float, 
     override fun _draw(modelMatrix: FloatArray) {
         val program = useProgram()
         if (program!=null) {
-            if ((program as ProgSprite).setDrawParam(_texture, _matrix, _v!!, _uv)) {
+            if ((program as ProgSprite).setDrawParam(_texture!!, _matrix, _v!!, _uv)) {
                 GLES20.glDrawArrays(_drawMode, 0, _numVertices)
             }
         }

@@ -1,8 +1,8 @@
-package com.interpark.smframework.base.scroller
+package com.brokenpc.smframework.base.scroller
 
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.base.SMView.Companion.M_PI_2
-import com.interpark.smframework.base.SMView.Companion.smoothInterpolate
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView.Companion.M_PI_2
+import com.brokenpc.smframework.base.SMView.Companion.smoothInterpolate
 
 class PageScroller(director:IDirector) : FlexibleScroller(director) {
 

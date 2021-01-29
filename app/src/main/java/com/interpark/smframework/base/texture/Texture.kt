@@ -1,10 +1,10 @@
-package com.interpark.smframework.base.texture
+package com.brokenpc.smframework.base.texture
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLES20
-import com.interpark.smframework.IDirector
-import com.interpark.smframework.util.SMAsyncTask
+import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.util.SMAsyncTask
 import java.lang.ref.WeakReference
 import java.sql.Ref
 
@@ -50,7 +50,7 @@ abstract class Texture(director: IDirector, key: String, loadAsync: Boolean, lis
     }
 
     fun isAsyncLoader():Boolean {return _loadAsync}
-    fun isLoading():Boolean {return _asyncTask!=null}
+    open fun isLoading():Boolean {return _asyncTask!=null}
     fun getKey():String {return _key}
     fun getId():Int {return _textureId[0]}
     fun getIdRef():IntArray {return _textureId}
@@ -66,7 +66,7 @@ abstract class Texture(director: IDirector, key: String, loadAsync: Boolean, lis
 
     fun getRefCount():Int {return _refCount}
 
-    fun deleteTexture(isGLThread:Boolean) {
+    open fun deleteTexture(isGLThread:Boolean) {
         if (_asyncTask!=null) {
             _asyncTask?.stop()
             _asyncTask = null
@@ -86,7 +86,7 @@ abstract class Texture(director: IDirector, key: String, loadAsync: Boolean, lis
 
 
     abstract fun loadTexture(director: IDirector, bitmap: Bitmap?):Boolean
-    fun loadTextureAsync(director: IDirector) {
+    open fun loadTextureAsync(director: IDirector) {
         if (_asyncTask!=null && !_asyncTask!!.isCancelled()) {
             _asyncTask?.stop()
             _asyncTask = null
