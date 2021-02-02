@@ -10,7 +10,7 @@ import java.lang.Exception
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
-class ImageDownloader {
+open class ImageDownloader {
     companion object {
         val DEFAULT = DownloadConfig(DownloadConfig.CachePolicy.DEFAULT)
         val NO_CACHE = DownloadConfig(DownloadConfig.CachePolicy.NO_CACHE)
@@ -201,8 +201,8 @@ class ImageDownloader {
 
     }
 
-    protected fun getMemCache(): MemoryLRUCache? {return _memCache}
-    protected fun getImageCache(): ImageLRUCache? {return _imageCache}
+    fun getMemCache(): MemoryLRUCache? {return _memCache}
+    fun getImageCache(): ImageLRUCache? {return _imageCache}
 
     fun queueDownloadTask(target: IDownloadProtocol, task: ImageDownloadTask) {
 
@@ -223,7 +223,7 @@ class ImageDownloader {
 
     }
 
-    fun writeToFileCache(cacheKey: String, cacheEntry: MemoryCacheEntry) {
+    fun writeToFileCache(cacheKey: String, cacheEntry: MemoryCacheEntry?) {
 
     }
 
