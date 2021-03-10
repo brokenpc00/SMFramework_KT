@@ -16,9 +16,9 @@ interface IDownloadProtocol {
     fun onDataLoadStart()
 
     fun resetDownload()
-    fun removeDownloadTask(task: DownloadTask)
+    fun removeDownloadTask(task: ImageDownloadTask)
     fun isDownloadRunning(requestPath: String, requestTag: Int): Boolean
-    fun addDownloadTask(task: DownloadTask)
+    fun addDownloadTask(task: ImageDownloadTask): Boolean
 
 
 }

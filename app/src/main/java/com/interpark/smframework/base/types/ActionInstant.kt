@@ -4,7 +4,7 @@ import com.brokenpc.smframework.IDirector
 
 open class ActionInstant(director:IDirector) : ActionInterval(director) {
 
-    override fun Clone(): ActionInstant? {
+    override fun Clone(): ActionInterval? {
         return null
     }
 

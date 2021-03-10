@@ -137,7 +137,7 @@ open class TextureManager(director:IDirector) : Ref(director) {
         return texture
     }
 
-    fun createTextureFromBitmap(bitmap: Bitmap, key: String): Texture {
+    fun createTextureFromBitmap(bitmap: Bitmap?, key: String): Texture {
         var texture:Texture? = _textureMap[key]
         if (texture!=null && texture.getId()==Texture.NO_TEXTURE) {
             if (texture is BitmapTexture) {

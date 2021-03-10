@@ -119,6 +119,13 @@ class Vec2 : Cloneable {
         this.y = -this.y
     }
 
+    fun set(s: Size): Vec2 {
+        this.x = s.width
+        this.y = s.height
+
+        return this
+    }
+
     fun set(v: Vec2): Vec2 {
         this.x = v.x
         this.y = v.y

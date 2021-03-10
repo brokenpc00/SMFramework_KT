@@ -1,15 +1,21 @@
 package com.brokenpc.smframework.util.ImageManager
 
 import android.graphics.Bitmap
+import android.media.Image
+import android.net.Uri
+import android.os.Build
 import android.util.Log
-import com.brokenpc.smframework.downloader.ImageManager
+import android.util.Size
+import com.brokenpc.smframework.SMDirector
 import com.brokenpc.smframework.network.Downloader.DownloadTask
 import com.brokenpc.smframework.network.Downloader.Downloader
 import com.brokenpc.smframework.util.AppUtil
 import com.brokenpc.smframework.util.FileUtils
 import com.brokenpc.smframework.util.cache.ImageCacheEntry
 import com.brokenpc.smframework.util.cache.MemoryCacheEntry
+import com.brokenpc.smframework.util.webp.WebPFactory
 import com.interpark.smframework.util.FileManager
+import com.interpark.smframework.util.ImageManager.ImageManager
 import com.interpark.smframework.util.ImageManager.PhoneAlbum
 import com.interpark.smframework.util.ImageManager.PhonePhoto
 import java.io.File
@@ -25,7 +31,7 @@ class ImageDownloadTask {
     private val _mutex:Lock = ReentrantLock(true)
     private val _cond: Condition = _mutex.newCondition()
     private var _isSuccess:Boolean = false
-    private var _netDownloader:Downloader = null
+    private var _netDownloader:Downloader? = null
     private var _running:Boolean = true
     private var _tag:Int = -1
     private var _type:MediaType = MediaType.NETWORK
@@ -58,7 +64,7 @@ class ImageDownloadTask {
         private var _phoneAlbum:ArrayList<PhoneAlbum> = ArrayList()
 
         @JvmStatic
-        fun createTaskForTarget(downloader: ImageDownloader, target: IDownloadProtocol): ImageDownloadTask {
+        fun createTaskForTarget(downloader: ImageDownloader, target: IDownloadProtocol?): ImageDownloadTask {
             val task = ImageDownloadTask()
             task._targetRef = WeakReference(target)
             task._downloader = downloader
@@ -67,8 +73,10 @@ class ImageDownloadTask {
         }
 
         @JvmStatic
-        fun makeCacheKey(type:MediaType, requestPath:String, config:DownloadConfig, keyPath: StringBuffer?): String {
+        fun makeCacheKey(type:MediaType, requestPath:String, config:DownloadConfig?, keyPath: StringBuffer?): String {
             var key:String = ""
+
+            if (config==null) return ""
 
             when (type) {
                 MediaType.NETWORK -> {
@@ -112,7 +120,7 @@ class ImageDownloadTask {
 
             keyPath?.append(key)
 
-            return AppUtil.getMD5(key.toByteArray())
+            return AppUtil.getMD5(key.toByteArray()).toString()
         }
     }
 
@@ -133,7 +141,9 @@ class ImageDownloadTask {
         _taskId = 0x100 + __task_count__++
     }
 
-    constructor(type:MediaType, requestPath: String, config: DownloadConfig?) {
+    fun init(type:MediaType, requestPath: String, config: DownloadConfig?) {
+        _taskId = 0x100 + __task_count__++
+
         _type = type
         _requestPath = requestPath
 
@@ -253,7 +263,7 @@ class ImageDownloadTask {
 
                 if (_config.isEnableMemoryCache()) {
                     // 메모리를 먼저 검색한다.
-                    val cacheEntry = _downloader?.getMemCache().get(_cacheKey)
+                    val cacheEntry = _downloader?.getMemCache()?.get(_cacheKey)
                     if (cacheEntry!=null && cacheEntry.size()>0) {
                         _cacheEntry = cacheEntry
                         _downloader?.handleState(this, ImageDownloader.State.DOWNLOAD_SUCCESS)
@@ -295,9 +305,9 @@ class ImageDownloadTask {
 
                 _netDownloader = Downloader()
 
-                _netDownloader.createDownloadDataTask(_requestPath)
+                _netDownloader?.createDownloadDataTask(_requestPath)
 
-                _netDownloader._onTaskError = object : Downloader.OnTaskError {
+                _netDownloader?._onTaskError = object : Downloader.OnTaskError {
                     override fun onTaskError(
                         task: DownloadTask,
                         errorCode: Int,
@@ -313,7 +323,7 @@ class ImageDownloadTask {
                     }
                 }
 
-                _netDownloader._onTaskProgress = object : Downloader.OnTaskProgress {
+                _netDownloader?._onTaskProgress = object : Downloader.OnTaskProgress {
                     override fun onTaskProgress(
                         task: DownloadTask,
                         byteReceived: Long,
@@ -324,14 +334,14 @@ class ImageDownloadTask {
                     }
                 }
 
-                _netDownloader._onDataTaskSuccess = object : Downloader.OnDataTaskSuccess {
+                _netDownloader?._onDataTaskSuccess = object : Downloader.OnDataTaskSuccess {
                     override fun onDataTaskSuccess(task: DownloadTask, data: ByteArray?) {
-                        writeDataProc(data, data.size)
+                        writeDataProc(data, data?.size)
                     }
                 }
 
                 _mutex.withLock {
-                    _cond.signal()
+                    _cond.await()
                 }
 
                 if (_isSuccess) {
@@ -465,30 +475,67 @@ class ImageDownloadTask {
 
                 _mutex.lock()
 
-//                if ()
+                if (_phoneAlbum.isNotEmpty()) {
+                    _isSuccess = true
+                } else {
+                    ImageManager.getPhoneAlbumInfo(SMDirector.getDirector().getActivity(), object : ImageManager.OnImageLoadListener {
+                        override fun onAlbumImageLoadComplete(albums: ArrayList<PhoneAlbum>) {
+                            _isSuccess = true
+                            _phoneAlbum = albums
+
+                            _mutex.withLock {
+                                _cond.signal()
+                            }
+
+                        }
+
+                        override fun onError() {
+                            _mutex.withLock {
+                                _cond.signal()
+                            }
+                        }
+                    })
+
+                    _mutex.withLock {
+                        _cond.await()
+                    }
+                }
+
+                if (!_isSuccess || _phoneAlbum.isEmpty()) {
+                    Log.i("ImageDownload", "[[[[[ Failed to get Album List")
+                    _mutex.unlock()
+                    break
+                }
+
+                Thread.sleep(1)
+                if (!_running) break
 
 
+                val bmp = getPhotoImage(_requestPath)
+                if (bmp==null) {
+                    Log.i("ImageDownload", "[[[[[ Failed to get Album List")
+                    _mutex.unlock()
+                    break
+                }
+
+                // success
+                _imageEntry = ImageCacheEntry.createEntry(bmp)
+                _mutex.unlock()
+
+                _downloader?.handleState(this, ImageDownloader.State.DECODE_SUCCESS)
+                _cacheEntry = null
+                return
             } while (false)
         } catch (e: InterruptedException) {
 
         }
-    }
 
-    fun writeDataProc(buffer: ByteArray?, size: Int?) {
-        _isSuccess = false
-
-        if (_cacheEntry!=null) {
-            _cacheEntry!!.appendData(buffer, size?:0)
-            _isSuccess = true
-        }
-
-        _mutex.withLock {
-            _cond.signal()
-        }
+        _cacheEntry = null
+        _downloader?.handleState(this, ImageDownloader.State.DOWNLOAD_FAILED)
     }
 
     fun getPhotoImage(imageUrl: String): Bitmap? {
-        if (_phoneAlbum.size==0) return null
+        if (_phoneAlbum.isEmpty()) return null
 
         val phoneAlbum = _phoneAlbum[0]
 
@@ -505,6 +552,188 @@ class ImageDownloadTask {
         val orientation = phonePhoto.getOrientation()
         val sideLength = MAX_SIDE_LENGTH
 
-//        return ImageManager.
+        return ImageManager.loadBitmapResize(imageUrl, orientation, sideLength)
+    }
+
+    // for resize
+    fun procLoadFromThumbnailThread() {
+        try {
+            do {
+                Thread.sleep(1)
+                if (!_running) break
+
+                val cacheEntry = _downloader?.getMemCache()?.get(_cacheKey)
+                if (cacheEntry!=null && cacheEntry.size()>0) {
+                    _cacheEntry = cacheEntry
+                    _downloader?.handleState(this, ImageDownloader.State.DOWNLOAD_SUCCESS)
+                    return
+                }
+
+                _cacheEntry = null
+
+        _isSuccess = false
+
+                _mutex.lock()
+                if (_phoneAlbum.isNotEmpty()) {
+                    _isSuccess = true
+                } else {
+                    ImageManager.getPhoneAlbumInfo(SMDirector.getDirector().getActivity(), object : ImageManager.OnImageLoadListener{
+                        override fun onAlbumImageLoadComplete(albums: ArrayList<PhoneAlbum>) {
+            _isSuccess = true
+                            _phoneAlbum = albums
+                            _mutex.withLock {
+                                _cond.signal()
+                            }
+        }
+
+                        override fun onError() {
+        _mutex.withLock {
+            _cond.signal()
+        }
+    }
+                    })
+
+                    _mutex.withLock {
+                        _cond.await()
+                    }
+                }
+
+                if (!_isSuccess || _phoneAlbum.isEmpty()) {
+                    Log.i("ImageDownloadTask", "Failed To Get Album List")
+                    _mutex.unlock()
+                    break
+                }
+
+                Thread.sleep(1)
+                if (!_running) break
+
+                val bmp = getPhotoThumbnail(_requestPath)
+                if (bmp==null) {
+                    Log.i("ImageDownloadTask", "[[[[[ Failed to get album list")
+                    _mutex.unlock()
+                    break
+                }
+
+                _imageEntry = ImageCacheEntry.createEntry(bmp)
+                _mutex.unlock()
+
+                _downloader?.handleState(this, ImageDownloader.State.DECODE_SUCCESS)
+                _cacheEntry = null
+                return
+            } while (false)
+        } catch (e: InterruptedException) {
+
+        }
+
+        _cacheEntry = null
+        _downloader?.handleState(this, ImageDownloader.State.DOWNLOAD_FAILED)
+    }
+
+    fun getPhotoThumbnail(imageUrl: String): Bitmap? {
+        if (Build.VERSION.SDK_INT <= 29) {
+            if (_phoneAlbum.isEmpty()) return null
+
+        val phoneAlbum = _phoneAlbum[0]
+
+        var phonePhoto: PhonePhoto? = null
+        for (photo in phoneAlbum.getAlbumPhotos()) {
+            if (photo.getPhotoUri().compareTo(imageUrl)==0) {
+                phonePhoto = photo
+                break
+            }
+        }
+
+        if (phonePhoto==null) return null
+
+            val context = SMDirector.getDirector().getActivity()
+            val thumbPath = ImageManager.getThumbnailPath(context, phonePhoto.getId().toLong())
+            var bitmap: Bitmap? = null
+        val orientation = phonePhoto.getOrientation()
+            val sideLength = DEFAULT_SIDE_LENGTH
+            if (thumbPath!=null) {
+                bitmap = ImageManager.extractThumbnailFromFile(thumbPath, orientation, sideLength, sideLength)
+            }
+
+            if (bitmap==null) {
+                bitmap = ImageManager.extractThumbnailFromFile(phonePhoto.getPhotoUri(), orientation, sideLength, sideLength)
+            }
+
+            return bitmap
+        } else {
+            return SMDirector.getDirector().getActivity().contentResolver.loadThumbnail(Uri.parse(imageUrl), Size(DEFAULT_SIDE_LENGTH, DEFAULT_SIDE_LENGTH), null)
+        }
+    }
+
+    fun procDecodeThread() {
+        try {
+            _imageEntry = null
+
+            if (_cacheEntry==null) {
+                _cacheEntry = _downloader?.getMemCache()?.get(_cacheKey)
+                if (_cacheEntry==null) {
+                    // decode하러 들어왔는데 여기 없을 수 없다...
+                    _downloader?.handleState(this, ImageDownloader.State.DECODE_FAILED)
+                    return
+                }
+            }
+
+            do {
+                Thread.sleep(1)
+                if (!_running) break
+
+                _mutex.lock()
+
+                val data = _cacheEntry?.getData()
+
+                if (data==null) {
+                    _mutex.unlock()
+                    break
+                }
+
+                Thread.sleep(1)
+                if (!_running) break
+
+                val bmp = WebPFactory.decodeByteArray(data)
+                if (bmp==null) {
+                    Log.i("ImageDownloadTask", "[[[[[ Failed to decode Image~")
+                    _mutex.unlock()
+                    break
+                }
+
+                _imageEntry = ImageCacheEntry.createEntry(bmp)
+                _mutex.unlock()
+
+                _downloader?.handleState(this, ImageDownloader.State.DECODE_SUCCESS)
+                _cacheEntry = null
+
+                return
+            } while (false)
+
+        } catch (e: InterruptedException) {
+
+        }
+
+        _imageEntry = null
+        _downloader?.handleState(this, ImageDownloader.State.DECODE_FAILED)
+    }
+
+    fun writeDataProc(buffer: ByteArray?, size: Int?) {
+        if (buffer==null || size==null) {
+            _mutex.withLock {
+                _cond.signal()
+            }
+            return
+        }
+
+        _isSuccess = false
+
+        if (_cacheEntry!=null) {
+            _cacheEntry!!.appendData(buffer, size?:0)
+            _isSuccess = true
+        }
+
+        _mutex.withLock {
+            _cond.signal()
+        }
     }
 }

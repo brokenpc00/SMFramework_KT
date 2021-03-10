@@ -3,7 +3,7 @@ package com.brokenpc.smframework.base.transition
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMScene
 import com.brokenpc.smframework.base.types.*
-import com.brokenpc.smframework.base.types.tweenfunc.TweenType
+import com.brokenpc.smframework.util.tweenfunc
 import com.brokenpc.smframework.view.SMSolidRectView
 
 class SlideOutToRight(director:IDirector) : BaseSceneTransition(director) {
@@ -33,7 +33,7 @@ class SlideOutToRight(director:IDirector) : BaseSceneTransition(director) {
     override fun getOutAction(): FiniteTimeAction? {
         val action = TransformAction.create(getDirector())
         action.toPositionX(getDirector().getWinSize().width + getDirector().getWinSize().width / 2)
-            .setTweenFunc(TweenType.Sine_EaseOut).setTimeValue(_duration, 0f)
+            .setTweenFunc(tweenfunc.TweenType.Sine_EaseOut).setTimeValue(_duration, 0f)
         return action
     }
 

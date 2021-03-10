@@ -6,7 +6,7 @@ open class EaseRateAction(director:IDirector) : ActionEase(director) {
     protected var _rate:Float = 0f
     companion object {
         @JvmStatic
-        fun create(director: IDirector, action:ActionInterval, rate:Float): EaseRateAction? {
+        fun create(director: IDirector, action:ActionInterval?, rate:Float): EaseRateAction? {
             val action:EaseRateAction = EaseRateAction(director)
             if (action.initWithAction(action, rate)) {
                 return action

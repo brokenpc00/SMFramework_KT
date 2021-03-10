@@ -1,7 +1,7 @@
 package com.brokenpc.smframework.base.types
 
 import com.brokenpc.smframework.IDirector
-import com.brokenpc.smframework.base.types.tweenfunc.Companion.sineEaseIn
+import com.brokenpc.smframework.util.tweenfunc
 
 class EaseSineIn(director:IDirector) : EaseRateAction(director) {
     companion object {
@@ -23,7 +23,7 @@ class EaseSineIn(director:IDirector) : EaseRateAction(director) {
     }
 
     override fun update(time: Float) {
-        _inner!!.update(sineEaseIn(time))
+        _inner!!.update(tweenfunc.sineEaseIn(time))
     }
 
     override fun reverse(): EaseRateAction? {

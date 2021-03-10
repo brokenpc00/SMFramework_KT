@@ -5,7 +5,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-class Rect : Cloneable {
+class Rect {
     companion object {
         val ZERO:Rect = Rect(0f, 0f, 0f, 0f)
     }
@@ -125,5 +125,5 @@ class Rect : Cloneable {
         return Rect(combinedLeftX, combinedTopY, combinedRightX-combinedLeftX, combinedBottomY-combinedTopY)
     }
 
-    fun Clone():Rect {return Rect(this)}
+    open fun Clone():Rect {return Rect(this)}
 }

@@ -33,11 +33,13 @@ class GridSprite(director:IDirector, texture: Texture, cx: Float, cy: Float, gri
         const val DEFAULT_GRID_SIZE = 10
 
         @JvmStatic
-        fun create(director: IDirector, sprite: Sprite): GridSprite? {
+        fun create(director: IDirector, sprite: Sprite?): GridSprite? {
             return if (sprite is GridSprite) sprite else {
+                if (sprite==null) null else {
                 val texture = sprite.getTexture()
                 if (texture!=null) GridSprite(director, texture, 0f, 0f, DEFAULT_GRID_SIZE) else null
             }
+        }
         }
 
         @JvmStatic

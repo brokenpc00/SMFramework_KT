@@ -6,19 +6,19 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 import com.brokenpc.smframework.IDirector
 
-class BitmapTexture(director: IDirector, key: String, bitmap: Bitmap) : Texture(director, key, false, null) {
+class BitmapTexture(director: IDirector, key: String, bitmap: Bitmap?) : Texture(director, key, false, null) {
 
     private var _tempBitmap:Bitmap? = null
 
     init {
-        _width = bitmap.width
-        _height = bitmap.height
+        _width = bitmap?.width ?: 0
+        _height = bitmap?.height ?: 0
         _originalWidth = _width
         _originalHeight = _height
         _tempBitmap = bitmap
     }
 
-    fun setBitmap(bitmap: Bitmap) {_tempBitmap = bitmap}
+    fun setBitmap(bitmap: Bitmap?) {_tempBitmap = bitmap}
 
     override fun loadTexture(director: IDirector, bitmap: Bitmap?): Boolean {
         return if (_tempBitmap!=null && !_tempBitmap!!.isRecycled) {

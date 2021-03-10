@@ -3,7 +3,7 @@ package com.brokenpc.smframework.base.types
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.SMView.Companion.interpolation
-import com.brokenpc.smframework.base.types.tweenfunc.TweenType
+import com.brokenpc.smframework.util.tweenfunc
 
 class TransformAction(director:IDirector) : DelayBaseAction(director) {
     private var _scaleAction = false
@@ -28,7 +28,7 @@ class TransformAction(director:IDirector) : DelayBaseAction(director) {
 
     private var _smooth = false
 
-    private var _tweenType: TweenType = TweenType.Circ_EaseOut
+    private var _tweenType: tweenfunc.TweenType = tweenfunc.TweenType.Circ_EaseOut
     private var _easingParam = 0f
 
     private var _finishCallback: TransformAction.TransformFunc? = null
@@ -124,11 +124,11 @@ class TransformAction(director:IDirector) : DelayBaseAction(director) {
         return this
     }
 
-    fun setTweenFunc(type: TweenType): TransformAction {
+    fun setTweenFunc(type: tweenfunc.TweenType): TransformAction {
         return setTweenFunc(type, 0f)
     }
 
-    fun setTweenFunc(type: TweenType, easingParam: Float): TransformAction {
+    fun setTweenFunc(type: tweenfunc.TweenType, easingParam: Float): TransformAction {
         _tweenType = type
         _easingParam = easingParam
         return this
@@ -155,7 +155,7 @@ class TransformAction(director:IDirector) : DelayBaseAction(director) {
 
     override fun onUpdate(dt: Float) {
         var t = dt
-        if (_tweenType !== TweenType.Linear) {
+        if (_tweenType !== tweenfunc.TweenType.Linear) {
             val easingParam = FloatArray(1)
             easingParam[0] = _easingParam
             t = tweenfunc.tweenTo(t, _tweenType, easingParam)

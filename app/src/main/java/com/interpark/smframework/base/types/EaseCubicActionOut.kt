@@ -1,12 +1,12 @@
 package com.brokenpc.smframework.base.types
 
 import com.brokenpc.smframework.IDirector
-import com.brokenpc.smframework.base.types.tweenfunc.Companion.cubicEaseOut
+import com.brokenpc.smframework.util.tweenfunc
 
 class EaseCubicActionOut(director:IDirector) : ActionEase(director) {
     companion object {
         @JvmStatic
-        fun create(director: IDirector, action:ActionInterval):EaseCubicActionOut? {
+        fun create(director: IDirector, action:ActionInterval?):EaseCubicActionOut? {
             val ease:EaseCubicActionOut = EaseCubicActionOut(director)
             if (ease.initWithAction(action)) {
                 return ease
@@ -17,13 +17,11 @@ class EaseCubicActionOut(director:IDirector) : ActionEase(director) {
     }
 
     override fun Clone(): EaseCubicActionOut? {
-        return if (_inner != null) {
-            create(getDirector(), _inner!!.Clone()!!)
-        } else null
+        return EaseCubicActionOut.create(getDirector(), _inner?.Clone())
     }
 
     override fun update(time: Float) {
-        _inner!!.update(cubicEaseOut(time))
+        _inner!!.update(tweenfunc.cubicEaseOut(time))
     }
 
     override fun reverse(): ActionEase? {

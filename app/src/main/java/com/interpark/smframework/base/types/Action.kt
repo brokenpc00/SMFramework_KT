@@ -15,7 +15,7 @@ open class Action(director: IDirector) : Ref(director) {
     protected var _flags:Long = 0
 
 
-    open fun Clone():Action? {return null}
+    override fun Clone(): Action? {return null}
     open fun reverse():Action? {return null}
     open fun isDone():Boolean {return true}
     open fun startWithTarget(target: SMView?) {

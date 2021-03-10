@@ -1,12 +1,12 @@
 package com.brokenpc.smframework.base.types
 
 import com.brokenpc.smframework.IDirector
-import com.brokenpc.smframework.base.types.tweenfunc.Companion.sineEaseOut
+import com.brokenpc.smframework.util.tweenfunc
 
 class EaseSineOut(director:IDirector) : EaseRateAction(director) {
     companion object {
         @JvmStatic
-        fun create(director: IDirector, action: ActionInterval): EaseSineOut? {
+        fun create(director: IDirector, action: ActionInterval?): EaseSineOut? {
             val ease:EaseSineOut = EaseSineOut(director)
             if (ease.initWithAction(action)) {
                 return ease
@@ -18,13 +18,13 @@ class EaseSineOut(director:IDirector) : EaseRateAction(director) {
 
     override fun Clone(): EaseSineOut? {
         return if (_inner != null) {
-            create(getDirector(), _inner!!.Clone()!!)
+            create(getDirector(), _inner!!.Clone())
         } else null
     }
 
 
     override fun update(time: Float) {
-        _inner!!.update(sineEaseOut(time))
+        _inner!!.update(tweenfunc.sineEaseOut(time))
     }
 
     override fun reverse(): EaseRateAction? {

@@ -4,7 +4,7 @@ import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMScene
 import com.brokenpc.smframework.base.types.FiniteTimeAction
 import com.brokenpc.smframework.base.types.TransformAction
-import com.brokenpc.smframework.base.types.tweenfunc
+import com.brokenpc.smframework.util.tweenfunc
 
 class SlideInToLeft(director:IDirector) : BaseSceneTransition(director) {
 

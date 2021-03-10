@@ -25,9 +25,9 @@ class Size : Cloneable {
         this.width = width.toFloat()
         this.height = height.toFloat()
     }
-    constructor(width: Float, height: Float) {
-        this.width = width
-        this.height = height
+    constructor(width: Float?, height: Float?) {
+        this.width = width ?: 0f
+        this.height = height ?: 0f
     }
     constructor() {
         Size(0.0f, 0.0f)
@@ -43,8 +43,9 @@ class Size : Cloneable {
         this.width = width
         this.height = height
     }
-    fun set(s: Size) {
+    fun set(s: Size): Size {
         set(s.width, s.height)
+        return this
     }
 
     fun equal(s:Size):Boolean {

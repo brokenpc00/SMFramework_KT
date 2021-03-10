@@ -43,12 +43,12 @@ class BitmapSprite(director:IDirector, texture: Texture, cx: Float, cy: Float) :
         }
 
         @JvmStatic
-        fun createFromBitmap(director: IDirector, key: String, bitmap: Bitmap):BitmapSprite {
+        fun createFromBitmap(director: IDirector, key: String, bitmap: Bitmap?):BitmapSprite {
             return createFromBitmap(director, key, bitmap, false)
         }
 
         @JvmStatic
-        fun createFromBitmap(director: IDirector, key: String, bitmap: Bitmap, alignCenter:Boolean):BitmapSprite {
+        fun createFromBitmap(director: IDirector, key: String, bitmap: Bitmap?, alignCenter:Boolean):BitmapSprite {
             val texture = director.getTextureManager().createTextureFromBitmap(bitmap, key)
             return BitmapSprite(director, texture, 0f, 0f)
         }

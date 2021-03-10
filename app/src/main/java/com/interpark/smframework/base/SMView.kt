@@ -214,6 +214,11 @@ open class SMView : Ref {
         }
 
         @JvmStatic
+        fun randomFloat(min: Float, max: Float): Float {
+            return min + Math.random().toFloat()*((max-min) + 1)
+        }
+
+        @JvmStatic
         fun getDecelateInterpolation(t: Float):Float {
             return (1.0f - (1.0f - t) * (1.0f - t))
         }
@@ -334,8 +339,8 @@ open class SMView : Ref {
         }
 
         @JvmStatic
-        fun copyBitmap(src:Bitmap):Bitmap {
-            return src.copy(src.config, true)
+        fun copyBitmap(src:Bitmap?):Bitmap? {
+            return src?.copy(src.config, true)
         }
     }
     var _pressState:STATE = STATE.NORMAL
@@ -1045,7 +1050,7 @@ open class SMView : Ref {
     }
 
 
-    fun setVisible(visible: Boolean) {
+    open fun setVisible(visible: Boolean) {
         if (_visible!=visible) {
             _visible = visible
             if (_visible) {
@@ -2170,7 +2175,7 @@ open class SMView : Ref {
     open fun setContentSize(size: Size) {
         setContentSize(size, true)
     }
-    open fun setContentSize(width:Float, height: Float) {
+    open fun setContentSize(width:Float?, height: Float?) {
         setContentSize(Size(width, height), true)
     }
     open fun setContentSize(size: Size, immediate:Boolean) {
