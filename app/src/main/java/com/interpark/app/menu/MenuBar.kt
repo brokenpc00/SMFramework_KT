@@ -188,20 +188,20 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
 
 
     init {
-        sDotMenu.add(DotPosition(Vec2(-13f, -13f), Vec2(-13f, -13f), AppConst.SIZE.DOT_DIAMETER))
-        sDotMenu.add(DotPosition(Vec2(13f, 13f), Vec2(13f, 13f), AppConst.SIZE.DOT_DIAMETER))
-        sDotMenu.add(DotPosition(Vec2(-13f, 13f), Vec2(-13f, 13f), AppConst.SIZE.DOT_DIAMETER))
-        sDotMenu.add(DotPosition(Vec2(13f, -13f), Vec2(13f, -13f), AppConst.SIZE.DOT_DIAMETER))
+        sDotMenu.add(DotPosition(Vec2(-26f, -26f), Vec2(-26f, -26f), AppConst.SIZE.DOT_DIAMETER))
+        sDotMenu.add(DotPosition(Vec2(26f, 26f), Vec2(26f, 26f), AppConst.SIZE.DOT_DIAMETER))
+        sDotMenu.add(DotPosition(Vec2(-26f, 26f), Vec2(-26f, 26f), AppConst.SIZE.DOT_DIAMETER))
+        sDotMenu.add(DotPosition(Vec2(26f, -26f), Vec2(26f, -26f), AppConst.SIZE.DOT_DIAMETER))
 
-        sDotClose.add(DotPosition(Vec2(-20f, -20f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
-        sDotClose.add(DotPosition(Vec2(20f, 20f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
-        sDotClose.add(DotPosition(Vec2(-20f, 20f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
-        sDotClose.add(DotPosition(Vec2(20f, -20f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
+        sDotClose.add(DotPosition(Vec2(-40f, -40f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
+        sDotClose.add(DotPosition(Vec2(40f, 40f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
+        sDotClose.add(DotPosition(Vec2(-40f, 40f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
+        sDotClose.add(DotPosition(Vec2(40f, -40f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
 
-        sDotBack.add(DotPosition(Vec2(-16f, -16f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
-        sDotBack.add(DotPosition(Vec2(16f, 16f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
-        sDotBack.add(DotPosition(Vec2(-16f, 12f), Vec2(-16f, -16f), AppConst.SIZE.LINE_DIAMETER))
-        sDotBack.add(DotPosition(Vec2(12f, -16f), Vec2(-16f, -16f), AppConst.SIZE.LINE_DIAMETER))
+        sDotBack.add(DotPosition(Vec2(-32f, -32f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
+        sDotBack.add(DotPosition(Vec2(32f, 32f), Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
+        sDotBack.add(DotPosition(Vec2(-32f, 32f), Vec2(-32f, -32f), AppConst.SIZE.LINE_DIAMETER))
+        sDotBack.add(DotPosition(Vec2(32f, -32f), Vec2(-32f, -32f), AppConst.SIZE.LINE_DIAMETER))
 
         sDotDot.add(DotPosition(Vec2.ZERO, Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
         sDotDot.add(DotPosition(Vec2.ZERO, Vec2.ZERO, AppConst.SIZE.LINE_DIAMETER))
@@ -406,7 +406,7 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
         _textIndex = 1 - _textIndex
 
         if (_textLabel[_textIndex]==null) {
-            _textLabel[_textIndex] = SMLabel.create(getDirector(), "", 40f, Color4F.TEXT_BLACK, Paint.Align.CENTER, true)
+            _textLabel[_textIndex] = SMLabel.create(getDirector(), "", 80f, Color4F.TEXT_BLACK, Paint.Align.CENTER, true)
             _textLabel[_textIndex]?.setAnchorPoint(Vec2.MIDDLE)
             _textLabel[_textIndex]?.setCascadeAlphaEnable(true)
             _textContainer.stub[_textIndex].addChild(_textLabel[_textIndex]!!)

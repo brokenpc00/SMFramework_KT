@@ -1,5 +1,6 @@
 package com.interpark.smframework.view
 
+import android.util.Log
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.Mat4
@@ -37,8 +38,8 @@ class SMRoundLine(director: IDirector) : SMSolidRoundRectView(director) {
     fun line(x1: Float, y1: Float, x2: Float, y2: Float) {
         if (_x1!=x1 || _x2!=x2 || _y1!=y1 || _y2!=y2) {
             _x1 = x1
-            _y1 = y1
             _x2 = x2
+            _y1 = y1
             _y2 = y2
 
             updateLineShape()
@@ -116,13 +117,21 @@ class SMRoundLine(director: IDirector) : SMSolidRoundRectView(director) {
     private fun updateLineShape() {
         val dx = _x2 - _x1
         val dy = _y2 - _y1
-        val length: Float = sqrt(dx*dx+dy*dy) * _lineScale
+        val length = sqrt(dx*dx+dy*dy) * _lineScale
         val degrees= (atan2(dy, dx) * 180f / M_PI).toFloat()
 
-        setCornerRadius(_lineWidth/2f)
-        super.setContentSize(Size(length+_lineWidth, _lineWidth))
-        super.setAnchorPoint(Vec2(0.5f * _lineWidth / _contentSize.width, 0.5f * _lineWidth / _contentSize.height))
-        super.setPosition(_x1, _y1)
+        val radius = _lineWidth/2f
+        setCornerRadius(radius)
+
+        val contentSize = Size(length+_lineWidth, _lineWidth)
+        super.setContentSize(contentSize)
+
+        val anchorPoint = Vec2((0.5*(_lineWidth/_contentSize.width)).toFloat(), 0.5f*_lineWidth/_contentSize.height)
+        super.setAnchorPoint(anchorPoint)
+
+        val position = Vec2(_x1, _y1)
+        super.setPosition(position)
+
         super.setRotation(degrees)
 
         _dirty = false

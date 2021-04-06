@@ -11,7 +11,7 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import kotlin.math.max
 
-class PrimitiveSolidRect(director:IDirector) : DrawNode(director) {
+open class PrimitiveSolidRect(director:IDirector) : DrawNode(director) {
     protected val _uv:FloatBuffer
     private var _round:Float = 0f
     private var _aaWidth:Float = 0f
@@ -43,13 +43,11 @@ class PrimitiveSolidRect(director:IDirector) : DrawNode(director) {
     override fun _draw(modelMatrix: FloatArray) {
         val program = useProgram()
         if (program!=null) {
-            if (program.getType()==ShaderManager.ProgramType.PrimitiveSolidRect) {
                 if ((program as ProgPrimitiveSolidRect).setDrawParam(_matrix, _v!!, _uv, _width, _height, _round, _aaWidth)) {
                     GLES20.glDrawArrays(_drawMode, 0, _numVertices)
                 }
             }
         }
-    }
 
     fun draawRect(x:Float, y:Float, width:Float, height:Float, round:Float, aaWidth:Float) {
         setProgramType(ShaderManager.ProgramType.PrimitiveSolidRect)
@@ -57,7 +55,6 @@ class PrimitiveSolidRect(director:IDirector) : DrawNode(director) {
         _height = height
         _round = round
         _aaWidth = aaWidth
-//        drawScale(x, y, max(width, height))
-        drawScaleXY(x, y, width, height)
+        drawScale(x, y, width.coerceAtLeast(height))
     }
 }

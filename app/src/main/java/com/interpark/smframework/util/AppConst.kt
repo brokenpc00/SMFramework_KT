@@ -29,12 +29,12 @@ class AppConst {
         const val EDGE_SWIPE_TOP = 130.0f
         const val LEFT_SIDE_MENU_WIDTH = 550.0f
         const val TOP_MENU_HEIGHT = 130.0f
-        const val TOP_MENU_BUTTON_HEIGHT = 120.0f
-        const val MENUBAR_HEIGHT = 130.0f
+        const val TOP_MENU_BUTTON_HEIGHT = 240.0f
+        const val MENUBAR_HEIGHT = 250.0f
         const val BOTTOM_MENU_HEIGHT = 160.0f
-        const val DOT_DIAMETER = 20.0f
-        const val LINE_DIAMETER = 5.0f
-        const val TOP_MENU_BUTTONE_SIZE = 120.0f
+        const val DOT_DIAMETER = 40.0f
+        const val LINE_DIAMETER = 10.0f
+        const val TOP_MENU_BUTTONE_SIZE = 240.0f
     }
 
     object TAG {

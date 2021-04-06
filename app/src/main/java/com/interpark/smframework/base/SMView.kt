@@ -2017,8 +2017,8 @@ open class SMView : Ref {
     }
 
 
-    fun getColor():Color4F {return _realColor}
-    fun getDisplayedColor():Color4F {return _displayedColor}
+    fun getColor():Color4F {return Color4F(_realColor)}
+    fun getDisplayedColor():Color4F {return Color4F(_displayedColor)}
 
     open fun setColor(r: Float, g: Float, b: Float, a: Float) {
         setColor(r, g, b, a, true)

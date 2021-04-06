@@ -29,21 +29,18 @@ class Color4F {
         g = gg
         b = bb
         a = aa
-//        set(r, g, b, a)
     }
     constructor(c4f:Color4F) {
         r = c4f.r
         g = c4f.g
         b = c4f.b
         a = c4f.a
-//        set(c4f)
     }
     constructor(c4b:Color4B) {
         r = c4b.r.toFloat()/255.0f
         g = c4b.g.toFloat()/255.0f
         b = c4b.b.toFloat()/255.0f
         a = c4b.a.toFloat()/255.0f
-//        set(c4b)
     }
 
     fun set(color:FloatArray) {
@@ -83,35 +80,11 @@ class Color4F {
     }
 
     fun minus(color: Color4F):Color4F {
-        val c:Color4F = Color4F(this)
-
-        c.r -= color.r
-        c.g -= color.g
-        c.b -= color.b
-        c.a -= color.a
-
-        if (c.r<0) c.r = 0f
-        if (c.g<0) c.g = 0f
-        if (c.b<0) c.b = 0f
-        if (c.a<0) c.a = 0f
-
-        return c
+        return Color4F(r-color.r, g-color.g, b-color.b, a-color.a)
     }
 
     fun add(color: Color4F):Color4F {
-        val c:Color4F = Color4F(this)
-
-        c.r += color.r
-        c.g += color.g
-        c.b += color.b
-        c.a += color.a
-
-        if (c.r>1) c.r = 1f
-        if (c.g>1) c.g = 1f
-        if (c.b>1) c.b = 1f
-        if (c.a>1) c.a = 1f
-
-        return c
+        return Color4F(r+color.r, g+color.g, b+color.b, a+color.a)
     }
 
     fun multiply(f:Float): Color4F {

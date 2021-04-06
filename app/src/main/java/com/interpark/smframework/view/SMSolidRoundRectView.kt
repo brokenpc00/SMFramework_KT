@@ -37,6 +37,8 @@ open class SMSolidRoundRectView : SMShapeView {
         }
     }
 
+    override fun setCornerRadius(radius: Float) {_cornerRadius = radius}
+
     override fun setBackgroundColor(color: Color4F) {
         setColor(color)
     }
@@ -47,7 +49,7 @@ open class SMSolidRoundRectView : SMShapeView {
 
     override fun draw(m: Mat4, flags: Int) {
         super.draw(m, flags)
-        _bgShape.draawRect(_contentSize.width/2.0f, _contentSize.height/2.0f, _contentSize.width, _contentSize.height, _cornerRadius, 1f)
+        _bgShape.draawRect(_contentSize.width/2f, _contentSize.height/2f, _contentSize.width, _contentSize.height, _cornerRadius, 1f)
     }
 
 }

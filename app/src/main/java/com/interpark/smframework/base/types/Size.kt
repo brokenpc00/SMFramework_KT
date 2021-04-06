@@ -96,10 +96,7 @@ class Size : Cloneable {
     }
 
     fun divide(r: Float): Size {
-        return Size(
-            this.width / r,
-            this.height / r
-        )
+        return Size(this.width / r, this.height / r)
     }
     fun divideLocal(r: Float) {
         this.width /= r
