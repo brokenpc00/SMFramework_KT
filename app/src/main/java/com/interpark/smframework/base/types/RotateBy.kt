@@ -7,8 +7,8 @@ import com.brokenpc.smframework.base.types.Vec3
 
 class RotateBy(director: IDirector): ActionInterval(director) {
     protected var _is3D = false
-    protected val _deltaAngle = Vec3.ZERO
-    protected val _startAngle = Vec3.ZERO
+    protected val _deltaAngle = Vec3(Vec3.ZERO)
+    protected val _startAngle = Vec3(Vec3.ZERO)
 
     companion object {
         @JvmStatic
@@ -76,7 +76,7 @@ class RotateBy(director: IDirector): ActionInterval(director) {
     override fun startWithTarget(target: SMView?) {
         super.startWithTarget(target)
         if (_is3D) {
-            _startAngle.set(target?.getPosition3D()?: Vec3.ZERO)
+            _startAngle.set(target?.getPosition3D()?: Vec3(Vec3.ZERO))
         } else {
             _startAngle.x = target?.getRotationSkewX()?:0f
             _startAngle.y = target?.getRotationSkewY()?:0f

@@ -5,7 +5,7 @@ import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.SMView.Companion.interpolation
 import com.brokenpc.smframework.util.tweenfunc
 
-class TransformAction(director:IDirector) : DelayBaseAction(director) {
+open class TransformAction(director:IDirector) : DelayBaseAction(director) {
     private var _scaleAction = false
     private var _positionXAction = false
     private var _positionYAction = false

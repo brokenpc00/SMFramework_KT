@@ -15,26 +15,26 @@ abstract class Texture(director: IDirector, key: String, loadAsync: Boolean, lis
         const val NO_TEXTURE = -1
     }
 
-    protected var _refCount:Int = 0
-    protected var _isValid:Boolean = true
+    private var _refCount:Int = 0
+    private var _isValid:Boolean = true
 
     interface OnTextureAsyncLoadListener {
         fun onTextureLoaded(texture: Texture?)
         fun onTextureLoadedBitmap(bitmap: Bitmap?)
     }
 
-    protected var _asyncLoadListener:OnTextureAsyncLoadListener? = listener
+    private var _asyncLoadListener:OnTextureAsyncLoadListener? = listener
     var _asyncTask:TextureLoaderTask? = null
 
     interface TextureLoader {
         fun onCreateOrUpdateTexture(director: IDirector, bitmap: Bitmap?):Boolean
     }
 
-    protected var _textureLoader:TextureLoader? = null
+    private var _textureLoader:TextureLoader? = null
 
     fun setOnTextureLoader(loader: TextureLoader?) {_textureLoader = loader}
 
-    protected var _key:String = key
+    private var _key:String = key
     protected var _textureId:IntArray = IntArray(1)
     protected var _width:Int = 0
     protected var _height:Int = 0

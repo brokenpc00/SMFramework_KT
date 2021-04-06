@@ -150,7 +150,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
 
         _sharedLayer = ArrayList(enumToIntForSharedLayer(SharedLayer.POPUP)+1)
         for (i in 0 until enumToIntForSharedLayer(SharedLayer.POPUP)+1) {
-            _sharedLayer[i] = null
+            _sharedLayer.add(null)
         }
 
         _instance = this
@@ -327,16 +327,18 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
             }
         }
 
-        var runnsingScene:SMScene? = getRunningScene()
+        var runnsingScene:SMScene? = null
         var inScene:SMScene? = null
-        if (getRunningScene() is TransitionScene) {
-            val transitionScene:TransitionScene = getRunningScene() as TransitionScene
-            inScene = transitionScene.getInScene()
+        if (getRunningScene() != null) {
+            runnsingScene = getRunningScene()
+            if (runnsingScene is TransitionScene) {
+                runnsingScene.setPositionX(getDirector().getWinSize().width/2)
+                inScene = runnsingScene.getInScene()
             inScene?.setPositionX(getDirector().getWinSize().width/2)
-            runnsingScene?.setPositionX(getDirector().getWinSize().width/2)
-            transitionScene.setPositionX(position+ getDirector().getWinSize().width/2)
             return
         }
+    }
+        runnsingScene?.setPositionX(position+getDirector().getWinSize().width/2)
     }
 
     fun onEdgeDismissUpdateCallback(state: Int, position: Float) {
@@ -526,7 +528,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     fun beginProjectionMatrix() {
         _width = BASE_SCREEN_WIDTH
         _height = _deviceHeight * BASE_SCREEN_WIDTH / _deviceWidth
-        _displayAdjust = (BASE_SCREEN_WIDTH / _deviceWidth).toFloat()
+        _displayAdjust = (BASE_SCREEN_WIDTH.toFloat() / _deviceWidth)
 
         GLES20.glViewport(0, 0, _deviceWidth, _deviceHeight)
 
@@ -641,6 +643,56 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
                         onEdgeBackUpdateCallback(a, b)
                     }
                 }
+                _backSwipe!!.onEnter()
+                _backSwipe!!.onEnterTransitionDidFinish()
+                _backSwipe!!.reset()
+            }
+
+            if (_dismissSwipe==null) {
+                _dismissSwipe = EdgeSwipeForDismiss.create(this, 0, 0f, 0f, getWidth().toFloat(), getHeight().toFloat())
+                _dismissSwipe!!.setSwipeWidth(getHeight().toFloat())
+                _dismissSwipe!!.setEdgeWidth(AppConst.SIZE.EDGE_SWIPE_TOP)
+                _dismissSwipe!!._swipeUpdateCallback = object : EdgeSwipeForDismiss.SWIPE_DISMISS_UPDATE_CALLBACK {
+                    override fun onSwipeUpdate(a: Int, b: Float) {
+                        onEdgeDismissUpdateCallback(a, b)
+                    }
+                }
+                _dismissSwipe!!.onEnter()
+                _dismissSwipe!!.onEnterTransitionDidFinish()
+                _dismissSwipe!!.reset()
+            }
+
+            if (_menuSwipe==null) {
+                _menuSwipe = EdgeSwipeLayerForSideMenu.create(this, 0, 0f, 0f, getWidth().toFloat(), getHeight().toFloat())
+                _menuSwipe!!.setSwipeWidth(_sideMenu?.getContentSize()?.width?:0f)
+                _menuSwipe!!.setEdgeWidth(AppConst.SIZE.EDGE_SWIPE_MENU)
+                _menuSwipe!!.setBackgroundColor(Color4F(1f, 0f, 0f, 0.4f))
+                _menuSwipe!!.setOnClickListener(object : SMView.OnClickListener {
+                    override fun onClick(view: SMView?) {
+                        if (_sideMenu!=null && _sideMenu!!.getState()==IDirector.SIDE_MENU_STATE.OPEN) {
+                            val p1 = _sideMenu!!.getOpenPosition() + getWidth()
+                            val p2 = _swipeLayer!!.getLastTouchLocation().x
+                            if (p2<p1) {
+                                SideMenu.CloseMenu()
+                            }
+                        } else {
+                            SideMenu.OpenMenu(getRunningScene())
+                        }
+                    }
+                })
+            }
+
+            setMenuSwipe()
+
+            if (_swipeLayer==null) {
+                _swipeLayer = SMView.create(this)
+                _swipeLayer!!.addChild(_menuSwipe)
+                _swipeLayer!!.onEnter()
+                _swipeLayer!!.onEnterTransitionDidFinish()
+            }
+
+            if (_frameBuffer==null) {
+                _frameBuffer = CanvasSprite.createCanvasSprite(this, _width, _height, "FRAME_BUFFER")
             }
         }
     }
@@ -690,12 +742,10 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         // pop MotionEvent from Queue
         synchronized(_motionEventQueue) {
             while (!_motionEventQueue.isEmpty()) {
-                val event:MotionEvent? = _motionEventQueue.poll()
-
+                val event = _motionEventQueue.poll()!!
                 var nowTime:Float = getGlobalTime()
-                if (event==null) break
 
-                val action:Int = event.action
+                val action = event.action
                 if (action==MotionEvent.ACTION_DOWN) {
                     _lastTouchDownTime = nowTime
                 } else if (action==MotionEvent.ACTION_UP || action==MotionEvent.ACTION_CANCEL) {
@@ -758,7 +808,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
                         when (type) {
                             SMScene.SwipeType.MENU -> {
                                 if (_swipeLayer!=null && runningScene !is TransitionScene) {
-                                    if (!(action==MotionEvent.ACTION_DOWN && _menuSwipe!!.isScrollArea(worldPoint) && !runningScene.canSwipe(worldPoint, type))) {
+                                    if (!(action==MotionEvent.ACTION_DOWN && _menuSwipe!=null && _menuSwipe!!.isScrollArea(worldPoint) && !runningScene.canSwipe(worldPoint, type))) {
                                         val nRet = _swipeLayer!!.dispatchTouchEvent(event, _swipeLayer!!, false)
                                         if (nRet==SMView.TOUCH_INTERCEPT) {
                                             if (_touchMotionTarget!=null && _touchMotionTarget!= _sideMenu) {
@@ -817,7 +867,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
 
                         if (ret!=SMView.TOUCH_FALSE) {
                             newTouchTarget = touchLayer
-                            if (_swipeLayer!=null && ret==SMView.TOUCH_INTERCEPT && _menuSwipe!!.isScrollTargeted()) {
+                            if (_swipeLayer!=null && ret==SMView.TOUCH_INTERCEPT && _menuSwipe!=null && _menuSwipe!!.isScrollTargeted()) {
                                 _swipeLayer!!.cancelTouchEvent(_swipeLayer!!, event)
                             }
                             break
@@ -843,7 +893,11 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
                     _touchMotionTarget = null
                 }
 
+                try {
                 event.recycle()
+                } catch (e: Exception) {
+
+                }
             }
         }
     }
@@ -858,7 +912,8 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         val ev:MotionEvent = MotionEvent.obtain(event)
 
         synchronized(_motionEventQueue) {
-            _motionEventQueue.add(event)
+            val point = Vec2(ev.getX(0), ev.getY(0))
+            _motionEventQueue.add(ev)
         }
 
 
@@ -898,20 +953,22 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
             _deltaTime = max(0f, _deltaTime)
         }
     }
-
     override fun onDrawFrame(p0: GL10?) {
+
         bindTexture(null)
+
+        if (_frameBuffer==null) return
 
         calculateDeltaTime()
         _globalTime += _deltaTime
 
-        _scheduler?.update(_deltaTime)
+        _scheduler.update(_deltaTime)
 
         if (_nextScene!=null) {
             setNextScene()
         }
 
-        val framBuffer:CanvasTexture = _frameBuffer!!.getTexture() as CanvasTexture
+        val framBuffer:CanvasTexture = _frameBuffer?.getTexture() as CanvasTexture
 
         framBuffer.setFrameBuffer(this, true)
         setFrameBufferId(framBuffer.getId())
@@ -960,10 +1017,11 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, getDeviceWidth(), getDeviceHeight())
         loadMatrix(MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW, _frameBufferMat)
 
-        _frameBuffer!!.drawScaleXY(0f, getHeight().toFloat(), 1f, -1f)
+        val height = getHeight().toFloat()
+        _frameBuffer!!.drawScaleXY(0f, height, 1f, -1f)
 
         try {
-            Thread.sleep(10)
+            Thread.sleep(1)
         } catch (e:InterruptedException) {
 
         }

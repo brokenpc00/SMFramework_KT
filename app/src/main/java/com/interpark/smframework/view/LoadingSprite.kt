@@ -7,6 +7,7 @@ import com.brokenpc.smframework.base.sprite.Sprite
 import com.brokenpc.smframework.base.texture.Texture
 import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.Mat4
+import com.brokenpc.smframework.util.ImageManager.ImageDownloadTask
 import com.brokenpc.smframework.view.SMImageView
 
 class LoadingSprite(director: IDirector) : SMImageView(director) {
@@ -107,5 +108,13 @@ class LoadingSprite(director: IDirector) : SMImageView(director) {
         }
 
         super.draw(m, flags)
+    }
+
+    override fun removeDownloadTask(task: ImageDownloadTask?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addDownloadTask(task: ImageDownloadTask?): Boolean {
+        TODO("Not yet implemented")
     }
 }

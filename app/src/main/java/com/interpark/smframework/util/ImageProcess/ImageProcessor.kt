@@ -84,7 +84,7 @@ class ImageProcessor() {
                             task.getTag(),
                             task.getProcessFunction()?.getCapturedTexture(),
                             task.getProcessFunction()?.getInputData(),
-                            task.getProcessFunction()?.getInputSize()?: Size.ZERO,
+                            task.getProcessFunction()?.getInputSize()?: Size(Size.ZERO),
                             task.getProcessFunction()?.getInputBpp()?:0
                         )
                     }

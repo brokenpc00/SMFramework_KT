@@ -77,14 +77,16 @@ open class TextureManager(director:IDirector) : Ref(director) {
         if (texture!=null) {
             if (texture.getId()==Texture.NO_TEXTURE) {
                 if (texture.isAsyncLoader()) {
-                    if (texture.isLoading()) {
-                        return false
+                    return if (texture.isLoading()) {
+                        false
                     } else {
                         texture.loadTextureAsync(_director!!)
-                        return false
+                        false
                     }
                 } else {
-                    if (!texture.createOrUpdate(_director!!, null)) return false
+                    if (!texture.createOrUpdate(_director!!, null)) {
+                        return false
+                    }
                 }
             }
             if (_activeTextureId!=texture.getId()) {

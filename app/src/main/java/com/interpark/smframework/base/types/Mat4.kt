@@ -10,11 +10,11 @@ class Mat4 {
     var m:FloatArray = FloatArray(16)
     companion object {
         private val m: FloatArray = FloatArray(16)
-        val ZERO:Mat4 = Mat4(0f, 0f, 0f, 0f,
+        @JvmField val ZERO:Mat4 = Mat4(0f, 0f, 0f, 0f,
                             0f, 0f, 0f, 0f,
                             0f, 0f, 0f, 0f,
                             0f, 0f, 0f, 0f)
-        val IDENTITY:Mat4 = Mat4(1f, 0f, 0f, 0f,
+        @JvmField val IDENTITY:Mat4 = Mat4(1f, 0f, 0f, 0f,
                                 0f, 1f, 0f, 0f,
                                 0f, 0f, 1f, 0f,
                                 0f, 0f, 0f, 1f)

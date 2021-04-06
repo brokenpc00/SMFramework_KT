@@ -11,7 +11,7 @@ import com.brokenpc.smframework.view.SMTableView
 import com.brokenpc.smframework.view.SMTableView.NumberOfRowsInSection
 import com.brokenpc.smframework.view.SMTableView.CellForRowAtIndexPath
 
-class SideMenu : SMView {
+class SideMenu(director:IDirector) : SMView(director), CellForRowAtIndexPath {
 
     private var _contentView: SMView
     private var _sideMenuTableView: SMTableView
@@ -22,7 +22,7 @@ class SideMenu : SMView {
     var _callback: MENU_OPEN_CLOSE? = null
 
     companion object {
-        const val SIDE_MENU_COUNT:Int = 5
+        const val SIDE_MENU_COUNT:Int = 20
         private var _instance: SideMenu? = null
 
         @JvmStatic
@@ -33,9 +33,30 @@ class SideMenu : SMView {
             return _instance!!
         }
 
+        @JvmStatic
+        fun OpenMenu(mainScene: SMScene?) {
+            OpenMenu(mainScene, null)
+        }
+
+        @JvmStatic
+        fun OpenMenu(mainScene: SMScene?, callback: MENU_OPEN_CLOSE?) {
+            GetSideMenu()._callback = callback
+            GetSideMenu()._swipeLayer?.open(false)
+        }
+
+        @JvmStatic
+        fun CloseMenu() {
+            CloseMenu(null)
+        }
+
+        @JvmStatic
+        fun CloseMenu(callback: MENU_OPEN_CLOSE?) {
+            GetSideMenu()._callback = callback
+            GetSideMenu()._swipeLayer?.close(false)
+        }
     }
 
-    constructor(director:IDirector) : super(director) {
+    init {
         setVisible(false)
 
         setPosition(Vec2(-AppConst.SIZE.LEFT_SIDE_MENU_WIDTH, 0f))
@@ -55,12 +76,11 @@ class SideMenu : SMView {
                 return SIDE_MENU_COUNT
             }
         }
-        _sideMenuTableView.cellForRowAtIndexPath = object : CellForRowAtIndexPath {
-            override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
-                return this.cellForRowAtIndexPath(indexPath)
-            }
-        }
+        _sideMenuTableView.cellForRowAtIndexPath = this
         _contentView.addChild(_sideMenuTableView)
+        _sideMenuTableView.setEnabled(true)
+        _sideMenuTableView.enableAccelerateScroll(true)
+        _sideMenuTableView.setScrollLock(false)
     }
 
     interface SIDE_MENU_LISTENER {
@@ -79,23 +99,7 @@ class SideMenu : SMView {
         _instance = null
     }
 
-    fun OpenMenu(mainScene: SMScene?) {
-        OpenMenu(mainScene, null)
-    }
 
-    fun OpenMenu(mainScene: SMScene?, callback: MENU_OPEN_CLOSE?) {
-        GetSideMenu()._callback = callback
-        GetSideMenu()._swipeLayer?.open(false)
-    }
-
-    fun CloseMenu() {
-        CloseMenu(null)
-    }
-
-    fun CloseMenu(callback: MENU_OPEN_CLOSE?) {
-        GetSideMenu()._callback = callback
-        GetSideMenu()._swipeLayer?.close(false)
-    }
 
     protected fun menuClick(view: SMView?) {}
 
@@ -166,10 +170,10 @@ class SideMenu : SMView {
 
     var _sideMenuUpdateCallback: SIDE_MENU_UPDATE_CALLBACK? = null
 
-    private fun cellForRowsAtIndexPath(indexPath: IndexPath): SMView? {
+    override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
         val index = indexPath.getIndex()
         val cellID = "SIDE MENU : $index"
-        val convertView = _sideMenuTableView!!.dequeueReusableCellWithIdentifier(cellID)
+        val convertView = _sideMenuTableView.dequeueReusableCellWithIdentifier(cellID)
         var cell: SideMenuCell
         val s = getContentSize()
         if (convertView != null) {

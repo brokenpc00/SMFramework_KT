@@ -1,5 +1,6 @@
 package com.brokenpc.smframework.view
 
+import android.util.Log
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.shape.PrimitiveRect
 import com.brokenpc.smframework.base.types.Color4F

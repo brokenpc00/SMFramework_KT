@@ -1,20 +1,20 @@
 package com.brokenpc.app
 
 import android.graphics.Point
+import android.opengl.GLSurfaceView
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.DisplayMetrics
 import android.view.*
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import com.brokenpc.smframework.ClassHelper
 import com.brokenpc.smframework.SMSurfaceView
 import com.brokenpc.smframework.base.SceneParams
+import com.brokenpc.app.scene.HelloBrokenpcScene
+import com.brokenpc.smframework.base.SMScene
 
 class MainActivity : FragmentActivity(), ClassHelper.HelperListener {
 
@@ -47,7 +47,8 @@ class MainActivity : FragmentActivity(), ClassHelper.HelperListener {
 
         val sceneParam:SceneParams = SceneParams()
 
-
+        val scene = HelloBrokenpcScene.create(_surfaceView!!.getDirector()!!, sceneParam, SMScene.SwipeType.MENU)
+        _surfaceView!!.startSMFrameWorkScene(scene)
 
         //DisplayMetrics
     }

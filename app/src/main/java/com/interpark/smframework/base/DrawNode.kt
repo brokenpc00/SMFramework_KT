@@ -218,7 +218,7 @@ open abstract class DrawNode(director: IDirector) : Ref(director) {
     }
 
     protected var _texture:Texture? = null
-    protected var _contentSize:Size = Size(Size.ZERO)
+    protected var _contentSize = Size(Size.ZERO)
     protected var _cx:Float = 0f
     protected var _cy:Float = 0f
 
@@ -228,5 +228,5 @@ open abstract class DrawNode(director: IDirector) : Ref(director) {
 
     protected var _programType:ProgramType? = null
     protected var _setColor:Boolean = false
-    protected var _color:Color4F = Color4F(1f, 1f, 1f, 0f)
+    protected var _color:Color4F = Color4F(1f, 1f, 1f, 1f)
 }

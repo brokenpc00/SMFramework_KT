@@ -17,7 +17,7 @@ class PrimitiveCircle(director:IDirector) : DrawNode(director) {
     private var _radius:Float = 0f
     private var _thickness:Float = 0f
     private var _aaWidth:Float = 0f
-    private val _anchor:Vec2 = Vec2(Vec2.ZERO)
+    private var _anchor:Vec2 = Vec2(Vec2.MIDDLE)
 
     init {
         _drawMode = GLES20.GL_TRIANGLE_STRIP

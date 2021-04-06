@@ -5,7 +5,7 @@ import com.brokenpc.smframework.base.shape.PrimitiveSolidRect
 import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.Mat4
 
-class SMSolidRoundRectView : SMShapeView {
+open class SMSolidRoundRectView : SMShapeView {
 
     constructor(director:IDirector) : super(director) {
         _bgShape = PrimitiveSolidRect(director)

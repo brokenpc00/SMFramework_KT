@@ -1,5 +1,6 @@
 package com.interpark.smframework.base.types
 
+import com.brokenpc.app.BuildConfig
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.ActionInterval
@@ -7,9 +8,9 @@ import com.brokenpc.smframework.base.types.Vec3
 
 class RotateTo(director: IDirector) : ActionInterval(director) {
     protected var _is3D = false
-    protected val _dstAngle = Vec3.ZERO
-    protected val _startAngle = Vec3.ZERO
-    protected val _diffAngle = Vec3.ZERO
+    protected val _dstAngle = Vec3(Vec3.ZERO)
+    protected val _startAngle = Vec3(Vec3.ZERO)
+    protected val _diffAngle = Vec3(Vec3.ZERO)
 
     companion object {
         @JvmStatic
@@ -52,7 +53,9 @@ class RotateTo(director: IDirector) : ActionInterval(director) {
     }
 
     override fun reverse(): ActionInterval? {
-        assert(false) // no reverse
+        if (BuildConfig.DEBUG) {
+            error("Assertion failed")
+        } // no reverse
         return null
     }
 
@@ -60,7 +63,7 @@ class RotateTo(director: IDirector) : ActionInterval(director) {
         super.startWithTarget(target)
 
         if (_is3D) {
-            _startAngle.set(_target?.getRotation3D()?: Vec3.ZERO)
+            _startAngle.set(_target?.getRotation3D()?: Vec3(Vec3.ZERO))
         } else {
             _startAngle.x = _target?.getRotationSkewX()?:0f
             _startAngle.y = _target?.getRotationSkewY()?:0f

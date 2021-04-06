@@ -7,7 +7,7 @@ import kotlin.math.pow
 
 class Rect {
     companion object {
-        val ZERO:Rect = Rect(0f, 0f, 0f, 0f)
+        val ZERO = Rect(0f, 0f, 0f, 0f)
     }
 
     constructor() {

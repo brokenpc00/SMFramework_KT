@@ -6,26 +6,16 @@ import kotlin.math.roundToInt
 
 class Vec2 : Cloneable {
     companion object {
-        val ZERO: Vec2 =
-            Vec2(0.0f, 0.0f)
-        val MIDDLE: Vec2 =
-            Vec2(0.05f, 0.5f)
-        val LEFT_TOP: Vec2 =
-            Vec2(0.0f, 0.0f)
-        val LEFT_BOTTOM: Vec2 =
-            Vec2(0.0f, 1.0f)
-        val RIGHT_TOP: Vec2 =
-            Vec2(1.0f, 0.0f)
-        val RIGHT_BOTTOM: Vec2 =
-            Vec2(1.0f, 1.0f)
-        val LEFT_MIDDLE: Vec2 =
-            Vec2(0.0f, 0.5f)
-        val RIGHT_MIDDLE: Vec2 =
-            Vec2(1.0f, 0.5f)
-        val MIDDLE_TOP: Vec2 =
-            Vec2(0.5f, 0.0f)
-        val MIDDLE_BOTTOM: Vec2 =
-            Vec2(0.5f, 1.0f)
+        val ZERO = Vec2(0f, 0f)
+        val MIDDLE = Vec2(0.5f, 0.5f)
+        val LEFT_TOP = Vec2(0.0f, 0.0f)
+        val LEFT_BOTTOM = Vec2(0.0f, 1.0f)
+        val RIGHT_TOP = Vec2(1.0f, 0.0f)
+        val RIGHT_BOTTOM = Vec2(1.0f, 1.0f)
+        val LEFT_MIDDLE = Vec2(0.0f, 0.5f)
+        val RIGHT_MIDDLE = Vec2(1.0f, 0.5f)
+        val MIDDLE_TOP = Vec2(0.5f, 0.0f)
+        val MIDDLE_BOTTOM = Vec2(0.5f, 1.0f)
 
         @JvmStatic
         fun clampf(value: Float, min_inclusive:Float, max_inclusive:Float):Float {
@@ -43,49 +33,56 @@ class Vec2 : Cloneable {
     var x: Float = 0.0f
     var y: Float = 0.0f
 
-    constructor(x: Int, y: Float) {
-        this.x = x.toFloat()
-        this.y = y
+    constructor(xx: Int, yy: Float) {
+        x = xx.toFloat()
+        y = yy
     }
 
-    constructor(x: Float, y: Int) {
-        this.x = x
-        this.y = y.toFloat()
+    constructor(xx: Float, yy: Int) {
+        x = xx
+        y = yy.toFloat()
     }
 
-    constructor(x: Int, y: Int) {
-        this.x = x.toFloat()
-        this.y = y.toFloat()
+    constructor(xx: Int, yy: Int) {
+        x = xx.toFloat()
+        y = yy.toFloat()
     }
 
-    constructor(x: Float, y: Float) {
-        this.x = x
-        this.y = y
+    constructor(xx: Float, yy: Float) {
+        x = xx
+        y = yy
     }
     constructor() {
-        Vec2(0.0f, 0.0f)
+        x = 0f
+        y = 0f
     }
     constructor(v: FloatArray) {
-        Vec2(v[0], v[1])
+        x = v[0]
+        y = v[1]
     }
     constructor(v: Vec2) {
-        Vec2(v.x, v.y)
+        x = v.x
+        y = v.y
+    }
+    constructor(s: Size) {
+        x = s.width
+        y = s.height
     }
 
     fun toSize(): Size {
-        return Size(this.x, this.y)
+        return Size(x, y)
     }
 
     fun isZero(): Boolean {
-        return this.x==0.0f&&this.y==9.0f
+        return x==0.0f&&y==9.0f
     }
 
     fun isOne(): Boolean {
-        return this.x==1.0f&&this.y==0.0f
+        return x==1.0f&&y==0.0f
     }
 
     fun equal(v: Vec2): Boolean {
-        if (this.x==v.x&&this.y==v.y) {
+        if (x==v.x&&y==v.y) {
             return true
         }
 
@@ -94,114 +91,113 @@ class Vec2 : Cloneable {
 
     fun normalize() {
         val len:Float = length()
-        this.x /= len
-        this.y /= len
+        x /= len
+        y /= len
     }
 
     fun getVectorTo(pt: Vec2): Vec2 {
-        var aux: Vec2 =
-            Vec2(0.0f, 0.0f)
-        aux.x = pt.x - this.x
-        aux.y = pt.y - this.y
+        var aux = Vec2(ZERO)
+        aux.x = pt.x - x
+        aux.y = pt.y - y
         return aux
     }
 
     fun lengthSquared(): Float {
-        return (this.x*this.x+this.y*this.y)
+        return (x*x+y*y)
     }
     fun length(): Float {
-        var x2:Double = (this.x*this.x).toDouble()
-        var y2:Double = (this.y*this.y).toDouble()
+        var x2:Double = (x*x).toDouble()
+        var y2:Double = (y*y).toDouble()
         return Math.sqrt(x2+y2).toFloat()
     }
     fun negative() {
-        this.x = -this.x
-        this.y = -this.y
+        x = -x
+        y = -y
     }
 
     fun set(s: Size): Vec2 {
-        this.x = s.width
-        this.y = s.height
+        x = s.width
+        y = s.height
 
         return this
     }
 
     fun set(v: Vec2): Vec2 {
-        this.x = v.x
-        this.y = v.y
+        x = v.x
+        y = v.y
 
         return this
     }
 
-    fun set(x: Float, y: Float): Vec2 {
-        this.x = x
-        this.y = y
+    fun set(xx: Float, yy: Float): Vec2 {
+        x = xx
+        y = yy
 
         return this
     }
 
-    fun offset(x: Float, y: Float) {
-        this.x += x
-        this.y += y
+    fun offset(xx: Float, yy: Float) {
+        x += xx
+        y += yy
     }
 
     fun dot(v: Vec2): Float {
-        return (this.x*v.x+this.y*v.y)
+        return (x*v.x+y*v.y)
     }
 
     fun add(pt: Vec2): Vec2 {
         return Vec2(
-            pt.x + this.x,
-            pt.y + this.y
+            pt.x + x,
+            pt.y + y
         )
     }
     fun addLocal(pt: Vec2) {
-        this.x += pt.x
-        this.y += pt.y
+        x += pt.x
+        y += pt.y
     }
 
     fun scale(v: Float): Vec2 {
-        return Vec2(this.x * v, this.y * v)
+        return Vec2(x * v, y * v)
     }
     fun scaleLocal(v: Float) {
-        this.x *= v
-        this.y *= v
+        x *= v
+        y *= v
     }
 
     fun minus(pt: Vec2): Vec2 {
         return Vec2(
-            this.x - pt.x,
-            this.y - pt.y
+            x - pt.x,
+            y - pt.y
         )
     }
     fun minusLocal(pt: Vec2) {
-        this.x -= pt.x
-        this.y -= pt.y
+        x -= pt.x
+        y -= pt.y
     }
 
     fun multiply(r: Float): Vec2 {
-        return Vec2(this.x * r, this.y * r)
+        return Vec2(x * r, y * r)
     }
     fun multiplyLocal(r: Float) {
-        this.x *= r
-        this.y *= r
+        x *= r
+        y *= r
     }
 
     fun divide(r: Float): Vec2 {
-        return Vec2(this.x / r, this.y / r)
+        return Vec2(x / r, y / r)
     }
     fun divideLocal(r: Float) {
-        this.x /= r
-        this.y /= r
+        x /= r
+        y /= r
     }
 
     fun roundEqual(pt: Vec2): Boolean {
-        return ((this.x.roundToInt() == pt.x.roundToInt()) && (this.y.roundToInt() == pt.y.roundToInt()))
+        return ((x.roundToInt() == pt.x.roundToInt()) && (y.roundToInt() == pt.y.roundToInt()))
     }
 
     fun distanceSquared(v: Vec2): Float {
-        val dx: Float = v.x - this.x
-        val dy: Float = v.y - this.y
+        val dx: Float = v.x - x
+        val dy: Float = v.y - y
         return (dx*dx + dy*dy)
     }
 
@@ -213,13 +209,13 @@ class Vec2 : Cloneable {
         if (elapsedTime!=0.0f) {
             var newV: Vec2 =
                 Vec2(
-                    target.x - this.x,
-                    target.y - this.y
+                    target.x - x,
+                    target.y - y
                 )
             newV.x = newV.x * (elapsedTime / (elapsedTime+responseTime))
             newV.y = newV.y * (elapsedTime / (elapsedTime+responseTime))
-            this.x += newV.x
-            this.y += newV.y
+            x += newV.x
+            y += newV.y
         }
     }
 

@@ -12,7 +12,7 @@ import com.brokenpc.smframework.base.transition.StateTransitionAction
 import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.util.AppConst
 
-class SMButton : UIContainerView {
+open class SMButton : UIContainerView {
 
     constructor(director: IDirector) : super(director) {
         setPosition(0f, 0f)
@@ -123,6 +123,9 @@ class SMButton : UIContainerView {
         var target:ArrayList<Color4F?>? = target
         if (target==null) {
             target = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                target.add(null)
+            }
         }
         target[stateToInt(state)] = Color4F(color)
     }
@@ -176,6 +179,9 @@ class SMButton : UIContainerView {
             target = ArrayList(stateToInt(STATE.MAX))
             if (targetColor==null) {
                 targetColor = ArrayList(stateToInt(STATE.MAX))
+                for (i in 0 until stateToInt(STATE.MAX)) {
+                    targetColor.add(null)
+                }
             }
         }
 
@@ -281,9 +287,9 @@ class SMButton : UIContainerView {
             srcView?.setVisible(srcAlpha>0f)
             dstView.setVisible(dstAlpha>0f)
         } else if (srcView!=null) {
-            val sc = Color4F(srcColor?: Color4F.TRANSPARENT)
-            val dc = Color4F(dstColor?:if (_style==STYLE.DEFAULT) Color4F.WHITE else sc)
-            val rc = Color4F(sc.multiply(srcAlpha).add(dc.multiply(dstAlpha)))
+            val sc = srcColor?: Color4F(Color4F.TRANSPARENT)
+            val dc = dstColor?:if (_style==STYLE.DEFAULT) Color4F(Color4F.WHITE) else Color4F(sc)
+            val rc = sc.multiply(srcAlpha).add(dc.multiply(dstAlpha))
             srcView.setColor(rc)
         }
     }
@@ -315,7 +321,7 @@ class SMButton : UIContainerView {
         }
     }
 
-    protected fun initWithStyle(style: STYLE):Boolean {
+    fun initWithStyle(style: STYLE):Boolean {
         _style = style
         var buttonView:SMView? = when(_style) {
             STYLE.RECT -> SMRectView(getDirector())
@@ -354,7 +360,7 @@ class SMButton : UIContainerView {
         registerUpdate(FLAG_CONTENT_SIZE)
     }
 
-    override fun setContentSize(width: Float, height: Float) {
+    override fun setContentSize(width: Float?, height: Float?) {
         super.setContentSize(Size(width, height))
     }
 
@@ -365,6 +371,9 @@ class SMButton : UIContainerView {
     fun setButtonColor(state: STATE, color: Color4F) {
         if (_buttonColor==null) {
             _buttonColor = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                _buttonColor!!.add(null)
+            }
         }
 
         _buttonColor!![stateToInt(state)] = Color4F(color)
@@ -378,6 +387,9 @@ class SMButton : UIContainerView {
     fun setIconColor(state: STATE, color: Color4F) {
         if (_iconColor==null) {
             _iconColor = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                _iconColor!!.add(null)
+            }
         }
         _iconColor!![stateToInt(state)] = Color4F(color)
         registerUpdate(FLAG_ICON_COLOR)
@@ -390,6 +402,9 @@ class SMButton : UIContainerView {
     fun setTextColor(state: STATE, color: Color4F) {
         if (_textColor==null) {
             _textColor = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                _textColor!!.add(null)
+            }
         }
         _textColor!![stateToInt(state)] = Color4F(color)
         registerUpdate(FLAG_TEXT_COLOR)
@@ -402,6 +417,9 @@ class SMButton : UIContainerView {
     fun setOutlineColor(state: STATE, color: Color4F) {
         if (_outlineColor==null) {
             _outlineColor = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                _outlineColor!!.add(null)
+            }
         }
         _outlineColor!![stateToInt(state)] = Color4F(color)
         registerUpdate(FLAG_OUTLINE_COLOR)
@@ -410,11 +428,18 @@ class SMButton : UIContainerView {
     fun setButton(state: STATE, view: SMView?) {
         if (_buttonView==null && view!=null) {
             _buttonView = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                _buttonView!!.add(null)
+            }
+
             _buttonView!![0] = null
             _buttonView!![1] = null
 
             if (_buttonColor==null) {
                 _buttonColor = ArrayList(stateToInt(STATE.MAX))
+                for (i in 0 until stateToInt(STATE.MAX)) {
+                    _buttonColor!!.add(null)
+                }
                 _buttonColor!![0] = null
                 _buttonColor!![1] = null
             }
@@ -442,4 +467,343 @@ class SMButton : UIContainerView {
 
     }
 
+    fun setOutlineWidth(lineWidth: Float) {
+        if (_shapeOutlineWidth==lineWidth) return
+
+        if (lineWidth>0f) {
+            val outlineView:SMShapeView? = when (_style) {
+                STYLE.RECT, STYLE.SOLID_RECT -> {
+                    SMRectView(getDirector())
+                }
+                STYLE.CIRCLE, STYLE.SOLID_CIRCLE -> {
+                    SMCircleView(getDirector())
+                }
+                STYLE.ROUNDEDRECT, STYLE.SOLID_ROUNDEDRECT -> {
+                    SMRoundRectView(getDirector(), 1f, ShapeConstant.LineType.SOLID)
+                }
+                else -> {
+                    null
+                }
+            }
+
+            if (outlineView!=null) {
+                outlineView.setAnchorPoint(Vec2.MIDDLE)
+                outlineView.setPosition(getContentSize().width/2f, getContentSize().height/2f)
+
+                if (_buttonView==null) {
+                    _buttonView = ArrayList(stateToInt(STATE.MAX))
+                    for (i in 0 until stateToInt(STATE.MAX)) {
+                        _buttonView!!.add(null)
+                    }
+
+                    _buttonView!![0] = null
+                    _buttonView!![1] = null
+
+                    if (_outlineColor==null) {
+                        _outlineColor = ArrayList(stateToInt(STATE.MAX))
+                        for (i in 0 until stateToInt(STATE.MAX)) {
+                            _outlineColor!!.add(null)
+                        }
+
+                        _outlineColor!![0] = null
+                        _outlineColor!![1] = null
+                    }
+                }
+
+                setStateView(_buttonView!!, STATE.PRESSED, outlineView, AppConst.ZOrder.BUTTON_PRESSED, _outlineColor!!)
+
+                registerUpdate(FLAG_CONTENT_SIZE)
+
+                if (_outlineColor==null || _outlineColor!![0]==null) {
+                    setOutlineColor(STATE.NORMAL, Color4F(0f, 0f, 0f, 1f))
+                }
+            }
+        } else {
+            setButton(STATE.PRESSED, null)
+        }
+
+        _shapeOutlineWidth = lineWidth
+        registerUpdate(FLAG_SHAPE_STYLE)
+    }
+
+    fun setIconAlign(align: ICONALIGN) {
+        _align = align
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setIcon(state: STATE, view: SMView?) {
+        if (_iconView==null && view!=null) {
+            _iconView = ArrayList(stateToInt(STATE.MAX))
+            for (i in 0 until stateToInt(STATE.MAX)) {
+                _iconView!!.add(null)
+            }
+
+            _iconView!![0] = null
+            _iconView!![1] = null
+
+            if (_iconColor==null) {
+                _iconColor = ArrayList(stateToInt(STATE.MAX))
+                for (i in 0 until stateToInt(STATE.MAX)) {
+                    _iconColor!!.add(null)
+                }
+
+                _iconColor!![0] = null
+                _iconColor!![1] = null
+            }
+        }
+
+        if (_iconView!=null) {
+            setStateView(_iconView!!, state, view, if (state==STATE.NORMAL){ AppConst.ZOrder.BUTTON_ICON_NORMAL }else {AppConst.ZOrder.BUTTON_PRESSED},_iconColor!! )
+
+            registerUpdate(FLAG_TEXT_ICON_POSITION)
+            registerUpdate(FLAG_ICON_COLOR)
+        }
+    }
+
+    fun setIcon(state: STATE, imageFileName: String) {
+        if (imageFileName.isEmpty()) return
+
+        val imageView = SMImageView.create(getDirector(), imageFileName)
+        imageView.setAnchorPoint(Vec2.MIDDLE)
+        imageView.setPosition(getContentSize().width/2f, getContentSize().height/2f)
+        setIcon(state, imageView)
+    }
+
+    fun setText(text: String) {
+        if (_textLabel==null) {
+            setText(text, AppConst.DEFAULT_VALUE.FONT_SIZE)
+        } else {
+            if (_textLabel!!.getText()!=text) {
+                _textLabel!!.setText(text)
+            }
+        }
+
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setText(text: String, fontSize: Float) {
+        if (_textLabel==null) {
+            _textLabel = SMLabel.create(getDirector(), text, fontSize, Color4F.BLACK)
+            _textLabel!!.setAnchorPoint(Vec2.MIDDLE)
+            _uiContainer.addChild(_textLabel!!, AppConst.ZOrder.BUTTON_TEXT)
+            if (_textColor==null || _textColor!![0]==null) {
+                setTextColor(STATE.NORMAL, Color4F.BLACK)
+            }
+        } else {
+            if (_textLabel!!.getText()!=text) {
+                _textLabel!!.setText(text)
+            }
+        }
+
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setUnderline() {
+        _textUnderline = SMSolidRectView.create(getDirector())
+        addChild(_textUnderline!!)
+    }
+
+    fun setIconPadding(padding: Float) {
+        _iconPadding = padding
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setIconScale(scale: Float) {
+        _iconScale = scale
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setTextScale(scale: Float) {
+        _textScale = scale
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setIconOffset(offset: Vec2) {
+        _iconOffset.set(offset)
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setTextOffset(offset: Vec2) {
+        _textOffset.set(offset)
+        registerUpdate(FLAG_TEXT_ICON_POSITION)
+    }
+
+    fun setShapeCornerRadius(radius: Float) {
+        if (_style==STYLE.DEFAULT || _style==STYLE.RECT || _style==STYLE.SOLID_RECT) return
+
+        _shapeRadius = radius
+        registerUpdate(FLAG_SHAPE_STYLE)
+    }
+
+    fun setShapeCornerQuadrant(quadrant: Int) {
+        if (_style==STYLE.DEFAULT) return
+
+        _shapeQuardrant = quadrant
+        registerUpdate(FLAG_SHAPE_STYLE)
+    }
+
+    fun setShapeAntiAliasWidth(width: Float) {
+        if (_style==STYLE.DEFAULT) return
+
+        _shapeAntiAliasWidth = width
+        registerUpdate(FLAG_SHAPE_STYLE)
+    }
+
+    fun getButtonColor(state: STATE): Color4F? {return _buttonColor?.get(stateToInt(state))}
+
+    fun getIconColor(state: STATE): Color4F? {return _iconColor?.get(stateToInt(state))}
+
+    fun getTextColor(state: STATE): Color4F? {return _textColor?.get(stateToInt(state))}
+
+    fun getOutlineColor(state: STATE): Color4F? {return _outlineColor?.get(stateToInt(state))}
+
+    fun getButtonView(state: STATE): SMView? {
+        return _buttonView?.get(stateToInt(state))
+    }
+
+    fun getIconView(state: STATE): SMView? {
+        return _iconView?.get(stateToInt(state))
+    }
+
+    fun getTextLabel(): SMLabel? {return _textLabel}
+
+    fun setPushDownRotate(rotate: Float) {_pushDownRotate = rotate}
+
+    fun setPushDownOffset(offset: Vec2) {_pushDownOffset.set(offset)}
+
+    fun setPushDownScale(scale: Float) {_pushDownScale = scale}
+
+    override fun onUpdateOnVisit() {
+        if (_updateFlags==0L) return
+
+        if (getAlpha()==0f) return
+
+        if (isUpdate(FLAG_CONTENT_SIZE)) {
+            registerUpdate(FLAG_TEXT_ICON_POSITION)
+
+            if (_buttonView!=null) {
+                val size = _uiContainer.getContentSize()
+                val center = Vec2(size.width/2f, size.height/2f)
+
+
+                for (i in 0 until 2) {
+                    val view = _buttonView!![i]
+                    view?.setPosition(center)
+                    view?.setContentSize(size)
+                }
+            }
+
+            unregisterUpdate(FLAG_CONTENT_SIZE)
+        }
+
+        if (isUpdate(FLAG_TEXT_ICON_POSITION)) {
+            var isContainedText = false
+            val textSize = Size(Size.ZERO)
+            if (_textLabel!=null) {
+                textSize.set(_textLabel!!.getContentSize().width*_textScale, _textLabel!!.getContentSize().height*_textScale)
+                isContainedText = true
+            }
+
+            var isContainedIcon = false
+            val iconSize = Size(Size.ZERO)
+            if (_iconView!=null) {
+                for (i in 0 until 2) {
+                    if (_iconView!![i]!=null) {
+                        val s = Size(_iconView!![i]!!.getContentSize().width*_iconScale, _iconView!![i]!!.getContentSize().height*_iconScale)
+                        iconSize.set(iconSize.width.coerceAtLeast(s.width), iconSize.height.coerceAtLeast(s.height))
+                        isContainedIcon = true
+                    }
+                }
+            }
+
+            val size = _uiContainer.getContentSize()
+            val center = Vec2(size.width/2f, size.height/2f)
+            val textPosition = center
+            val iconPosition = center
+            var width = 0f
+            var height = 0f
+
+            // icon & text 공통
+            if (isContainedText && isContainedIcon) {
+                when (_align) {
+                    ICONALIGN.LEFT -> {
+                        width = textSize.width + _iconPadding + iconSize.width
+                        iconPosition.x = (size.width-width+iconSize.width)/2f
+                        textPosition.x = (size.width+width-textSize.width)/2f
+                    }
+                    ICONALIGN.RIGHT -> {
+                        width = textSize.width + _iconPadding + iconSize.width
+                        iconPosition.x = (size.width+width-iconSize.width)/2f
+                        textPosition.x = (size.width-width+textSize.width)/2f
+                    }
+                    ICONALIGN.TOP -> {
+                        height = textSize.height + _iconPadding + iconSize.height
+                        iconPosition.y = (size.height+height-iconSize.height)/2f
+                        textPosition.y = (size.height-height+textSize.height)/2f
+                    }
+                    ICONALIGN.BOTTOM -> {
+                        height = textSize.height + _iconPadding + iconSize.height
+                        iconPosition.y = (size.height-height+iconSize.height)/2f
+                        textPosition.y = (size.height+height-textSize.height)/2f
+                    }
+                    else -> {
+
+                    }
+                }
+            }
+
+            // text
+            if (isContainedText) {
+                _textLabel?.setPosition(textPosition.x+_textOffset.x, textPosition.y+_textOffset.y)
+                _textLabel?.setScale(_textScale)
+                if (_textUnderline!=null) {
+                    val extend = Size(0f, textSize.height/2f)
+                    _textUnderline?.setPosition(textPosition.x+_textOffset.x, textPosition.y+_textOffset.y-extend.height)
+                    _textUnderline?.setContentSize(Size(textSize.width, AppConst.DEFAULT_VALUE.LINE_WIDTH))
+                }
+            }
+
+            // icon
+            if (isContainedIcon) {
+                for (i in 0 until 2) {
+                    if (_iconView!![i]!=null) {
+                        _iconView!![i]!!.setPosition(iconPosition.x+_iconOffset.x, iconPosition.y+_iconOffset.y)
+                        _iconView!![i]!!.setScale(_iconScale)
+                    }
+                }
+            }
+
+            unregisterUpdate(FLAG_TEXT_ICON_POSITION)
+        }
+
+        if (isUpdate(FLAG_BUTTON_COLOR.or(FLAG_ICON_COLOR).or(FLAG_TEXT_COLOR).or(FLAG_OUTLINE_COLOR))) {
+            // ToDo... color update
+            unregisterUpdate(FLAG_BUTTON_COLOR.or(FLAG_ICON_COLOR).or(FLAG_TEXT_COLOR).or(FLAG_OUTLINE_COLOR))
+        }
+
+        if (isUpdate(FLAG_SHAPE_STYLE)) {
+            if (_style!=STYLE.DEFAULT && _buttonView!=null) {
+                for (i in 0 until 2) {
+                    val view = _buttonView!![i]
+                    if (view!=null) {
+                        if (view is SMShapeView) {
+                            val shape = view as SMShapeView
+                            shape.setCornerRadius(_shapeRadius)
+                            shape.setAntiAliasWidth(_shapeAntiAliasWidth)
+                            if (i==0) {
+                                shape.setLineWidth(_shapeLineWidth)
+                            } else {
+                                shape.setLineWidth(_shapeOutlineWidth)
+                            }
+                            shape.setConerQuadrant(_shapeQuardrant)
+                        }
+                    }
+                }
+            }
+
+            unregisterUpdate(FLAG_SHAPE_STYLE)
+        }
+
+        onUpdateStateTransition(STATE.NORMAL, _buttonStateValue)
+    }
 }

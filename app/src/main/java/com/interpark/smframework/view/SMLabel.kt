@@ -40,6 +40,11 @@ class SMLabel(director:IDirector) : UIContainerView(director) {
         }
 
         @JvmStatic
+        fun create(director: IDirector, text: String, fontSize: Float, fontColor: Color4F, align: Align, bold: Boolean): SMLabel {
+            return create(director, text, fontSize, fontColor, align, bold, false, false)
+        }
+
+        @JvmStatic
         fun create(director: IDirector, text: String, fontSize: Float, fontColor: Color4F, align: Align, bold: Boolean, italic: Boolean, strike: Boolean): SMLabel {
             return create(director, text, fontSize, fontColor, align, bold, italic, strike, -1, 1)
         }

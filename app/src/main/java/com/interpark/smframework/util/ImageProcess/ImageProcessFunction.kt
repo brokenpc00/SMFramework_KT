@@ -37,7 +37,7 @@ open class ImageProcessFunction() {
         _inputData = null
         _outputData = null
         _param = null
-        _clearColor = Color4F.TRANSPARENT
+        _clearColor = Color4F(Color4F.TRANSPARENT)
         _isCaptureOnly = false
         _outputImage = null
         initParam()

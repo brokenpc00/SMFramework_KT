@@ -82,21 +82,25 @@ open class BaseTableView(director:IDirector) : SMView(director), _ScrollProtocol
         // contents 들만 남기고 다 지움
 
         // contents 떼어냄...
-        if (_contentView != null) {
+        if (_contentView != null && _contentView!!.isNotEmpty()) {
             for (i in 0 until _numContainer) {
+                if (_contentView!![i]!=null) {
                 super.removeChild(_contentView!![i])
             }
+        }
         }
 
         // 나머지 다 날리고
         super.removeAllChildrenWithCleanup(cleanup)
 
         // contents들을 다시 붙임
-        if (_contentView != null) {
+        if (_contentView != null && _contentView!!.isNotEmpty()) {
             for (i in 0 until _numContainer) {
+                if (_contentView!![i]!=null) {
                 super.addChild(_contentView!![i]!!)
             }
         }
+    }
     }
 
     fun getContainerCount(): Long {
@@ -159,14 +163,13 @@ open class BaseTableView(director:IDirector) : SMView(director), _ScrollProtocol
 
 
     protected fun initWithContainer(numContainer: Int): Boolean {
-        assert(numContainer > 0)
+        if (BuildConfig.DEBUG && numContainer <= 0) {
+            error("Assertion failed")
+        }
         _numContainer = numContainer
         _contentView = arrayOfNulls(_numContainer)
         for (i in 0 until _numContainer) {
-            _contentView!![i] =
-                create(
-                    getDirector()
-                )
+            _contentView!![i] = create(getDirector())
             super.addChild(_contentView!![i]!!)
         }
         if (_headerView != null && _isHeaderInList) {
@@ -201,9 +204,7 @@ open class BaseTableView(director:IDirector) : SMView(director), _ScrollProtocol
     }
 
     protected fun clearInstantHolder() {
-        if (_holder != null) {
-            _holder!!.clear()
-        }
+        _holder?.clear()
     }
 
     protected fun addChild(columnNum: Int, child: SMView) {
@@ -307,10 +308,11 @@ open class BaseTableView(director:IDirector) : SMView(director), _ScrollProtocol
     protected var _reloadFlag = false
 
 
-    private class InstantHolder(director: IDirector?) :
-        Ref(director!!) {
-        @JvmOverloads
-        fun insert(hashCode: Int, parent: SMView?, child: SMView, cleanup: Boolean = true): Boolean {
+    private class InstantHolder(director: IDirector) : Ref(director) {
+        fun insert(hashCode: Int, parent: SMView?, child: SMView): Boolean {
+            return insert(hashCode, parent, child, true)
+        }
+        fun insert(hashCode: Int, parent: SMView?, child: SMView, cleanup: Boolean): Boolean {
             val view = _data[hashCode]
             if (view != null) {
                 return false
@@ -320,7 +322,7 @@ open class BaseTableView(director:IDirector) : SMView(director), _ScrollProtocol
             return true
         }
 
-        fun find(hashCode: Int): SMView {
+        fun find(hashCode: Int): SMView? {
             return _data[hashCode]
         }
 

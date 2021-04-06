@@ -33,7 +33,7 @@ open class SMScene(director: IDirector) : SMView(director), BackPressable {
     protected var _sceneResult:SceneParams? = null
     protected var _sceneParam:SceneParams? = null
 
-    protected var _rootView:SMView = SMView(director, 0f, 0f, director.getWidth().toFloat(), director.getHeight().toFloat())
+    protected lateinit var _rootView:SMView
     protected var _swipeType:SwipeType = SwipeType.NONE
     protected var _mainMenuEnable:Boolean = false
 
@@ -46,7 +46,10 @@ open class SMScene(director: IDirector) : SMView(director), BackPressable {
     }
 
     protected fun initWithSceneParams(param: SceneParams?, type: SwipeType): Boolean {
-        setContentSize(_rootView.getContentSize())
+        val size = Size(getDirector().getWidth(), getDirector().getHeight())
+        setContentSize(size)
+
+        _rootView = SMView(getDirector(), 0f, 0f, size.width, size.height)
         super.addChild(_rootView)
 
         _swipeType = type
@@ -64,28 +67,25 @@ open class SMScene(director: IDirector) : SMView(director), BackPressable {
 
     init {
         setAnchorPoint(Vec2.MIDDLE)
-        setPosition(Vec2(director.getWinSize().width/2, director.getWinSize().height/2))
+        setPosition(Vec2(director.getWinSize().width/2f, director.getWinSize().height/2f))
         setContentSize(director.getWidth().toFloat(), director.getHeight().toFloat())
     }
 
     fun getRootView():SMView {return _rootView}
     fun getSwipeType():SwipeType {return _swipeType}
 
-    override fun addChild(child: SMView) {
-        val size:Size = Size(getDirector().getWidth().toFloat(), getDirector().getHeight().toFloat())
-        setContentSize(size)
+    override fun addChild(child: SMView?) {
+        if (child==null) return
         _rootView.addChild(child)
     }
 
-    override fun addChild(child: SMView, zOrder: Int) {
+    override fun addChild(child: SMView?, zOrder: Int) {
+        if (child==null) return
         _rootView.addChild(child, zOrder)
     }
 
-    override fun addChild(child: SMView, zOrder: Int, name: String) {
-        _rootView.addChild(child, zOrder, name)
-    }
-
-    override fun addChild(child: SMView, zOrder: Int, tag: Int) {
+    override fun addChild(child: SMView?, zOrder: Int, tag: Int) {
+        if (child==null) return
         _rootView.addChild(child, zOrder, tag)
     }
 

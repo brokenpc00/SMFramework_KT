@@ -39,11 +39,11 @@ open class UIContainerView : SMView {
         super.setContentSize(size)
     }
 
-    fun setPadding(padding:Float) {
+    open fun setPadding(padding:Float) {
         setPadding(padding, padding, padding, padding)
     }
 
-    fun setPadding(left:Float, top:Float, right:Float, bottom:Float) {
+    open fun setPadding(left:Float, top:Float, right:Float, bottom:Float) {
         _paddingLeft = left
         _paddingTop = top
         _paddingRight = right

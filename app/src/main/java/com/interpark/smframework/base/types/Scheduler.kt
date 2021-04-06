@@ -441,7 +441,7 @@ open class Scheduler(director: IDirector) : Ref(director) {
         element?.paused = false
 
         var elementUpdate: tHashUpdateEntry? = findUpdateElement(target)
-        elementUpdate?.entry!!.paused = false
+        elementUpdate?.entry?.paused = false
     }
 
     fun isTargetPaused(target: Ref): Boolean {
@@ -452,7 +452,7 @@ open class Scheduler(director: IDirector) : Ref(director) {
 
         var elementUpdate:tHashUpdateEntry? = findUpdateElement(target)
         if (elementUpdate!=null) {
-            return elementUpdate.entry!!.paused
+            return elementUpdate.entry?.paused ?: false
         }
 
         return false

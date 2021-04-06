@@ -1,5 +1,6 @@
 package com.brokenpc.smframework.view
 
+import android.util.Log
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.Color4F
@@ -7,6 +8,11 @@ import com.brokenpc.smframework.base.types.Mat4
 import com.brokenpc.smframework.base.types.Vec2
 
 open class SMShapeView(director: IDirector) : SMView(director) {
+    protected var _shapeColor = Color4F(Color4F.TRANSPARENT)
+    protected var _cornerRadius = 0.0f
+    protected var _lineWidth = 1.0f
+    protected var _aaWidth = 0.0f
+    protected var _quarant = 0
 
     companion object {
         @JvmStatic
@@ -85,9 +91,4 @@ open class SMShapeView(director: IDirector) : SMView(director) {
         getDirector().setColor(_shapeColor.r, _shapeColor.g, _shapeColor.b, _shapeColor.a)
     }
 
-    protected var _shapeColor:Color4F = Color4F(Color4F.TRANSPARENT)
-    protected var _cornerRadius:Float = 0.0f
-    protected var _lineWidth:Float = 1.0f
-    protected var _aaWidth:Float = 0.0f
-    protected var _quarant:Int = 0
 }

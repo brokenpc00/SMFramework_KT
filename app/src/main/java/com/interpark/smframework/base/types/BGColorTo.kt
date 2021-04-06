@@ -14,7 +14,7 @@ class BGColorTo(director:IDirector) : ActionInterval(director) {
         fun create(director: IDirector, duration: Float, color: Color4F):BGColorTo {
             val colorTo:BGColorTo = BGColorTo(director)
             if (colorTo.initWithDuration(duration)) {
-                colorTo._toColor = Color4F(color)
+                colorTo._toColor.set(color)
             }
 
             return colorTo
@@ -24,8 +24,8 @@ class BGColorTo(director:IDirector) : ActionInterval(director) {
     override fun startWithTarget(target: SMView?) {
         if (target!=null) {
             super.startWithTarget(target)
-            _startColor = Color4F(target.getBackgroundColor())
-            _deltaColor = _toColor.minus(_startColor)
+            _startColor.set(target.getBackgroundColor())
+            _deltaColor.set(_toColor.minus(_startColor))
         }
     }
 

@@ -22,7 +22,6 @@ open class SMView : Ref {
         _actionManager = _director!!.getActionManager()
         _scheduler = _director!!.getScheduler()
         _scaledDoubleTouchSlope = ViewConfig.getScaledDoubleTouchSlop(director)
-        setCascadeAlphaEnable(true)
     }
 
     constructor(director: IDirector, x: Float, y: Float, width: Float, height: Float) : super(director) {
@@ -32,7 +31,11 @@ open class SMView : Ref {
         _actionManager = _director!!.getActionManager()
         _scheduler = _director!!.getScheduler()
         _scaledDoubleTouchSlope = ViewConfig.getScaledDoubleTouchSlop(director)
-        setCascadeAlphaEnable(true)
+    }
+
+    init {
+//        setCascadeAlphaEnable(true)
+        _parent = null
     }
 
     enum class Direction {
@@ -305,13 +308,13 @@ open class SMView : Ref {
 
         @JvmStatic
         fun getDirection(dx:Float, dy:Float):Direction {
-            val VERTICAL_WIDE:Int = 100
+            val VERTICAL_WIDE = 100
             // 80
-            val HORIZONTAL_WIDE:Int = (180-VERTICAL_WIDE)
+            val HORIZONTAL_WIDE = (180-VERTICAL_WIDE)
 
             val radians:Float = atan2(dy, dx)
             var degrees:Int = toDegrees(radians.toDouble()).toInt()
-            degrees = (degrees % 360) + (if (degrees>0) 360 else 0 )
+            degrees = (degrees % 360) + (if (degrees<0) 360 else 0 )
 
             // a = 40
             var a:Int = HORIZONTAL_WIDE/2
@@ -651,6 +654,7 @@ open class SMView : Ref {
         _displayedColor.r = _realColor.r * parentColor.r
         _displayedColor.g = _realColor.g * parentColor.g
         _displayedColor.b = _realColor.b * parentColor.b
+        _displayedColor.a = _realColor.a * parentColor.a
 
         updateColor()
 
@@ -664,7 +668,7 @@ open class SMView : Ref {
     fun isCascadeColorEnabled():Boolean {return _cascadeColorEnabled}
 
     fun updateCascadeColor() {
-        val parentColor:Color4F = Color4F(Color4F.WHITE)
+        val parentColor = Color4F(Color4F.WHITE)
         if (_parent!=null && _parent!!.isCascadeColorEnabled()) {
             parentColor.set(_parent!!.getDisplayedColor())
         }
@@ -677,7 +681,7 @@ open class SMView : Ref {
     }
 
     fun updateCascadeAlpha() {
-        var parentAlpha:Float = 1.0f
+        var parentAlpha = 1.0f
         if (_parent!=null && _parent!!.isCascadeAlphaEnabled()) {
             parentAlpha = _parent!!.getDisplayedAlpha()
         }
@@ -718,6 +722,8 @@ open class SMView : Ref {
     }
 
     open fun init():Boolean {
+        _parent = null
+        setCascadeAlphaEnable(true)
         return true
     }
 
@@ -740,6 +746,7 @@ open class SMView : Ref {
         _bgColor.set(color)
 
         if (_bgView==null) {
+            if (color.a==0f) return
             _bgView = SMSolidRectView.create(getDirector())
             _bgView!!.setContentSize(_contentSize)
             _bgView!!.setPosition(Vec2.ZERO)
@@ -747,9 +754,9 @@ open class SMView : Ref {
             addChild(_bgView!!, AppConst.ZOrder.BG, "")
         }
 
-        _bgView!!.setColor(_bgColor)
-        _bgView!!.setAlpha(_bgColor.a)
-        _bgView!!.setVisible(_bgColor.a!=0f)
+        _bgView?.setColor(_bgColor)
+        _bgView?.setAlpha(_bgColor.a)
+        _bgView?.setVisible(_bgColor.a!=0f)
     }
 
     open fun setBackgroundColor(color: Color4F, changeDurationTime: Float) {
@@ -789,8 +796,8 @@ open class SMView : Ref {
         return _children[index]
     }
 
-    fun containsPoint(point:Vec2):Boolean {return containsPoint(point.x, point.y)}
-    fun containsPoint(x:Float, y:Float):Boolean {
+    open fun containsPoint(point:Vec2):Boolean {return containsPoint(point.x, point.y)}
+    open fun containsPoint(x:Float, y:Float):Boolean {
         return !(x < 0 || y < 0 || x > _contentSize.width || y > _contentSize.height)
     }
 
@@ -919,13 +926,13 @@ open class SMView : Ref {
     interface OnLongClickListener {
         fun onLongClick(view: SMView?)
     }
-    private val mOnLongClickListener: OnLongClickListener? = null
+    private var mOnLongClickListener: OnLongClickListener? = null
 
     // state change
     interface OnStateChangeListener {
         fun onStateChange(view: SMView?, state: STATE?)
     }
-    private val mOnStateChangeListener: OnStateChangeListener? = null
+    private var mOnStateChangeListener: OnStateChangeListener? = null
 
     // render
     open protected fun onSmoothUpdate(flags:Long, dt:Float) {}
@@ -983,7 +990,7 @@ open class SMView : Ref {
     }
 
     fun schedule(selector: SEL_SCHEDULE?, interval: Float, repeat: Long, delay: Float) {
-        if (BuildConfig.DEBUG && interval<=0) {
+        if (BuildConfig.DEBUG && interval<0) {
             error("Assertion failed")
         }
 
@@ -1035,7 +1042,7 @@ open class SMView : Ref {
     }
 
     fun setState(state: STATE): Boolean {
-        if (_pressState==state) {
+        if (_pressState!=state) {
             if (isEnabled()) {
                 _pressState = state
                 mStateChangeAni = true
@@ -1068,6 +1075,76 @@ open class SMView : Ref {
     fun isEnabled(): Boolean {return _enabled}
 
 
+    // touch event
+    fun setOnTouchListener(listener: OnTouchListener?) {
+        setOnTouchListener(listener, null)
+    }
+    fun setOnTouchListener(listener: OnTouchListener?, eventTarget: SMView?) {
+        mOnTouchListener = listener
+        _eventTargetTouch = eventTarget
+
+        if (listener!=null) {
+            setTouchMask(TOUCH_MASK_TOUCH)
+        } else {
+            clearTouchMask(TOUCH_MASK_TOUCH)
+        }
+    }
+
+    fun setOnClickListener(listener: OnClickListener?) {
+        setOnClickListener(listener, null)
+    }
+    fun setOnClickListener(listener: OnClickListener?, eventTarget: SMView?) {
+        setClickable(true)
+
+        mOnClickListener = listener
+        _eventTargetClick = eventTarget
+
+        if (listener!=null) {
+            setTouchMask(TOUCH_MASK_CLICK)
+        } else {
+            clearTouchMask(TOUCH_MASK_CLICK)
+        }
+    }
+
+    fun setOnDoubleClickListener(listener: OnDoubleClickListener?) {
+        setOnDoubleClickListener(listener, null)
+    }
+    fun setOnDoubleClickListener(listener: OnDoubleClickListener?, eventTarget: SMView?) {
+        setDoubleClickable(true)
+
+        mOnDoubleClickListener = listener
+        _eventTargetDoubleClick = eventTarget
+
+        if (listener!=null) {
+            setTouchMask(TOUCH_MASK_DOUBLECLICK)
+        } else {
+            clearTouchMask(TOUCH_MASK_DOUBLECLICK)
+        }
+    }
+
+    fun setOnLongClickListener(listener: OnLongClickListener?) {
+        setOnLongClickListener(listener, null)
+    }
+    fun setOnLongClickListener(listener: OnLongClickListener?, eventTarget: SMView?) {
+        setLongClickable(true)
+
+        mOnLongClickListener = listener
+        _eventTargetLongPress = eventTarget
+
+        if (listener!=null) {
+            setTouchMask(TOUCH_MASK_LONGCLICK)
+        } else {
+            clearTouchMask(TOUCH_MASK_LONGCLICK)
+        }
+    }
+
+    fun setOnStateChangeListener(listener: OnStateChangeListener?) {
+        setOnStateChangeListener(listener, null)
+    }
+    fun setOnStateChangeListener(listener: OnStateChangeListener?, eventTarget: SMView?) {
+        mOnStateChangeListener = listener
+        _eventTargetStateChange = eventTarget
+    }
 
     // member method
     fun setPosition(pos: Vec2) {
@@ -1168,7 +1245,7 @@ open class SMView : Ref {
     fun setPositionNormalized(position:Vec2) {
         if (_normalizedPosition.equal(position)) return
 
-        _normalizedPosition = position
+        _normalizedPosition.set(position)
         _usingNormalizedPosition = true
         _normalizedPositionDirty = true
 
@@ -1329,7 +1406,7 @@ open class SMView : Ref {
 
     fun setAnimRotate3D(rotate: Vec3) { setAnimRotate3D(rotate, true) }
     fun setAnimRotate3D(rotate: Vec3, immediate: Boolean) {
-        if (!_newAnimRotation.equals(rotate)) {
+        if (!_newAnimRotation.equal(rotate)) {
             _newAnimRotation.set(rotate)
             scheduleSmoothUpdate(VIEWFLAG_ANIM_ROTATE)
         }
@@ -1896,7 +1973,7 @@ open class SMView : Ref {
             _rotationZ_Y = rotate3D.z
 
         } else {
-            if (_newRotation.equals(rotate)) return
+            if (_newRotation.equal(rotate)) return
 
             _newRotation = Vec3(rotate)
 
@@ -1915,9 +1992,9 @@ open class SMView : Ref {
 
             if (mOnStateChangeListener!=null) {
                 if (_eventTargetStateChange!=null) {
-                    mOnStateChangeListener.onStateChange(_eventTargetStateChange, _pressState)
+                    mOnStateChangeListener?.onStateChange(_eventTargetStateChange, _pressState)
                 } else {
-                    mOnStateChangeListener.onStateChange(this, _pressState)
+                    mOnStateChangeListener?.onStateChange(this, _pressState)
                 }
             }
         }
@@ -1931,9 +2008,9 @@ open class SMView : Ref {
 
             if (mOnStateChangeListener!=null) {
                 if (_eventTargetStateChange!=null) {
-                    mOnStateChangeListener.onStateChange(_eventTargetStateChange, _pressState)
+                    mOnStateChangeListener?.onStateChange(_eventTargetStateChange, _pressState)
                 } else {
-                    mOnStateChangeListener.onStateChange(this, _pressState)
+                    mOnStateChangeListener?.onStateChange(this, _pressState)
                 }
             }
         }
@@ -1961,8 +2038,8 @@ open class SMView : Ref {
                 _newColor.set(color)
 
 
-                _realColor = Color4F(color)
-                _displayedColor = Color4F(color)
+                _realColor.set(color)
+                _displayedColor.set(color)
 
                 setAlpha(color.a)
 
@@ -1975,18 +2052,15 @@ open class SMView : Ref {
             }
         } else {
             if (!_realColor.equal(color)) {
-                _newColor = Color4F(color)
+                _newColor.set(color)
                 scheduleSmoothUpdate(VIEWFLAG_COLOR)
             }
         }
     }
 
     open fun setAlpha(a:Float) {
-        _realAlpha = a
-        _displayedAlpha = a
-
-        _realColor.a = a
-        _displayedColor.a = a
+        _realAlpha = a.also { _displayedAlpha = it }
+        _realColor.a = a.also { _displayedColor.a = it }
 
         updateCascadeAlpha()
     }
@@ -2066,23 +2140,23 @@ open class SMView : Ref {
     open fun removeChild(child: SMView?, cleanup: Boolean) {
         if (_children.isEmpty()) return
 
+        if (child==null) return
+
         val index:Int = _children.indexOf(child)
 
         if (index!=-1) {
             detachChild(child, index, cleanup)
         }
 
-        if (child!=null) {
             if (child==_bgView) {
                 _bgView = null
             } else if (child==_touchMotionTarget) {
                 _touchMotionTarget = null
             }
         }
-    }
 
     open fun getChildByTag(tag:Int): SMView? {
-        if (BuildConfig.DEBUG && tag==1) {
+        if (BuildConfig.DEBUG && tag==-1) {
             error("Assertion Failed")
         }
 
@@ -2159,7 +2233,7 @@ open class SMView : Ref {
 
         if (bgView!=null) {
             _bgView = bgView
-            _bgView!!.setContentSize(_contentSize)
+            _bgView?.setContentSize(_contentSize)
             _bgView?.setPosition(Vec2.ZERO)
             _bgView?.setColor(_bgColor)
             _bgView?.setAlpha(_bgColor.a)
@@ -2180,8 +2254,8 @@ open class SMView : Ref {
     }
     open fun setContentSize(size: Size, immediate:Boolean) {
         if (immediate) {
-            if (!size.equals(_contentSize)) {
-                _contentSize = Size(size)
+            if (!size.equal(_contentSize)) {
+                _contentSize.set(size)
 
                 _anchorPointInPoints.set(_contentSize.width*_anchorPoint.x, _contentSize.height*_anchorPoint.y)
                 _contentSizeDirty = true
@@ -2190,10 +2264,10 @@ open class SMView : Ref {
                 _transformUpdated = true
             }
             _bgView?.setContentSize(size)
-            _newContentSize = size
+            _newContentSize.set(size)
         } else {
-            if (!size.equals(_newContentSize)) {
-                _newContentSize = size
+            if (!size.equal(_newContentSize)) {
+                _newContentSize.set(size)
                 scheduleSmoothUpdate(VIEWFLAG_CONTENT_SIZE)
             }
         }
@@ -2206,20 +2280,24 @@ open class SMView : Ref {
 
     open fun isInitialized():Boolean {return true}
 
-    open fun addChild(child: SMView) {
+    open fun addChild(child: SMView?) {
+        if (child==null) return
         this.addChild(child, child.getLocalZOrder(), child._name)
     }
-    open fun addChild(child: SMView, zOrder: Int) {
+    open fun addChild(child: SMView?, zOrder: Int) {
+        if (child==null) return
         this.addChild(child, zOrder, child._name)
     }
-    open fun addChild(child: SMView, zOrder: Int, name:String) {
+    open fun addChild(child: SMView?, zOrder: Int, name:String) {
+        if (child==null) return
         if (BuildConfig.DEBUG && child.getParent()!=null) {
             error("Assertion Failed... child already added. It can't be added again")
         }
 
         addChildHelper(child, zOrder, -1, name, false)
     }
-    open fun addChild(child: SMView, zOrder: Int, tag: Int) {
+    open fun addChild(child: SMView?, zOrder: Int, tag: Int) {
+        if (child==null) return
         if (BuildConfig.DEBUG && child.getParent()!=null) {
             error("Assertion Failed... child already added. It can't be added again")
         }
@@ -2230,13 +2308,13 @@ open class SMView : Ref {
     private fun addChildHelper(child: SMView, zOrder: Int, tag: Int, name: String, setTag: Boolean) {
         var ownNode:Boolean = false
 
-        var parent:SMView? = getParent()
-        while (parent!=null) {
-            parent = parent.getParent()
-            if (parent==child) {
+        var parent = getParent()
+        while (parent != null) {
+            if (parent === child) {
                 ownNode = true
                 break
             }
+            parent = parent.getParent()
         }
 
         if (BuildConfig.DEBUG && ownNode) {
@@ -2320,9 +2398,9 @@ open class SMView : Ref {
     protected open fun performLongClick() {
         if (mOnLongClickListener != null) {
             if (_eventTargetLongPress != null) {
-                mOnLongClickListener.onLongClick(_eventTargetLongPress)
+                mOnLongClickListener?.onLongClick(_eventTargetLongPress)
             } else {
-                mOnLongClickListener.onLongClick(this)
+                mOnLongClickListener?.onLongClick(this)
             }
         }
         if (_longClickable) {

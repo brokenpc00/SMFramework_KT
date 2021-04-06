@@ -51,9 +51,7 @@ open class EdgeSwipeLayer(director:IDirector) : SMView(director) {
     }
 
     open fun isScrollArea(worldPoint: Vec2): Boolean {
-        return if (worldPoint.x < _edgeSize) {
-            true
-        } else false
+        return worldPoint.x < _edgeSize
     }
 
     open fun openStateChanged(openState: Int) {

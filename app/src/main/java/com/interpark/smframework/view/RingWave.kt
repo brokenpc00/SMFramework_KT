@@ -2,12 +2,11 @@ package com.interpark.smframework.view
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
-import com.brokenpc.smframework.base.types.Action
-import com.brokenpc.smframework.base.types.ActionInterval
-import com.brokenpc.smframework.base.types.Color4F
-import com.brokenpc.smframework.base.types.Vec2
+import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.view.SMCircleView
 import com.brokenpc.smframework.view.SMShapeView
+import com.interpark.smframework.base.types.EaseOut
+import com.interpark.smframework.base.types.RepeatForever
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -18,7 +17,32 @@ class RingWave(director: IDirector) : SMView(director) {
 
 
     companion object {
+        @JvmStatic
+        fun show(director: IDirector, parent: SMView?, x: Float, y: Float, size: Float, duration: Float, delay: Float): RingWave {
+            return show(director, parent, x, y, size, duration, delay, null)
+        }
+        @JvmStatic
+        fun show(director: IDirector, parent: SMView?, x: Float, y: Float, size: Float, duration: Float, delay: Float, color: Color4F?): RingWave {
+            return show(director, parent, x, y, size, duration, delay, color, false)
+        }
+        @JvmStatic
+        fun show(director: IDirector, parent: SMView?, x: Float, y: Float, size: Float, duration: Float, delay: Float, color: Color4F?, forever: Boolean): RingWave {
+            val wave = RingWave(director)
+            if (wave.initWithParam(size, duration, delay, color, forever)) {
+                if (parent!=null) {
+                    parent.addChild(wave)
+                    wave.setPosition(x, y)
+                }
+            }
 
+            return wave
+        }
+    }
+
+    fun setWaveColor(color: Color4F?) {
+        if (color!=null) {
+            _circle.setLineColor(color)
+        }
     }
 
     fun initWithParam(size: Float, duration: Float, delay: Float, color: Color4F?, forever: Boolean): Boolean {
@@ -37,11 +61,28 @@ class RingWave(director: IDirector) : SMView(director) {
         }
         _circle.setAlpha(0f)
 
-//        val wave = EaseOut
+        var action: Action
 
-        val action: Action
+        val wave = EaseOut.create(getDirector(), WaveCircleActionCreate(getDirector(), duration, _circle, size), 0.2f)!!
 
+        if (_forever) {
+            var reqAction:RepeatForever
+            if (delay>0f) {
+                reqAction = RepeatForever.create(getDirector(), Sequence.create(getDirector(), DelayTime.create(getDirector(), delay), wave, DelayTime.create(getDirector(), 0.1f), null))!!
+            } else {
+                reqAction = RepeatForever.create(getDirector(), Sequence.create(getDirector(), wave, DelayTime.create(getDirector(), 0.1f), null))!!
+            }
+            runAction(reqAction)
+        } else {
+            if (delay>0f) {
+                action = Sequence.create(getDirector(), DelayTime.create(getDirector(), delay), wave, null)!!
+            } else {
+                action = wave
+            }
+            runAction(action)
+        }
 
+        return true
     }
 
     fun WaveCircleActionCreate(director: IDirector, duration: Float, shape: SMShapeView, size: Float): WaveCircleAction {

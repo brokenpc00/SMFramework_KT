@@ -207,7 +207,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
 
     // cell이 처음 나타날때 애니메이션을 위한 callback (willDisplayCell...같은 역할)
     interface InitFillWithCells {
-        open fun onInitFillWithCells(tableView: SMTableView?)
+        fun onInitFillWithCells(tableView: SMTableView?)
     }
 
     var onInitFillWithCells: InitFillWithCells? = null
@@ -218,7 +218,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
     }
 
     open fun getColumnCount(): Int {
-        return getContainerCount() as Int
+        return getContainerCount().toInt()
     }
 
     // page view에서
@@ -229,7 +229,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
         if (_forceJumpPage) {
             return false
         }
-        val currentPage: Int = (_scroller!!.getNewScrollPosition() / pageSize) as Int
+        val currentPage = (_scroller!!.getNewScrollPosition() / pageSize).toInt()
         val info: ColumnInfo = _column!![0]!!
         if (pageNo == currentPage) {
             return false
@@ -388,14 +388,14 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
                 val cursor: Cursor = Cursor(info.getViewFirstCursor())
                 var i: Int = 0
                 while (i < numChild) {
-                    var child: SMView? = getChildAt(col, i)
+                    var child: SMView = getChildAt(col, i)!!
                     val item: Item = cursor.getItem()!!
                     if (item._reload) {
                         // cell reload
                         item._reload = false
 
                         // child를 없애고 다시 만든다.
-                        removeChild(col, child!!)
+                        removeChild(col, child)
                         _reuseScrapper._internalReuseType = -1
                         _reuseScrapper._internalReuseNode = null
                         child = cellForRowAtIndexPath!!.cellForRowAtIndexPath(item._indexPath)
@@ -428,13 +428,12 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
                         onCellResizeCallback?.onCellResizeCallback(child, item._newSize)
                     }
                     val location: Float = startLocation + cursor.getLocation()
-
-                    onPositionCell(child!!, location, false)
-                    child!!.setLocalZOrder(cursor.getPosition())
+                    onPositionCell(child, location, false)
+                    child.setLocalZOrder(cursor.getPosition())
                     i++
                     cursor.inc(false)
                 }
-                lastLocation = max(lastLocation, info.getLastCursor().getLocation())
+                lastLocation = lastLocation.coerceAtLeast(info.getLastCursor().getLocation())
             }
         }
         lastLocation += startLocation
@@ -446,7 +445,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
         }
         if (_refreshView != null && _refreshState != RefreshState.NONE) {
             if (isVertical()) {
-                _refreshView!!.setPositionX(startLocation - _refreshView!!.getContentSize().height)
+                _refreshView!!.setPositionY(startLocation)
             } else {
                 _refreshView!!.setPositionX(startLocation - _refreshView!!.getContentSize().width)
             }
@@ -498,12 +497,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
                             //Delete중인 상단 child는 hold (Animation이 진행되어야 하기 때문에)
                             removeChildAndHold(col, item._tag, child, false)
                         } else {
-                            removeChildAndReuseScrap(
-                                col,
-                                item._reuseType,
-                                child,
-                                SMTableView.CLEANUP_FLAG
-                            )
+                            removeChildAndReuseScrap(col, item._reuseType, child, CLEANUP_FLAG)
                         }
                         info.retreatViewFirst()
                     } else {
@@ -516,8 +510,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
             numChild = getChildrenCount(col)
             if (numChild > 0) {
                 for (i in numChild - 1 downTo 0) {
-                    val cursor: Cursor = Cursor(info.getViewLastCursor(-1))
-                    //                    Cursor cursor = info.getViewLastCursor(-1);
+                    val cursor = Cursor(info.getViewLastCursor(-1))
                     val child: SMView? = getChildAt(col, i)
                     if (child != null && startLocation + cursor.getLocation() >= containerSize + _preloadPadding) {
                         val item: Item = cursor.getItem()!!
@@ -530,12 +523,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
                                 stopAndCompleteChildAction(item._tag)
                                 item._tag = 0
                             }
-                            removeChildAndReuseScrap(
-                                col,
-                                item._reuseType,
-                                child,
-                                SMTableView.CLEANUP_FLAG
-                            )
+                            removeChildAndReuseScrap(col, item._reuseType, child, SMTableView.CLEANUP_FLAG)
                             info.retreatViewLast()
                         }
                     } else {
@@ -572,7 +560,6 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
         var scrollLocation: Float = _firstMargin + _innerScrollMargin - scrollPosition
         var limitLocation: Float = containerSize + _preloadPadding - scrollLocation
         if (_headerView != null) {
-            scrollLocation += headerSize
             limitLocation -= headerSize
         }
         var child: SMView? = null
@@ -607,14 +594,12 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
 
             // 다음 추가할 아이템을 찾는다.
             info = _column!![column]!!
-            var indexPath: IndexPath? = null
-            if (info.isAtLast()) {
+            val indexPath = if (info.isAtLast()) {
                 // 이전에 생성된 아이템 없음 => 추가
-                indexPath = IndexPath(0, column, lastIndex)
-                lastIndex++
+                IndexPath(0, column, lastIndex++)
             } else {
                 // 이전에 생성된 아이템 있음.
-                indexPath = IndexPath(info.getViewLastCursor().getIndexPath())
+                IndexPath(info.getViewLastCursor().getIndexPath())
             }
             _reuseScrapper._internalReuseType = -1
             _reuseScrapper._internalReuseNode = null
@@ -644,19 +629,12 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
                 if (_hintIsFixedSize) {
                     childSize = _hintFixedChildSize
                 } else {
-                    childSize =
-                        if (isVertical()) child.getContentSize().height else child.getContentSize().width
+                    childSize = if (isVertical()) {child.getContentSize().height} else {child.getContentSize().width}
                 }
             }
 
             // cursor 진행
-            val cursor: Cursor = Cursor(
-                info.advanceViewLast(
-                    IndexPath(0, column, indexPath.getIndex()),
-                    _reuseScrapper._internalReuseType,
-                    childSize
-                )
-            )
+            val cursor = Cursor(info.advanceViewLast(IndexPath(0, column, indexPath.getIndex()), _reuseScrapper._internalReuseType, childSize))
             //            Cursor cursor = info.advanceViewLast(new IndexPath(0, column, indexPath.getIndex()), _reuseScrapper._internalReuseType, childSize);
             if (reload) {
                 info.resizeCursor(cursor)
@@ -680,16 +658,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
             childSize = item._size
 
             // view 내 위치 참조
-            val locationInView: Float =
-                headerSize + _firstMargin + _innerScrollMargin - scrollPosition
-            //            if (isVertical()) {
-////                onPositionCell(child, _contentSize.height - locationInView - cursor.getLastLocation(), true);
-//
-//                float cellPosY = locationInView + cursor.getLocation();
-//                onPositionCell(child, cellPosY, true);
-//            } else {
-//                onPositionCell(child, locationInView + cursor.getLocation(), true);
-//            }
+            val locationInView: Float = headerSize + _firstMargin + _innerScrollMargin - scrollPosition
             onPositionCell(child, locationInView + cursor.getLocation(), true)
             addChild(column, child)
             if (_reuseScrapper._internalReuseNode != null && _reuseScrapper._internalReuseNode === child) {
@@ -761,10 +730,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
                     info.resizeCursor(cursor)
                 }
             }
-            if (BuildConfig.DEBUG && child==null) {
-                error("Assertion Failed")
-            }
-            if (child!!.getParent() != null) {
+            if (child.getParent() != null) {
                 // 이미 attach 되어 있다???
                 break
             }
@@ -1758,14 +1724,8 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
             }
 
             // view 안의 위치
-            val locationInView: Float =
-                headerSize + _firstMargin - _scroller!!.getScrollPosition()
-            if (isVertical()) {
-//                onPositionCell(child, _contentSize.height - (cursor.getLastLocation() + locationInView), true);
+            val locationInView: Float = headerSize + _firstMargin - _scroller!!.getScrollPosition()
                 onPositionCell(child, cursor.getLocation() + locationInView, true)
-            } else {
-                onPositionCell(child, cursor.getLocation() + locationInView, true)
-            }
             addChild(column, child)
             if (_reuseScrapper._internalReuseNode != null && _reuseScrapper._internalReuseNode === child) {
                 _reuseScrapper.popBack(_reuseScrapper._internalReuseType)

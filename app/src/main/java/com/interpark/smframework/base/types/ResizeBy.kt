@@ -6,9 +6,9 @@ import com.brokenpc.smframework.base.types.ActionInterval
 import com.brokenpc.smframework.base.types.Size
 
 class ResizeBy(director: IDirector): ActionInterval(director) {
-    protected val _sizeDelta = Size.ZERO
-    protected val _startSize = Size.ZERO
-    protected val _previousSize = Size.ZERO
+    protected val _sizeDelta = Size(Size.ZERO)
+    protected val _startSize = Size(Size.ZERO)
+    protected val _previousSize = Size(Size.ZERO)
 
     companion object {
         @JvmStatic
@@ -43,6 +43,6 @@ class ResizeBy(director: IDirector): ActionInterval(director) {
 
     override fun startWithTarget(target: SMView?) {
         super.startWithTarget(target)
-        _previousSize.set(_startSize.set(target?.getContentSize()?: Size.ZERO))
+        _previousSize.set(_startSize.set(target?.getContentSize()?: Size(Size.ZERO)))
     }
 }

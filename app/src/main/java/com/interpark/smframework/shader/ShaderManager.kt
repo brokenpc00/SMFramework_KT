@@ -108,6 +108,7 @@ class ShaderManager {
             program = loadProgram(director, type)
             if (program!=null) {
                 _programSet.put(type.getKey(), program)
+                program?.complete()
             }
         }
         _activeProgram = program

@@ -5,6 +5,7 @@ import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.Action
 import com.brokenpc.smframework.base.types.ActionInterval
 import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.view.SMButton
 import java.nio.channels.FileLock
 
 class StateTransitionAction(director:IDirector) : ActionInterval(director) {
@@ -40,7 +41,10 @@ class StateTransitionAction(director:IDirector) : ActionInterval(director) {
 
     override fun update(t: Float) {
         if (_target!=null) {
-//            val btn = _target
+            if (_target is SMButton) {
+                val button = _target as SMButton
+                button.onUpdateStateTransition(_toState, if (_toState==SMView.STATE.PRESSED) {t} else {1-t})
+            }
         }
     }
 }

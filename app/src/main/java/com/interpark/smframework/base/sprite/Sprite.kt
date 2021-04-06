@@ -61,7 +61,7 @@ open class Sprite : DrawNode {
         texture.incRefCount()
     }
 
-    open fun initTextureCoordQuard() {
+    protected open fun initTextureCoordQuard() {
         val uv:FloatArray = floatArrayOf(
             _tx/_tw, _ty/_th,
             (_tx+_contentSize.width)/_tw, _ty/_th,

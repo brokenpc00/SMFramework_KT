@@ -18,13 +18,11 @@ class CanvasTexture(director: IDirector, key:String, width:Int, height:Int) : Te
     }
 
     init {
-        _width = width
-        _originalWidth = width
-        _height = height
-        _originalHeight = height
+        _width = width.also { _originalWidth = it }
+        _height = height.also { _originalHeight = it }
     }
 
-    open fun setRenderTarget(director: IDirector, turnOn:Boolean):Boolean {
+    fun setRenderTarget(director: IDirector, turnOn:Boolean):Boolean {
         _renderTargetEnabled = true
 
         if (turnOn) {

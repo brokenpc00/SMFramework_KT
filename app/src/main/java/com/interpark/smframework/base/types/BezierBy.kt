@@ -8,8 +8,8 @@ import kotlin.math.pow
 
 open class BezierBy(director: IDirector) : ActionInterval(director) {
     protected val _config = ccBezierConfig()
-    protected val _startPosition = Vec2.ZERO
-    protected val _previousPosition = Vec2.ZERO
+    protected val _startPosition = Vec2(Vec2.ZERO)
+    protected val _previousPosition = Vec2(Vec2.ZERO)
 
     companion object {
         @JvmStatic

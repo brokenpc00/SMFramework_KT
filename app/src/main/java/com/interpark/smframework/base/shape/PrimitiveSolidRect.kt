@@ -23,7 +23,7 @@ class PrimitiveSolidRect(director:IDirector) : DrawNode(director) {
         _numVertices = 4
 
         val v:FloatArray = floatArrayOf(
-            -1f, 1f,
+            -1f, -1f,
             1f, -1f,
             -1f, 1f,
             1f, 1f

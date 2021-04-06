@@ -8,7 +8,7 @@ import com.brokenpc.smframework.base.types.ActionInterval
 import com.brokenpc.smframework.base.types.Vec2
 
 class GenieAction(director: IDirector) : ActionInterval(director) {
-    private var _removeAnchor = Vec2.ZERO
+    private var _removeAnchor = Vec2(Vec2.ZERO)
     private var _sprite:Sprite? = null
 
     companion object {

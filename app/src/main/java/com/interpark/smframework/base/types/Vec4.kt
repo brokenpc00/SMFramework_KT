@@ -6,23 +6,17 @@ import kotlin.math.sqrt
 
 class Vec4 : Cloneable {
     companion object {
-        val MATH_FLOAT_SMALL:Float = 1.0e-37f
-        val MATH_TOLERANCE:Float = 2e-37f
-        val MATH_PIOVER2:Float = 1.57079632679489661923f
-        val MATH_EPSILON:Float = 0.000001f
+        @JvmField val MATH_FLOAT_SMALL:Float = 1.0e-37f
+        @JvmField val MATH_TOLERANCE:Float = 2e-37f
+        @JvmField val MATH_PIOVER2:Float = 1.57079632679489661923f
+        @JvmField val MATH_EPSILON:Float = 0.000001f
 
-        val ZERO: Vec4 =
-            Vec4(0f, 0f, 0f, 0f)
-        val ONE: Vec4 =
-            Vec4(1f, 1f, 1f, 1f)
-        val UNIT_X: Vec4 =
-            Vec4(1f, 0f, 0f, 0f)
-        val UNIT_Y: Vec4 =
-            Vec4(0f, 1f, 0f, 0f)
-        val UNIT_Z: Vec4 =
-            Vec4(0f, 0f, 1f, 0f)
-        val UNIT_W: Vec4 =
-            Vec4(0f, 0f, 0f, 1f)
+        val ZERO = Vec4(0f, 0f, 0f, 0f)
+        val ONE = Vec4(1f, 1f, 1f, 1f)
+        val UNIT_X = Vec4(1f, 0f, 0f, 0f)
+        val UNIT_Y = Vec4(0f, 1f, 0f, 0f)
+        val UNIT_Z = Vec4(0f, 0f, 1f, 0f)
+        val UNIT_W = Vec4(0f, 0f, 0f, 1f)
 
 
         @JvmStatic

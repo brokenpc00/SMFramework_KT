@@ -61,6 +61,9 @@ class ZoomController(director:IDirector) : Ref(director) {
         _needUpdate = false
     }
 
+    fun getPan(): Vec2 {return Vec2(_panX, _panY)
+    }
+
     fun getPanX():Float {return _panX}
     fun getPanY():Float {return _panY}
     fun getZoom():Float {return _zoom}
@@ -77,7 +80,7 @@ class ZoomController(director:IDirector) : Ref(director) {
     fun setZoom(zoom:Float) {_zoom=zoom}
     fun setViewSize(viewSize:Size) {_viewSize.set(viewSize)}
 
-    fun udpateAspect(viewSize: Size, contentSize:Size, fillMode:Boolean) {
+    fun updateAspect(viewSize: Size, contentSize:Size, fillMode:Boolean) {
         _aspect = (contentSize.width/contentSize.height) / (viewSize.width/viewSize.height)
         setViewSize(viewSize)
         _fillMode = fillMode

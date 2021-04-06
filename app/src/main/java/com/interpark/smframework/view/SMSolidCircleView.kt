@@ -5,15 +5,18 @@ import com.brokenpc.smframework.base.shape.PrimitiveCircle
 import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.Mat4
 
-class SMSolidCircleView : SMShapeView {
-    protected var _bgShape:PrimitiveCircle
+open class SMSolidCircleView : SMShapeView {
+    private var _bgShape:PrimitiveCircle
     constructor(director:IDirector) : super(director) {
         _bgShape = PrimitiveCircle(director)
-        _aaWidth = 0.015f
     }
 
     constructor(director:IDirector, color:Color4F) : super(director) {
         _bgShape = PrimitiveCircle(director)
+        _aaWidth = 0.015f
+    }
+
+    init {
         _aaWidth = 0.015f
     }
 

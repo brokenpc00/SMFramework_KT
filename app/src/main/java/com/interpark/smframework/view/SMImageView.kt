@@ -26,19 +26,19 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
     private var _imageScale: Float = 1f
     private var _spriteScaleX: Float = 1f
     private var _spriteScaleY: Float = 1f
-    private var _spritePosition: Vec2 = Vec2.ZERO
-    private var _imageRect: Rect = Rect.ZERO
+    private var _spritePosition: Vec2 = Vec2(Vec2.ZERO)
+    private var _imageRect: Rect = Rect(Rect.ZERO)
     private var _clipping: Boolean = false
 
-    private val _realSpritePosition = Vec2.ZERO
-    private val _newSpritePosition = Vec2.ZERO
-    private val _animSpritePosition = Vec2.ZERO
-    private val _animSpriteSize = Vec2.ZERO
+    private val _realSpritePosition = Vec2(Vec2.ZERO)
+    private val _newSpritePosition = Vec2(Vec2.ZERO)
+    private val _animSpritePosition = Vec2(Vec2.ZERO)
+    private val _animSpriteSize = Vec2(Vec2.ZERO)
 
-    private val _realSpriteSize = Size.ZERO
-    private val _newSpriteSize = Size.ZERO
-    private val _newAnimSpritePosition = Size.ZERO
-    private val _newAnimSpriteSize = Size.ZERO
+    private val _realSpriteSize = Size(Size.ZERO)
+    private val _newSpriteSize = Size(Size.ZERO)
+    private val _newAnimSpritePosition = Size(Size.ZERO)
+    private val _newAnimSpriteSize = Size(Size.ZERO)
 
     private val _downloadTask = ArrayList<ImageDownloadTask>()
 
@@ -196,7 +196,7 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
             _sprite = sprite
 
             if (_sprite!=null) {
-                _imageRect = Rect(Vec2.ZERO, _sprite!!.getContentSize() ?: Size.ZERO)
+                _imageRect = Rect(Vec2.ZERO, _sprite!!.getContentSize())
 
                 registerUpdate(FLAG_CONTENT_SIZE)
             }
@@ -426,7 +426,8 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
         }
     }
 
-    override fun removeDownloadTask(task: ImageDownloadTask) {
+    override fun removeDownloadTask(task: ImageDownloadTask?) {
+        if (task==null) return
         synchronized(_downloadTask) {
             val iter = _downloadTask.listIterator()
             while (iter.hasNext()) {
@@ -453,7 +454,8 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
         }
     }
 
-    override fun addDownloadTask(task: ImageDownloadTask): Boolean {
+    override fun addDownloadTask(task: ImageDownloadTask?): Boolean {
+        if (task==null) return false
         synchronized(_downloadTask) {
             val iter = _downloadTask.listIterator()
             while (iter.hasNext()) {

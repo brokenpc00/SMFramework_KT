@@ -7,11 +7,11 @@ import kotlin.math.sqrt
 
 class Vec3 : Cloneable {
     companion object {
-        val MATH_FLOAT_SMALL:Float = 1.0e-37f
-        val MATH_TOLERANCE:Float = 2e-37f
-        val MATH_PIOVER2:Float = 1.57079632679489661923f
-        val MATH_EPSILON:Float = 0.000001f
-        val ZERO:Vec3 = Vec3(0f, 0f, 0f)
+        val MATH_FLOAT_SMALL = 1.0e-37f
+        val MATH_TOLERANCE = 2e-37f
+        val MATH_PIOVER2 = 1.57079632679489661923f
+        val MATH_EPSILON = 0.000001f
+        val ZERO = Vec3(0f, 0f, 0f)
 
         @JvmStatic
         fun fromColor(color:Int): Vec3 {
@@ -243,7 +243,7 @@ class Vec3 : Cloneable {
         this.z /= r
     }
 
-    fun equals(v: Vec3):Boolean {
+    fun equal(v: Vec3):Boolean {
         return this.x==v.x&&this.y==v.y&&this.z==v.z
     }
 

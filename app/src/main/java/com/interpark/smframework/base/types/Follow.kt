@@ -11,15 +11,15 @@ open class Follow(director: IDirector): Action(director) {
     protected var _followView:SMView? = null
     protected var _boundarySet = false
     protected var _boundaryFullyCovered = false
-    protected var _halfScreenSize = Vec2.ZERO
-    protected var _fullScreenSize = Vec2.ZERO
+    protected var _halfScreenSize = Vec2(Vec2.ZERO)
+    protected var _fullScreenSize = Vec2(Vec2.ZERO)
     protected var _leftBoundary = 0f
     protected var _rightBoundary = 0f
     protected var _topBoundary = 0f
     protected var _bottomBoundary = 0f
     protected var _offsetX = 0f
     protected var _offsetY = 0f
-    protected var _worldRect = Rect.ZERO
+    protected var _worldRect = Rect(Rect.ZERO)
 
     companion object {
         @JvmStatic

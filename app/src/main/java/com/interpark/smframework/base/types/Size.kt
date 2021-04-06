@@ -4,8 +4,7 @@ import kotlin.math.roundToInt
 
 class Size : Cloneable {
     companion object {
-        val ZERO: Size =
-            Size(0.0f, 0.0f)
+        val ZERO = Size(0.0f, 0.0f)
     }
 
     var width: Float = 0.0f
