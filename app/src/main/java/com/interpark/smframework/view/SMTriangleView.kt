@@ -2,6 +2,7 @@ package com.interpark.smframework.view
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.shape.PrimitiveTriangle
+import com.brokenpc.smframework.base.types.Mat4
 import com.brokenpc.smframework.base.types.Size
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.view.SMShapeView
@@ -54,5 +55,11 @@ class SMTriangleView(director: IDirector): SMShapeView(director) {
         _bgShape = PrimitiveTriangle(getDirector(), width, height)
         setTriangle(lineWidth, p0, p1, p2)
         return true
+    }
+
+    override fun draw(m: Mat4, flags: Int) {
+        super.draw(m, flags)
+
+        _bgShape?.drawTriangle(_p0, _p1, _p2, _aaWidth)
     }
 }

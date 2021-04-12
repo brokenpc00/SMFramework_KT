@@ -6,6 +6,7 @@ import com.brokenpc.smframework.base.DrawNode
 import com.brokenpc.smframework.base.texture.Texture
 import com.brokenpc.smframework.base.shape.ShapeConstant.LineType
 import com.brokenpc.smframework.shader.ProgSprite
+import com.brokenpc.smframework.shader.ShaderManager
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -21,22 +22,28 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: F
     private var _thickness:Float
 
     companion object {
-        const val CONER_SEGMENT:Int = 10
-        const val NUM_VERTICES:Int = (CONER_SEGMENT+1)*2*4+2
+        const val CORNER_SEGMENT:Int = 10
+        const val NUM_VERTICES:Int = (CORNER_SEGMENT+1)*2*4+2
     }
 
     init {
-        _thickness = thickness
-        _lineType = lineType
         _texture = texture
-        _drawMode = GLES20.GL_TRIANGLE_STRIP
+
+        setProgramType(ShaderManager.ProgramType.Sprite)
+
         _numVertices = NUM_VERTICES
+        _drawMode = GLES20.GL_TRIANGLE_STRIP
+        _lineType = lineType
+        _thickness = thickness
 
         _vertices = FloatArray(NUM_VERTICES*2)
         _texcoord = FloatArray(NUM_VERTICES*2)
 
         _v = ByteBuffer.allocateDirect(_vertices.size*4).order(ByteOrder.nativeOrder()).asFloatBuffer()
         _v!!.position(0)
+
+        _uv = ByteBuffer.allocateDirect(_texcoord.size*4).order(ByteOrder.nativeOrder()).asFloatBuffer()
+        _uv.position(0)
 
         for (i in 0 until NUM_VERTICES*2 step 4) {
             _texcoord[i] = 0.5f
@@ -45,25 +52,24 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: F
             _texcoord[i+3] = 1f
         }
 
-        _uv = ByteBuffer.allocateDirect(_texcoord.size*4).order(ByteOrder.nativeOrder()).asFloatBuffer()
         _uv.put(_texcoord)
         _uv.position(0)
     }
 
     fun setSize(width:Float, height:Float, cornerRadius:Float) {
-        val inR:Float = cornerRadius - _thickness/2f
-        val outR:Float = cornerRadius + _thickness/2f
+        val inR = cornerRadius - _thickness/2f
+        val outR = cornerRadius + _thickness/2f
         val w = width/2-cornerRadius
         val h = height/2-cornerRadius
-        val textureRoundLength:Float = ((0.25f*2*cornerRadius*PI)/_thickness).toFloat()
-        val textureWidthLength:Float = ((width-2*cornerRadius)/_thickness)
+        val textureRoundLength = ((0.25f*2*cornerRadius*PI)/_thickness).toFloat()
+        val textureWidthLength = ((width-2*cornerRadius)/_thickness)
         val textureHeightLength = ((height-2*cornerRadius)/_thickness)
-        val stepRoundLength = textureRoundLength / CONER_SEGMENT
+        val stepRoundLength = textureRoundLength / CORNER_SEGMENT
 
         var index = 0
         var tu = 0f
-        for (i in 0 .. CONER_SEGMENT) {
-            val rad:Float = (i* PI*0.5f/ CONER_SEGMENT).toFloat()
+        for (i in 0 .. CORNER_SEGMENT) {
+            val rad:Float = (i* PI*0.5f/ CORNER_SEGMENT).toFloat()
             val ca:Float = cos(rad)
             val sa:Float = sin(rad)
 
@@ -80,44 +86,40 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: F
             _vertices[index+3] = -h-outB
             if (_lineType==LineType.DASH) {
                 tu += i*stepRoundLength
-                _texcoord[index] = tu
-                _texcoord[index+2] = tu
+                _texcoord[index] = tu.also { _texcoord[index+2] = it }
             }
 
             // right top
-            index += (CONER_SEGMENT+1)*4
+            index += (CORNER_SEGMENT+1)*4
             _vertices[index] = w+inB
             _vertices[index+1] = -h-inA
             _vertices[index+2] = w+outB
             _vertices[index+3] = -h-outA
             if (_lineType==LineType.DASH) {
                 tu += textureWidthLength+textureRoundLength
-                _texcoord[index] = tu
-                _texcoord[index+2] = tu
+                _texcoord[index] = tu.also { _texcoord[index+2] = it }
             }
 
             // right bottom
-            index += (CONER_SEGMENT+1)*4
+            index += (CORNER_SEGMENT+1)*4
             _vertices[index] = w+inA
             _vertices[index+1] = h+inB
             _vertices[index+2] = w+outA
             _vertices[index+3] = h+outB
             if (_lineType==LineType.DASH) {
                 tu += textureHeightLength+textureRoundLength
-                _texcoord[index] = tu
-                _texcoord[index+2] = tu
+                _texcoord[index] = tu.also { _texcoord[index+2] = it }
             }
 
             // left bottom
-            index += (CONER_SEGMENT+1)*4
+            index += (CORNER_SEGMENT+1)*4
             _vertices[index] = -w-inB
             _vertices[index+1] = h+inA
             _vertices[index+2] = -w-outB
             _vertices[index+3] = h+outA
             if (_lineType==LineType.DASH) {
                 tu += textureWidthLength+textureRoundLength
-                _texcoord[index] = tu
-                _texcoord[index+2] = tu
+                _texcoord[index] = tu.also { _texcoord[index+2] = it }
             }
         }
         index += 4
@@ -127,8 +129,7 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: F
         _vertices[index+3] = _vertices[3]
         if (_lineType==LineType.DASH) {
             tu += textureHeightLength
-            _texcoord[index] = tu
-            _texcoord[index+2] = tu
+            _texcoord[index] = tu.also { _texcoord[index+2] = it }
         }
 
         _v!!.put(_vertices)

@@ -26,7 +26,7 @@ class AppConst {
 
     object SIZE {
         const val EDGE_SWIPE_MENU = 80.0f
-        const val EDGE_SWIPE_TOP = 130.0f
+        const val EDGE_SWIPE_TOP = 240.0f
         const val LEFT_SIDE_MENU_WIDTH = 550.0f
         const val TOP_MENU_HEIGHT = 130.0f
         const val TOP_MENU_BUTTON_HEIGHT = 240.0f

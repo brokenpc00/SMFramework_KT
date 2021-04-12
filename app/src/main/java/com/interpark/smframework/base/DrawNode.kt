@@ -49,7 +49,7 @@ open abstract class DrawNode(director: IDirector) : Ref(director) {
     fun getTexture():Texture? {return _texture}
     fun setTexture(texture: Texture) {_texture = texture}
     fun setProgramType(programType: ProgramType) {_programType = programType}
-    protected fun useProgram():ShaderProgram? {return _director!!.useProgram(_programType!!)}
+    protected fun useProgram():ShaderProgram? {return _director?.useProgram(_programType!!)}
 
     fun initRect(director: IDirector, w:Float, h:Float, cx:Float, cy:Float) {
         this._director = director

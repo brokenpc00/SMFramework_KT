@@ -22,12 +22,9 @@ class SlideInToTop(director:IDirector) : BaseSceneTransition(director) {
     }
 
     override fun getInAction(): FiniteTimeAction? {
-        _inScene!!.setPosition(
-            getDirector().getWinSize().width / 2,
-            getDirector().getWinSize().height + getDirector().getWinSize().height / 2
-        )
+        _inScene!!.setPosition(getDirector().getWinSize().width / 2, getDirector().getWinSize().height + getDirector().getWinSize().height / 2)
 
-        return EaseCubicActionOut.create(getDirector(), MoveTo.create(getDirector(), _duration, Vec2(getDirector().getWinSize().width/2f, getDirector().getWidth().hashCode()/2f))!!)
+        return EaseCubicActionOut.create(getDirector(), MoveTo.create(getDirector(), _duration, Vec2(getDirector().getWinSize().width/2f, getDirector().getWinSize().height/2f))!!)
     }
 
     override fun isNewSceneEnter(): Boolean {

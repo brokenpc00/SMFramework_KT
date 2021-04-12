@@ -355,7 +355,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
                 if (position<=0) {
                     dismiss.cancel()
                     _dismissSwipe!!.reset()
-                } else if (position>_dismissSwipe!!.getContentSize().height) {
+                } else if (position>=_dismissSwipe!!.getContentSize().height) {
                     dismiss.finish()
                     _dismissSwipe!!.reset()
                 } else {
@@ -366,12 +366,12 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         }
 
         if (dismiss!=null) {
-            dismiss.getOutScene()!!.setPositionY(position+ getDirector().getWinSize().height/2)
-            val progress:Float = (dismiss.getOutScene()!!.getPositionY() - getDirector().getWinSize().height/2) / getDirector().getWinSize().height
+            dismiss.getOutScene()!!.setPositionY(position+ getDirector().getWinSize().height/2f)
+//            val progress:Float = (dismiss.getOutScene()!!.getPositionY() - getDirector().getWinSize().height/2) / getDirector().getWinSize().height
 
-            val minusScale:Float = 0.6f*progress
-            val newScale:Float = 1.6f - minusScale
-            dismiss.getInScene()!!.setScale(newScale)
+//            val minusScale:Float = 0.6f*progress
+//            val newScale:Float = 1.6f - minusScale
+//            dismiss.getInScene()!!.setScale(newScale)
         }
     }
 
@@ -732,14 +732,15 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
 
             // for scale
             backScene.getOutScene()?.setPositionX(position+getDirector().getWinSize().width/2f)
+            backScene.getInScene()?.setPositionX(0.3f * (-_backSwipe!!.getContentSize().width + position) + getDirector().getWinSize().width/2f)
 
-            val inScene:SMScene? = backScene.getInScene()
-            if (inScene!=null) {
-                inScene.setPositionX(0.3f * (-_backSwipe!!.getContentSize().width + position) + getDirector().getWinSize().width/2f)
-                val progress:Float = backScene.getLastProgress()
-                val minusScale = 0.6f * progress
+//            val inScene:SMScene? = backScene.getInScene()
+//            if (inScene!=null) {
+//                inScene.setPositionX(0.3f * (-_backSwipe!!.getContentSize().width + position) + getDirector().getWinSize().width/2f)
+//                val progress:Float = backScene.getLastProgress()
+//                val minusScale = 0.6f * progress
 //                inScene.setScale(1.6f-minusScale)
-            }
+//            }
         }
     }
 

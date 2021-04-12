@@ -20,21 +20,32 @@ class SMRoundRectView : SMShapeView {
         _lineTexture = director.getTextureManager().createTextureFromResource(R.raw.dash_line_2)
         _round = 0f
     }
-    constructor(director: IDirector, tickness:Float, type:LineType) : super(director) {
+    constructor(director: IDirector, thickness:Float, type:LineType) : super(director) {
+        _lineTexture = director.getTextureManager().createTextureFromResource(R.raw.dash_line_2)
+        _round = 0f
+
         _type = type
-        _lineWidth = tickness*10.0f
+        _lineWidth = thickness*10.0f
         _bgShape = PrimitiveRoundRectLine(director, _lineTexture, _lineWidth, type)
     }
-    constructor(director: IDirector, tickness:Float, type:LineType, round: Float) : super(director) {
+    constructor(director: IDirector, thickness:Float, type:LineType, round: Float) : super(director) {
+        _lineTexture = director.getTextureManager().createTextureFromResource(R.raw.dash_line_2)
+        _round = 0f
+
         _type = type
-        _lineWidth = tickness*10.0f
+        _lineWidth = thickness*10.0f
         _bgShape = PrimitiveRoundRectLine(director, _lineTexture, _lineWidth, type)
+
         _round = round
     }
-    constructor(director: IDirector, tickness:Float, type:LineType, round: Float, color: Color4F) : super(director) {
+    constructor(director: IDirector, thickness:Float, type:LineType, round: Float, color: Color4F) : super(director) {
+        _lineTexture = director.getTextureManager().createTextureFromResource(R.raw.dash_line_2)
+        _round = 0f
+
         _type = type
-        _lineWidth = tickness*10.0f
+        _lineWidth = thickness*10.0f
         _bgShape = PrimitiveRoundRectLine(director, _lineTexture, _lineWidth, type)
+
         _round = round
         setColor(color)
     }
@@ -48,15 +59,15 @@ class SMRoundRectView : SMShapeView {
         }
 
         @JvmStatic
-        fun create(director: IDirector, tickness: Float, type: LineType, round: Float):SMRoundRectView {
-            val view = SMRoundRectView(director, tickness, type, round)
+        fun create(director: IDirector, thickness: Float, type: LineType, round: Float):SMRoundRectView {
+            val view = SMRoundRectView(director, thickness, type, round)
             view.init()
             return view
         }
 
         @JvmStatic
-        fun create(director: IDirector, tickness: Float, type: LineType, round: Float, color: Color4F):SMRoundRectView {
-            val view = SMRoundRectView(director, tickness, type, round, color)
+        fun create(director: IDirector, thickness: Float, type: LineType, round: Float, color: Color4F):SMRoundRectView {
+            val view = SMRoundRectView(director, thickness, type, round, color)
             view.init()
             return view
         }

@@ -112,10 +112,10 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
 
                     cell.setOnClickListener(object : OnClickListener{
                         override fun onClick(view: SMView?) {
-                            val inddex = view!!.getTag()
+                            val index = view!!.getTag()
 
                             val params = SceneParams()
-                            params.putInt("SCENE_TYPE", inddex)
+                            params.putInt("SCENE_TYPE", index)
                             params.putString("MENU_NAME", _menuNames[index])
                             val scene = ListScene.create(getDirector(), _menuBar, params)
                             val left = SlideInToLeft.create(getDirector(), 0.3f, scene)
