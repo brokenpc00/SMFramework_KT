@@ -29,13 +29,6 @@ open class TransitionScene(director:IDirector) : SMScene(director) {
         }
     }
 
-    init {
-        val size = Size(director.getWidth().toFloat(), director.getHeight().toFloat())
-        setAnchorPoint(Vec2.MIDDLE)
-        setPosition(Vec2(size.width/2, size.height/2))
-        setContentSize(size)
-    }
-
     enum class Orientation {
         LEFT_OVER,
         RIGHT_OVER,
@@ -50,6 +43,11 @@ open class TransitionScene(director:IDirector) : SMScene(director) {
 
     fun initWithDuration(t:Float, scene: SMScene): Boolean {
         if (super.init()) {
+            val size = Size(getDirector().getWidth().toFloat(), getDirector().getHeight().toFloat())
+            setAnchorPoint(Vec2.MIDDLE)
+            setPosition(size.width/2f, size.height/2f)
+            setContentSize(size)
+
             _duration = t
 
             _inScene = scene
@@ -78,19 +76,19 @@ open class TransitionScene(director:IDirector) : SMScene(director) {
             _inScene?.visit(m, flags)
         } else {
             _inScene?.visit(m, flags)
-            _outScene?.visit()
+            _outScene?.visit(m, flags)
         }
     }
 
     fun finish() {
         // clean up
         _inScene?.setVisible(true)
-        _inScene?.setPosition(getDirector().getWinSize().width/2, getDirector().getWinSize().height/2)
+        _inScene?.setPosition(getDirector().getWinSize().width/2f, getDirector().getWinSize().height/2f)
         _inScene?.setScale(1f)
         _inScene?.setRotation(0f)
 
         _outScene?.setVisible(false)
-        _outScene?.setPosition(getDirector().getWinSize().width/2, getDirector().getWinSize().height/2)
+        _outScene?.setPosition(getDirector().getWinSize().width/2f, getDirector().getWinSize().height/2f)
         _outScene?.setScale(1f)
         _outScene?.setRotation(0f)
 

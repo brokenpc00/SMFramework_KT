@@ -1,10 +1,10 @@
 package com.brokenpc.smframework.base.types
 
 import android.util.SparseArray
+import androidx.core.util.valueIterator
 import com.brokenpc.app.BuildConfig
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
-import kotlin.math.sign
 
 open class ActionManager(director: IDirector) : Ref(director) {
 
@@ -20,8 +20,11 @@ open class ActionManager(director: IDirector) : Ref(director) {
         return _targets.get(target.hashCode())
     }
 
-    fun addAction(action: Action, target: Ref, paused: Boolean) {
-        var element: tHashElement? = findHashElement(target)
+    fun addAction(action: Action?, target: Ref?, paused: Boolean) {
+        if (action==null || target==null) return
+
+        var element = findHashElement(target)
+
         if (element == null) {
             element = tHashElement()
             element.paused = paused
@@ -44,17 +47,19 @@ open class ActionManager(director: IDirector) : Ref(director) {
 
     fun removeAllActions() {
         for (i in 0 until _targets.size()) {
-            val element:tHashElement = _targets[i]
-            val target:Ref? = element.target
-            if (target!=null) {
-                removeallActionsFromTarget(target)
+            val element = _targets[i]
+            if (element.target!=null) {
+                removeallActionsFromTarget(element.target)
             }
         }
         _targets.clear()
     }
 
-    fun removeallActionsFromTarget(target: Ref) {
-        val element:tHashElement? = _targets.get(target.hashCode())
+    fun removeallActionsFromTarget(target: Ref?) {
+
+        if (target==null) return
+
+        val element = _targets.get(target.hashCode())
         if (element!=null) {
             if (element.actions.contains(element.currentAction)) {
                 element.currentActionSalvaged = true
@@ -74,11 +79,13 @@ open class ActionManager(director: IDirector) : Ref(director) {
         _targets.remove(element.target.hashCode())
     }
 
-    fun removeAction(action: Action) {
-        val target: Ref = action.getOriginTarget()!!
-        val element: tHashElement? = findHashElement(target)
+    fun removeAction(action: Action?) {
+        if (action==null) return
+
+        val target = action.getOriginTarget()!!
+        val element = findHashElement(target)
         if (element!=null) {
-            val index:Int = element.actions.indexOf(action)
+            val index = element.actions.indexOf(action)
             if (index!=-1) {
                 removeActionAtIndex(index, element)
             }
@@ -86,7 +93,7 @@ open class ActionManager(director: IDirector) : Ref(director) {
     }
 
     fun removeActionAtIndex(index:Int, element:tHashElement):tHashElement {
-        val action:Action? = element.actions[index]
+        val action = element.actions[index]
         if (action!=null && action==element.currentAction) {
             element.currentActionSalvaged = true
         }
@@ -117,12 +124,11 @@ open class ActionManager(director: IDirector) : Ref(director) {
             return
         }
 
-        val element:tHashElement? = findHashElement(target)
+        val element = findHashElement(target)
         if (element!=null) {
-            val limit:Int = element.actions.size
+            val limit = element.actions.size
             for (i in 0 until limit) {
-                val action:Action? = element.actions[i]
-                if (action?.getTag()==tag && action.getOriginTarget() ==target) {
+                if (element.actions[i]?.getTag()==tag && element.actions[i]?.getOriginTarget()==target) {
                     removeActionAtIndex(i, element)
                     break
                 }
@@ -139,14 +145,14 @@ open class ActionManager(director: IDirector) : Ref(director) {
             return
         }
 
-        val element:tHashElement? = findHashElement(target)
+        val element = findHashElement(target)
 
         if (element!=null) {
-            var limit:Int = element.actions.size
-            var i:Int = 0
+            var limit = element.actions.size
+            var i = 0
             while (i<limit) {
-                var action:Action? = element.actions[i]
-                if (action?.getTag()==tag && action.getOriginTarget()==target) {
+                var action = element.actions[i]
+                if (action?.getTag()==tag && action?.getOriginTarget()==target) {
                     removeActionAtIndex(i, element)
                     --limit
                 } else {
@@ -168,9 +174,9 @@ open class ActionManager(director: IDirector) : Ref(director) {
         val element:tHashElement? = findHashElement(target)
         if (element!=null) {
             var limit:Int = element.actions.size
-            var i:Int = 0
+            var i = 0
             while (i<limit) {
-                var action:Action? = element.actions[i]
+                var action = element.actions[i]
 
                 if (action?.getFlags()?.and(flags)!=0L && action?.getOriginTarget()==target) {
                     removeActionAtIndex(i, element)
@@ -187,13 +193,12 @@ open class ActionManager(director: IDirector) : Ref(director) {
             return null
         }
 
-        val element:tHashElement? = findHashElement(target)
+        val element = findHashElement(target)
         if (element!=null) {
-            val limit:Int = element.actions.size
+            val limit = element.actions.size
             for (i in 0 until limit) {
-                val action:Action? = element.actions.get(i)
-                if (action?.getTag()==tag) {
-                    return action
+                if (element.actions[i]?.getTag()==tag) {
+                    return element.actions[i]
                 }
             }
         }
@@ -202,14 +207,14 @@ open class ActionManager(director: IDirector) : Ref(director) {
     }
 
     fun getNumberOfRunningActionsInTarget(target: Ref): Int {
-        val element:tHashElement? = findHashElement(target)
+        val element = findHashElement(target)
         return element?.actions?.size ?: 0
     }
 
     fun getNumberOfRunningActions(): Int {
-        var count: Int = 0
+        var count = 0
         for (i in 0 until _targets.size()) {
-            val element:tHashElement = _targets[i]
+            val element = _targets[i]
             count += element.actions.size
         }
 
@@ -219,12 +224,12 @@ open class ActionManager(director: IDirector) : Ref(director) {
     fun getNumberOfRunningActionsInTargetByTag(target: Ref, tag: Int): Int {
         if (tag==Action.INVALID_TAG) return 0
 
-        val element:tHashElement? = findHashElement(target)
+        val element = findHashElement(target)
         if (element==null || element.actions.size==0) return 0
 
-        var count:Int = 0
+        var count = 0
         for (i in 0 until element.actions.size) {
-            val action:Action? = element.actions[i]
+            val action = element.actions[i]
             if (action?.getTag()==tag) {
                 ++count
             }
@@ -235,18 +240,18 @@ open class ActionManager(director: IDirector) : Ref(director) {
 
     fun pauseTarget(target: Ref) {
         val element:tHashElement? = findHashElement(target)
-        element?.paused = true
+        if (element!=null) element.paused = true
     }
 
     fun resumeTarget(target: Ref) {
-        val element:tHashElement? = findHashElement(target)
-        element?.paused = false
+        val element = findHashElement(target)
+        if (element!=null) element.paused = false
     }
 
     fun pauseAllRunningActions():ArrayList<Ref?> {
         val idsWidthActions:ArrayList<Ref?> = ArrayList()
         for (i in 0 until _targets.size()) {
-            val element:tHashElement = _targets.valueAt(i)
+            val element = _targets.valueAt(i)
             if (!element.paused) {
                 element.paused = true
                 idsWidthActions.add(element.target)
@@ -265,39 +270,41 @@ open class ActionManager(director: IDirector) : Ref(director) {
     }
 
     fun update(dt:Float) {
-        for (i in 0 until _targets.size()) {
-            val elt:tHashElement = _targets.valueAt(i)
+
+        val values = _targets.valueIterator()
+        while (values.hasNext()) {
+            val elt = values.next()
             _currentTarget = elt
             _currentTargetSalvaged= false
 
             if (!_currentTarget?.paused!!) {
-                for (i in 0 until _currentTarget?.actions?.size!!) {
-                    _currentTarget?.currentAction = _currentTarget?.actions?.get(i)
-                    if (_currentTarget?.currentAction==null) {
-                        continue
-                    }
+                _currentTarget!!.actionIndex = 0
+                while (_currentTarget!!.actionIndex < _currentTarget!!.actions.size) {
+                    _currentTarget!!.currentAction =
+                        _currentTarget!!.actions[_currentTarget!!.actionIndex]
+                    if (_currentTarget!!.currentAction == null) continue
 
-                    _currentTarget?.currentActionSalvaged = false
+                    _currentTarget!!.currentActionSalvaged = false
+                    _currentTarget!!.currentAction!!.step(dt)
 
-                    _currentTarget?.currentAction?.step(dt)
-
-                    if (_currentTarget?.currentAction?.isDone()!!) {
-                        _currentTarget?.currentAction?.stop()
-                        val action:Action = _currentTarget?.currentAction!!
+                    if (_currentTarget!!.currentAction!!.isDone()) {
+                        _currentTarget!!.currentAction!!.stop()
+                        val action = _currentTarget!!.currentAction!!
+                        _currentTarget!!.currentAction = null
                         removeAction(action)
                     }
 
-                    _currentTarget?.currentAction = null
-                }
+                    _currentTarget!!.currentAction = null
+                    _currentTarget!!.actionIndex++
             }
 
-            if (_currentTargetSalvaged && _currentTarget?.actions?.size==0) {
+                if (_currentTargetSalvaged && _currentTarget!!.actions.size == 0) {
                 deleteHashElement(_currentTarget!!)
-            } else if (_currentTargetSalvaged && _currentTarget?.target!=null) {
+                } else if (_currentTargetSalvaged && _currentTarget!!.target != null) {
                 deleteHashElement(_currentTarget!!)
             }
         }
-
+        }
         _currentTarget = null
     }
 }

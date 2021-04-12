@@ -356,7 +356,7 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
         }
 
         if (_menuTransform==null) {
-            _menuTransform = MenuTransform(getDirector())
+            _menuTransform = MenuTransformCreate(getDirector())
             _menuTransform?.setMenuBar(this)
             _menuTransform?.setTag(AppConst.TAG.ACTION_MENUBAR_MENU)
         }
@@ -1094,6 +1094,12 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
         }
     }
 
+    fun MenuTransformCreate(director: IDirector): MenuTransform {
+        val action = MenuTransform(director)
+        action.initWithDuration(0f)
+        return action
+    }
+
     inner class MenuTransform(director: IDirector): DelayBaseAction(director) {
         var isFirstMenu = true
         var _from:ArrayList<Vec2> = ArrayList(4)
@@ -1108,13 +1114,34 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
 
         fun setMenuBar(menuBar: MenuBar) {_menuBar = menuBar}
 
+        override fun initWithDuration(d: Float): Boolean {
+
+            for (i in 0..3) {
+                _from.add(Vec2(Vec2.ZERO))
+                _to.add(Vec2(Vec2.ZERO))
+            }
+
+            return super.initWithDuration(d)
+        }
+
         override fun onStart() {
             var lineWidth = 1f
 
+            if (_from.size==0) {
+                for (i in 0..3) {
+                    _from.add(Vec2(Vec2.ZERO))
+                }
+            }
+            if (_to.size==0) {
+                for (i in 0..3) {
+                    _to.add(Vec2(Vec2.ZERO))
+                }
+            }
+
             for (i in 0 until 4) {
                 val line = _menuBar._menuLine[i]
-                _from.add(line.getFromPosition())
-                _to.add(line.getToPosition())
+                _from[i].set(line.getFromPosition())
+                _to[i].set(line.getToPosition())
 
                 if (_menuButtonType==MenuType.MENU && isFirstMenu) {
                     _diameter[i] = 1f
@@ -1226,8 +1253,8 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
 
         override fun onEnd() {
             for (i in 0 until 4) {
-                _menuBar._menuLine[i].setVisible(_fromType!=MenuType.MENU)
-                _menuBar._menuCircle[i].setVisible(_fromType==MenuType.MENU)
+                _menuBar._menuLine[i].setVisible(_menuButtonType!=MenuType.MENU)
+                _menuBar._menuCircle[i].setVisible(_menuButtonType==MenuType.MENU)
             }
             if (_menuButtonType==MenuType.MENU) {
                 _menuBar.showAlarmBadge()
@@ -1248,7 +1275,7 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
                 _menuBar._menuLine[i].setVisible(_fromType!=MenuType.MENU)
                 _menuBar._menuCircle[i].setVisible(_fromType==MenuType.MENU)
             }
-            if (_menuButtonType==MenuType.MENU) {
+            if (_fromType==MenuType.MENU) {
                 _menuBar.showAlarmBadge()
             }
 
@@ -1355,16 +1382,16 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
                 _menuBar?._textLabel!![_toIndex]?.setAlpha(dt)
             } else {
                 var t = tweenfunc.cubicEaseOut(dt)
-                if (t<0) t = 0f
-                if (t>1) t = 1f
+                if (t<0f) t = 0f
+                if (t>1f) t = 1f
 
                 // out text... 0.4 ~ 0.8
                 var outValue = 0f
                 var outStart = 0.4f
                 var outEnd = 0.8f
-                if (t>=outStart && t<=outEnd) {
+                if (t in outStart..outEnd) {
                     outValue = t - outStart
-                    if (outValue>0) {
+                    if (outValue>0f) {
                         outValue /= 0.4f
         }
     }
@@ -1377,7 +1404,7 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
                 var inEnd = 0.9f
                 if (t>=inStart && t<inEnd) {
                     inValue = t - inStart
-                    if (inValue>0) {
+                    if (inValue>0f) {
                         inValue /= 0.4f
                     }
                 }
@@ -1469,20 +1496,19 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
                     label.setVisible(false)
                     for (i in 0 until label.getSeparateCount()) {
                         val letter = label.getLetter(i)
-                        letter?.setScale(0f)
-                        letter?.setAlpha(0f)
+                        letter?.setScale(1f)
+                        letter?.setAlpha(1f)
                     }
                 } else {
                     label.setVisible(true)
                 }
             }
 
-            if (_menuBar?._textLabel!![1-_toIndex]!=null) {
                 _menuBar?._textLabel!![1-_toIndex]?.clearSeparate()
-            }
-            if (_menuBar?._textLabel!![_toIndex]!=null) {
                 _menuBar?._textLabel!![_toIndex]?.clearSeparate()
-            }
+
+            _menuBar?._textLabel!![1-_toIndex]?.setAlpha(0f)
+            _menuBar?._textLabel!![_toIndex]?.setAlpha(1f)
         }
 
         fun onCancel() {
@@ -1536,13 +1562,14 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
                     _gap = AppConst.Config.TEXT_TRANS_DURATION + AppConst.Config.TEXT_TRANS_DELAY * len
                 }
 
+
                 label = _menuBar?._textLabel!![textIndex]
                 if (label!=null) {
                     if (label.getSeparateCount()>0) {
                         for (i in 0 until label.getSeparateCount()) {
                             val letter = label.getLetter(i)
                             letter?.setScale(0f)
-                            letter?.setAlpha(0f)
+//                            letter?.setAlpha(0f)
                         }
                         duration = AppConst.Config.TEXT_TRANS_DURATION + AppConst.Config.TEXT_TRANS_DELAY * label.getSeparateCount() + 0.1f
                     } else {

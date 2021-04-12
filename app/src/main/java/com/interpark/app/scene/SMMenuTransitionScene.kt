@@ -6,11 +6,11 @@ import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.Size
 import com.interpark.app.menu.MenuBar
 
-class SMMenuTransitionScene(director: IDirector): SMScene(director) {
+open class SMMenuTransitionScene(director: IDirector): SMScene(director) {
     protected var _menuBar:MenuBar? = null
     protected var _menuTitle:String = ""
     protected var _prevMenuTitle:String = ""
-    protected val _menuBarButton:ArrayList<MenuBar.MenuType> = ArrayList(2)
+    protected val _menuBarButton:ArrayList<MenuBar.MenuType> = arrayListOf(MenuBar.MenuType.NONE, MenuBar.MenuType.NONE)
     protected var _prevManuBarButton:ArrayList<MenuBar.MenuType> = ArrayList()
     protected var _swipeStarted: Boolean = false
     protected val _menubarListener:MenuBar.MenuBarListener = object : MenuBar.MenuBarListener {
@@ -35,15 +35,11 @@ class SMMenuTransitionScene(director: IDirector): SMScene(director) {
     }
 
 
-    init {
-
-    }
-
-    fun onMenuBarClick(view: SMView?): Boolean {
+    open fun onMenuBarClick(view: SMView?): Boolean {
         return false
     }
 
-    fun onMenuBarTouch() {
+    open fun onMenuBarTouch() {
 
     }
 
@@ -59,7 +55,6 @@ class SMMenuTransitionScene(director: IDirector): SMScene(director) {
         _fromMenuType = menuBar.getMenuButtonType()
 
         _menuBar = menuBar
-        if (_menuBar!=null) {
             val layer = getDirector().getSharedLayer(IDirector.SharedLayer.BETWEEN_SCENE_AND_UI)
             if (layer!=null) {
                 _menuBar!!.changeParent(layer)
@@ -85,8 +80,6 @@ class SMMenuTransitionScene(director: IDirector): SMScene(director) {
 
                 return true
             }
-        }
-
         return false
     }
 

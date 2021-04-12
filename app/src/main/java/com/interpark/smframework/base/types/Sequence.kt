@@ -9,8 +9,8 @@ open class Sequence(director:IDirector) : ActionInterval(director) {
     protected var _last:Int = 0
 
     init {
-        _actions[0] = null
-        _actions[1] = null
+        _actions.add(null)
+        _actions.add(null)
     }
 
 
@@ -22,7 +22,7 @@ open class Sequence(director:IDirector) : ActionInterval(director) {
             var prev:FiniteTimeAction? = action1
 
             return if (actions.size==1) createWithTwoActions(director, prev, ExtraAction.create(director)) else {
-                for (i in 0 until actions.size-1) {
+                for (i in 1 until actions.size-1) {
                     val now:FiniteTimeAction? = actions[i]
                     prev = createWithTwoActions(director, prev, now)
                 }

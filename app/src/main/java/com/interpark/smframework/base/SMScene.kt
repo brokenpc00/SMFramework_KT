@@ -45,7 +45,7 @@ open class SMScene(director: IDirector) : SMView(director), BackPressable {
         IN, OUT, PAUSE, RESUME, SWIPE_IN, SWIPE_OUT
     }
 
-    protected fun initWithSceneParams(param: SceneParams?, type: SwipeType): Boolean {
+    protected open fun initWithSceneParams(param: SceneParams?, type: SwipeType): Boolean {
         val size = Size(getDirector().getWidth(), getDirector().getHeight())
         setContentSize(size)
 

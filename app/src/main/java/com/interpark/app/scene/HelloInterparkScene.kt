@@ -1,11 +1,11 @@
 package com.brokenpc.app.scene
 
-import android.util.Log
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.SideMenu
 import com.brokenpc.smframework.base.SMScene
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.SceneParams
+import com.brokenpc.smframework.base.transition.SlideInToLeft
 import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.IndexPath
 import com.brokenpc.smframework.base.types.Vec2
@@ -13,6 +13,7 @@ import com.brokenpc.smframework.util.AppConst
 import com.brokenpc.smframework.view.SMLabel
 import com.brokenpc.smframework.view.SMTableView
 import com.interpark.app.menu.MenuBar
+import com.interpark.app.scene.ListScene
 import com.interpark.smframework.view.SMRoundLine
 
 class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.CellForRowAtIndexPath, SMTableView.NumberOfRowsInSection, SMView.OnClickListener {
@@ -94,7 +95,6 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
                 var cell = _tableView.dequeueReusableCellWithIdentifier(cellID)
                 if (cell==null) {
                     cell = create(getDirector(), 0, 0f, 0f, s.width, 250f)!!
-                    cell.setBackgroundColor(Color4F.WHITE)
 
                     val str = _menuNames[index]
                     val title = SMLabel.create(getDirector(), str, 80f, MakeColor4F(0x222222, 1f))
@@ -108,12 +108,18 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
                     line.line(40f, 246f, s.width-40f, 246f)
                     line.setLengthScale(1f)
                     cell.addChild(line)
-
                     cell.setTag(index)
 
                     cell.setOnClickListener(object : OnClickListener{
                         override fun onClick(view: SMView?) {
-                            Log.i("LOG", "[[[[[ click item : ${view?.getTag()}")
+                            val inddex = view!!.getTag()
+
+                            val params = SceneParams()
+                            params.putInt("SCENE_TYPE", inddex)
+                            params.putString("MENU_NAME", _menuNames[index])
+                            val scene = ListScene.create(getDirector(), _menuBar, params)
+                            val left = SlideInToLeft.create(getDirector(), 0.3f, scene)
+                            getDirector().pushScene(left!!)
                         }
                     })
 
@@ -134,6 +140,7 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
         _contentView.addChild(_tableView)
         _tableView.setScissorEnable(true)
 
+        _contentView.setLocalZOrder(-10)
         return true
     }
 

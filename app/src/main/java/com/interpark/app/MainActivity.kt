@@ -26,18 +26,18 @@ class MainActivity : FragmentActivity(), ClassHelper.HelperListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val version:Int = Build.VERSION.SDK_INT
-        if (version>=13) {
-            var size:Point = Point()
-            display!!.getRealSize(size)
-            _displayRawWidth = size.x;
-            _displayRawHeight = size.y;
-        } else {
+//        val version:Int = Build.VERSION.SDK_INT
+//        if (version>=13) {
+//            var size:Point = Point()
+//            display!!.getRealSize(size)
+//            _displayRawWidth = size.x;
+//            _displayRawHeight = size.y;
+//        } else {
             var displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
             _displayRawWidth = displayMetrics.widthPixels
             _displayRawHeight = displayMetrics.heightPixels
-        }
+//        }
 
         _surfaceView = SMSurfaceView(this)
         addContentView(_surfaceView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))

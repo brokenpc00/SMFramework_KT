@@ -32,7 +32,7 @@ open class BaseSceneTransition(director:IDirector) : TransitionScene(director) {
     }
 
     companion object {
-        const val DEFAULT_DELAY_TIME:Float = 1f
+        const val DEFAULT_DELAY_TIME:Float = 0.1f
         const val MaxDimRatio:Float = 0.4f
 
     }
@@ -48,13 +48,13 @@ open class BaseSceneTransition(director:IDirector) : TransitionScene(director) {
 
     fun getOutScene():SMScene? {return _outScene}
 
-    fun BaseTransitionDraw(m:Mat4, flags:Int) {
+    fun baseTransitionDraw(m:Mat4, flags:Int) {
         if (isDimLayerEnable() && _lastProgress>0f && _dimLayer==null) {
             _dimLayer = SMSolidRectView(getDirector())
-            _dimLayer!!.setContentSize(Size(getDirector().getWidth().toFloat(), getDirector().getHeight().toFloat()))
-            _dimLayer!!.setAnchorPoint(Vec2(0.5f, 0.5f))
-            _dimLayer!!.setPosition(Vec2(getDirector().getWinSize().width/2, getDirector().getWinSize().height/2))
-            _dimLayer!!.setColor(0f, 0f, 0f, 0f)
+            _dimLayer!!.setContentSize(getDirector().getWidth().toFloat(), getDirector().getHeight().toFloat())
+            _dimLayer!!.setAnchorPoint(Vec2.MIDDLE)
+            _dimLayer!!.setPosition(getDirector().getWinSize().width/2, getDirector().getWinSize().height/2)
+            _dimLayer!!.setColor(Color4F.TRANSPARENT)
         }
 
         if (_isInSceneOnTop) {
@@ -66,7 +66,7 @@ open class BaseSceneTransition(director:IDirector) : TransitionScene(director) {
             }
 
             if (_lastProgress>0f && _lastProgress<1f && _dimLayer!=null) {
-                val alpha:Float = MaxDimRatio*_lastProgress
+                val alpha = MaxDimRatio*_lastProgress
                 _dimLayer!!.setColor(0f, 0f, 0f, alpha)
                 _dimLayer!!.visit(m, flags)
             }
@@ -100,7 +100,7 @@ open class BaseSceneTransition(director:IDirector) : TransitionScene(director) {
     }
 
     override fun draw(m: Mat4, flags: Int) {
-        BaseTransitionDraw(m, flags)
+        baseTransitionDraw(m, flags)
     }
 
     override fun onEnter() {
@@ -109,19 +109,24 @@ open class BaseSceneTransition(director:IDirector) : TransitionScene(director) {
         val inMenu:Boolean = _inScene!!.isMainMenuEnable()
         val outMenu:Boolean = _outScene!!.isMainMenuEnable()
 
-        if (outMenu) {
+        _menuDrawType = if (outMenu) {
             if (inMenu) {
-                _menuDrawType = MenuDrawType.OO
+                MenuDrawType.OO
             } else {
-                _menuDrawType = MenuDrawType.OX
+                MenuDrawType.OX
             }
         } else {
             if (inMenu) {
-                _menuDrawType = MenuDrawType.XO
+                MenuDrawType.XO
             } else {
-                _menuDrawType= MenuDrawType.XX
+                MenuDrawType.XX
             }
         }
+
+        if (_menuDrawType == MenuDrawType.OX || _menuDrawType == MenuDrawType.XO) {
+            // Todo another menu... Make If you need to another menu
+        }
+
 
         var inAction:FiniteTimeAction? = getInAction()
         var outAction:FiniteTimeAction? = getOutAction()
@@ -190,7 +195,7 @@ open class BaseSceneTransition(director:IDirector) : TransitionScene(director) {
         _inScene?.onEnterTransitionDidFinish()
 
         if (_menuDrawContainer!=null) {
-            // ToDo... 나중에 메뉴관련 추
+            // ToDo... 나중에 메뉴관련 추가
         }
     }
 

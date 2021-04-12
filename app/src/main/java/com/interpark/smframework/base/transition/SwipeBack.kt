@@ -121,15 +121,15 @@ open class SwipeBack(director:IDirector) : BaseSceneTransition(director) {
                 _outScene?.onTransitionComplete(Transition.RESUME, getTag())
                 _outScene?.onEnterTransitionDidFinish()
             } else {
-                _inScene?.onTransitionComplete(Transition.PAUSE, getTag())
-                _outScene?.onTransitionComplete(Transition.SWIPE_IN, getTag())
+                _outScene?.onTransitionComplete(Transition.RESUME, getTag())
+                _inScene?.onTransitionComplete(Transition.SWIPE_OUT, getTag())
                 _outScene?.onEnterTransitionDidFinish()
             }
             _inScene!!.onExit()
         } else {
             if (_isInSceneOnTop) {
-                _inScene?.onTransitionComplete(Transition.SWIPE_IN, getTag())
                 _outScene?.onTransitionComplete(Transition.PAUSE, getTag())
+                _inScene?.onTransitionComplete(Transition.SWIPE_IN, getTag())
             } else {
                 _outScene?.onTransitionComplete(Transition.SWIPE_OUT, getTag())
                 _inScene?.onTransitionComplete(Transition.RESUME, getTag())

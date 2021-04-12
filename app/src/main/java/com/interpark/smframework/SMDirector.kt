@@ -332,7 +332,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         if (getRunningScene() != null) {
             runnsingScene = getRunningScene()
             if (runnsingScene is TransitionScene) {
-                runnsingScene.setPositionX(getDirector().getWinSize().width/2)
+                runnsingScene.setPositionX(position+getDirector().getWinSize().width/2)
                 inScene = runnsingScene.getInScene()
             inScene?.setPositionX(getDirector().getWinSize().width/2)
             return
@@ -721,13 +721,24 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         }
 
         if (backScene!=null) {
-            backScene.getOutScene()?.setPositionX(position+ getDirector().getWinSize().width/2f)
+            // for origin
+//            backScene.getOutScene()?.setPositionX(position)
+//
+//            backScene.getInScene()?.setPositionX(0.3f * (-_backSwipe!!.getContentSize().width + position) + getDirector().getWinSize().width/2f)
+//            val inScene:SMScene? = backScene.getInScene()
+//            if (inScene!=null) {
+//                inScene.setPositionX(0.3f * (-_backSwipe!!.getContentSize().width + position))
+//            }
+
+            // for scale
+            backScene.getOutScene()?.setPositionX(position+getDirector().getWinSize().width/2f)
+
             val inScene:SMScene? = backScene.getInScene()
             if (inScene!=null) {
-                inScene.setPositionX(0.3f*(-_backSwipe!!.getContentSize().width + position) + getDirector().getWinSize().width/2f)
+                inScene.setPositionX(0.3f * (-_backSwipe!!.getContentSize().width + position) + getDirector().getWinSize().width/2f)
                 val progress:Float = backScene.getLastProgress()
                 val minusScale = 0.6f * progress
-                inScene.setScale(1.6f-minusScale)
+//                inScene.setScale(1.6f-minusScale)
             }
         }
     }

@@ -23,7 +23,7 @@ class SwipeDismiss(director:IDirector) : SwipeBack(director) {
             // exist drawable another menu!!!
         }
 
-        BaseTransitionDraw(m, flags)
+        baseTransitionDraw(m, flags)
     }
 
     override fun onEnter() {

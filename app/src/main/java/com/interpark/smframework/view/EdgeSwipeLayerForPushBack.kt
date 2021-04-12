@@ -7,6 +7,7 @@ import com.brokenpc.smframework.base.scroller.PageScroller
 import com.brokenpc.smframework.base.scroller.PageScroller.PAGE_CALLBACK
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.AppConst
+import kotlin.math.abs
 
 class EdgeSwipeLayerForPushBack(director:IDirector) : EdgeSwipeLayer(director) {
     companion object {
@@ -87,13 +88,6 @@ class EdgeSwipeLayerForPushBack(director:IDirector) : EdgeSwipeLayer(director) {
         }
     }
 
-//    public int SMViewDispatchTouchEvent (MotionEvent e) {
-//        return super.dispatchTouchEvent(e);
-//    }
-
-    //    public int SMViewDispatchTouchEvent (MotionEvent e) {
-    //        return super.dispatchTouchEvent(e);
-    //    }
     override fun dispatchTouchEvent(ev: MotionEvent): Int {
         val x = ev.x
         val y = ev.y
@@ -109,11 +103,9 @@ class EdgeSwipeLayerForPushBack(director:IDirector) : EdgeSwipeLayer(director) {
                 _lastMotionX = x
                 _lastMotionY = y
                 _firstMotionTime = getDirector().getGlobalTime()
-                _scrollEventTargeted = if (Math.abs(_curPosition) as Int <= 1 && x < _edgeSize) {
-                    true
-                } else {
-                    false
-                }
+
+                _scrollEventTargeted = abs(_curPosition).toInt() <= 1 && x < _edgeSize
+
                 if (_scrollEventTargeted) {
                     _scroller!!.onTouchDown()
                     _velocityTracker!!.addMovement(ev)
