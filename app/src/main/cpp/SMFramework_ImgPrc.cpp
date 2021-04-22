@@ -14,7 +14,6 @@
 #include <cstdlib>
 #include <cmath>
 
-
 typedef uint8_t BYTE;
 typedef uint32_t DWORD;
 typedef uint8_t BOOL;
@@ -48,8 +47,8 @@ typedef uint8_t BOOL;
 
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 
-extern "C" JNIEXPORT
-jstring JNICALL Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_stringFromJNI(
+extern "C" JNICALL
+jstring  Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_stringFromJNI(
         JNIEnv *env,
         jclass thiz
 )
@@ -58,7 +57,7 @@ jstring JNICALL Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing
     return env->NewStringUTF(hello.c_str());
 }
 
-extern "C" JNIEXPORT
+extern "C" JNICALL
 void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_callTest(
         JNIEnv *env,
         jclass thiz
@@ -67,7 +66,7 @@ void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_callTest(
     LOGD("[[[[[ callTest!!!!");
 }
 
-extern "C" JNIEXPORT
+extern "C" JNICALL
 void Java_com_brokenpc_smframework_nativeImageProcess_ImageProcessing_exitApp(
         JNIEnv *env,
         jclass thiz

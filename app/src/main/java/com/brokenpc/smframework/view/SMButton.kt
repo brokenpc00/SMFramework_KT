@@ -83,12 +83,12 @@ open class SMButton : UIContainerView {
 
     companion object {
         const val FLAG_CONTENT_SIZE:Long = 1
-        const val FLAG_BUTTON_COLOR:Long = FLAG_CONTENT_SIZE.shr(1)
-        const val FLAG_ICON_COLOR:Long = FLAG_CONTENT_SIZE.shr(2)
-        const val FLAG_TEXT_COLOR:Long = FLAG_CONTENT_SIZE.shr(3)
-        const val FLAG_OUTLINE_COLOR:Long = FLAG_CONTENT_SIZE.shr(4)
-        const val FLAG_TEXT_ICON_POSITION:Long = FLAG_CONTENT_SIZE.shr(5)
-        const val FLAG_SHAPE_STYLE:Long = FLAG_CONTENT_SIZE.shr(6)
+        const val FLAG_BUTTON_COLOR:Long = FLAG_CONTENT_SIZE.shl(1)
+        const val FLAG_ICON_COLOR:Long = FLAG_CONTENT_SIZE.shl(2)
+        const val FLAG_TEXT_COLOR:Long = FLAG_CONTENT_SIZE.shl(3)
+        const val FLAG_OUTLINE_COLOR:Long = FLAG_CONTENT_SIZE.shl(4)
+        const val FLAG_TEXT_ICON_POSITION:Long = FLAG_CONTENT_SIZE.shl(5)
+        const val FLAG_SHAPE_STYLE:Long = FLAG_CONTENT_SIZE.shl(6)
 
         @JvmStatic
         fun create(director: IDirector):SMButton {return create(director, 0)}
@@ -304,7 +304,7 @@ open class SMButton : UIContainerView {
                     viewColorChange(_buttonView!![0], null, _buttonColor!![0], _buttonColor!![1], t)
                 }
                 if (_outlineColor!=null) {
-                    viewColorChange(_buttonView!![0], null, _outlineColor!![0], _outlineColor!![1], t)
+                    viewColorChange(_buttonView!![1], null, _outlineColor!![0], _outlineColor!![1], t)
                 }
             }
         }
@@ -718,8 +718,8 @@ open class SMButton : UIContainerView {
 
             val size = _uiContainer.getContentSize()
             val center = Vec2(size.width/2f, size.height/2f)
-            val textPosition = center
-            val iconPosition = center
+            var textPosition = Vec2(center)
+            var iconPosition = Vec2(center)
             var width = 0f
             var height = 0f
 
@@ -776,9 +776,9 @@ open class SMButton : UIContainerView {
             unregisterUpdate(FLAG_TEXT_ICON_POSITION)
         }
 
-        if (isUpdate(FLAG_BUTTON_COLOR.or(FLAG_ICON_COLOR).or(FLAG_TEXT_COLOR).or(FLAG_OUTLINE_COLOR))) {
+        if (isUpdate(FLAG_BUTTON_COLOR or FLAG_ICON_COLOR or FLAG_TEXT_COLOR or FLAG_OUTLINE_COLOR)) {
             // ToDo... color update
-            unregisterUpdate(FLAG_BUTTON_COLOR.or(FLAG_ICON_COLOR).or(FLAG_TEXT_COLOR).or(FLAG_OUTLINE_COLOR))
+            unregisterUpdate(FLAG_BUTTON_COLOR or FLAG_ICON_COLOR or FLAG_TEXT_COLOR or FLAG_OUTLINE_COLOR)
         }
 
         if (isUpdate(FLAG_SHAPE_STYLE)) {

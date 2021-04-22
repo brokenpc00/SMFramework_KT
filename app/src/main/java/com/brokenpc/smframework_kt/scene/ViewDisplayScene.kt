@@ -125,6 +125,10 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         _viewType = _sceneParam?.getInt("VIEW_TYPE")?:0
 
         when (_viewType) {
+            1 -> {
+                // zoom view
+                zoomDisplay()
+            }
             else -> {
                 imageDisplay()
             }
@@ -138,12 +142,13 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         val padding = 30f
         val buttonSize = AppConst.SIZE.MENUBAR_HEIGHT - padding * 2f
 
-        val bgHeight = buttonSize * 5
+        val bgHeight = buttonSize * 5f
 
         _mainImageView = SMImageView.create(getDirector(), "images/defaults2.jpg")
         if (_mainImageView==null) return
         _mainImageView!!.setContentSize(Size(s.width, s.height-bgHeight))
         _mainImageView!!.setPosition(Vec2.ZERO)
+        _mainImageView!!.setBackgroundColor(1f, 0f, 0f, 0.4f)
         _mainImageView!!.setScaleType(SMImageView.ScaleType.CENTER)
         _contentView.addChild(_mainImageView)
 
@@ -169,8 +174,8 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         })
         _gravityButton!!.setOnClickListener(object : OnClickListener{
             override fun onClick(view: SMView?) {
-                if (_imageButtonGravityType) {
-                    _imageButtonGravityType = false
+                if (!_imageButtonGravityType) {
+                    _imageButtonGravityType = true
                     setGravityButtonState()
                 }
             }
@@ -215,8 +220,7 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         fitCenterBtn.setText("FIT CENTER", fontSize)
         scaleBtns.add(fitCenterBtn)
 
-        for (i in 0 until scaleBtns.size) {
-            val btn = scaleBtns[i]
+        for (btn in scaleBtns) {
             btn.setButtonColor(STATE.NORMAL, Color4F.WHITE)
             btn.setButtonColor(STATE.PRESSED, Color4F.XEEEFF1)
 
@@ -288,17 +292,17 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
 
         posY = 15f
         val RT = SMButton.create(getDirector(), 6, SMButton.STYLE.SOLID_ROUNDEDRECT, s.width/3f*2f + 22f, posY + 8f, buttonWidth, buttonSize + 15f)
-        RT.setText("RT")
+        RT.setText("RT", fontSize)
         gravityBtns.add(RT)
 
         posY += buttonSize+30f
         val RC = SMButton.create(getDirector(), 7, SMButton.STYLE.SOLID_ROUNDEDRECT, s.width/3f*2f + 22f, posY + 8f, buttonWidth, buttonSize + 15f)
-        RC.setText("RC")
+        RC.setText("RC", fontSize)
         gravityBtns.add(RC)
 
         posY += buttonSize+30f
         val RB = SMButton.create(getDirector(), 8, SMButton.STYLE.SOLID_ROUNDEDRECT, s.width/3f*2f + 22f, posY + 8f, buttonWidth, buttonSize + 15f)
-        RB.setText("RB")
+        RB.setText("RB", fontSize)
         gravityBtns.add(RB)
 
         for (i in 0 until gravityBtns.size) {
@@ -385,6 +389,10 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
                 _gravitiBG!!.setVisible(false)
             }
         }
+    }
+
+    fun zoomDisplay() {
+
     }
 
     override fun onPageChangedCallback(view: SMPageView, page: Int) {

@@ -279,7 +279,7 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
     fun computeContentSize() {
         if (_sprite==null) return
 
-        val vsize = _uiContainer.getContentSize()
+        val vsize = Size(_uiContainer.getContentSize())
 
         if (vsize.width<=0 || vsize.height<=0) return
 
@@ -296,22 +296,17 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
                 scaleY = 1f
             }
             ScaleType.CENTER_INSIDE -> {
-                scaleX = (vsize.width / ssize.width).coerceAtMost(vsize.height / ssize.height)
-                    .coerceAtMost(
-                        1f
-                    )
-                scaleY = scaleX
+                scaleX = (vsize.width / ssize.width).coerceAtMost(vsize.height / ssize.height).coerceAtMost(1f).also { scaleY = it }
             }
             ScaleType.CENTER_CROP -> {
-                scaleX = (vsize.width / ssize.width).coerceAtLeast(vsize.height / ssize.height)
-                scaleY = scaleX
+                scaleX = (vsize.width / ssize.width).coerceAtLeast(vsize.height / ssize.height).also { scaleY = it }
             }
             ScaleType.FIT_XY -> {
                 scaleX = vsize.width / ssize.width
                 scaleY = vsize.height / ssize.height
             }
             else -> {
-                scaleX = (vsize.width/ssize.width).coerceAtMost(vsize.height / ssize.height)
+                scaleX = (vsize.width/ssize.width).coerceAtMost(vsize.height / ssize.height).also { scaleY = it }
             }
         }
 

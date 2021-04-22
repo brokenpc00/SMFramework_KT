@@ -23,9 +23,6 @@ class MainActivity : AppCompatActivity(), ClassHelper.HelperListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_main)
-
-//        val str =  ImageProcessing.stringFromJNI()
-
         // Example of a call to a native method
 //        findViewById<TextView>(R.id.sample_text).text = ImageProcessing.stringFromJNI()
 
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity(), ClassHelper.HelperListener {
     companion object {
         // Used to load the 'SMFramework_ImgPrc' library on application startup.
         init {
-            System.loadLibrary("SMFramework_ImgPrc")
+//            System.loadLibrary("SMFramework_ImgPrc")
         }
     }
 }

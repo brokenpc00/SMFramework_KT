@@ -228,5 +228,5 @@ open abstract class DrawNode(director: IDirector) : Ref(director) {
 
     protected var _programType:ProgramType? = null
     protected var _setColor:Boolean = false
-    protected var _color:Color4F = Color4F(1f, 1f, 1f, 1f)
+    protected var _color:Color4F = Color4F(1f, 1f, 1f, 0f)
 }

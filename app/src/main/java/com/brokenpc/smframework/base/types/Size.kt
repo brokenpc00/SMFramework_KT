@@ -29,13 +29,20 @@ class Size : Cloneable {
         this.height = height ?: 0f
     }
     constructor() {
-        Size(0.0f, 0.0f)
+        width = 0.0f
+        height = 0.0f
     }
     constructor(v: FloatArray) {
-        Size(v[0], v[1])
+        width = v[0]
+        height = v[1]
     }
     constructor(s: Size) {
-        Size(s.width, s.height)
+        this.width = s.width
+        this.height = s.height
+    }
+    constructor(v: Vec2) {
+        this.width = v.x
+        this.height = v.y
     }
 
     fun set(width: Float, height: Float) {

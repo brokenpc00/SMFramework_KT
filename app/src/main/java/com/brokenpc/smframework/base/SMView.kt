@@ -34,7 +34,6 @@ open class SMView : Ref {
     }
 
     init {
-//        setCascadeAlphaEnable(true)
         _parent = null
     }
 
@@ -422,7 +421,7 @@ open class SMView : Ref {
     protected var _rotationZ_Y:Float = 0.0f
     protected var _rotationQuat:Quaternion = Quaternion()
     protected var _cascadeColorEnabled:Boolean = false
-    protected var _cascadeAlphaEnabled:Boolean = false
+    protected var _cascadeAlphaEnabled:Boolean = true
 
     protected var _scaleX:Float = 1.0f
     protected var _scaleY:Float = 1.0f
@@ -749,7 +748,7 @@ open class SMView : Ref {
         _bgColor.set(color)
 
         if (_bgView==null) {
-            if (color.a==0f) return
+//            if (color.a==0f) return
             _bgView = SMSolidRectView.create(getDirector())
             _bgView!!.setContentSize(_contentSize)
             _bgView!!.setPosition(Vec2.ZERO)
@@ -2835,18 +2834,23 @@ open class SMView : Ref {
             if (_children.size>0) {
                 sortAllChildren()
 
-                for (i in 0 until _children.size) {
-                    val view:SMView = _children[i]
+                val size = _children.size
+                var i = 0
+                while (i<size) {
 
+                    val view = _children[i]
                     if (view._localZOrder<0) {
                         view.visit(_modelViewTransform, flags)
                     } else break
+
+                    i++
                 }
 
                 draw(_modelViewTransform, flags)
 
-                for (i in 0 until _children.size) {
-                    val child:SMView = _children[i]
+                val iter = _children.listIterator(i)
+                while (iter.hasNext()) {
+                    val child = iter.next()
                     child.visit(_modelViewTransform, flags)
                 }
             } else {

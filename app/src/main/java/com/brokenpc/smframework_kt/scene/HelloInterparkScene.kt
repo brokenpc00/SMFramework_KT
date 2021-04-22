@@ -10,6 +10,8 @@ import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.IndexPath
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.view.SMButton
+import com.brokenpc.smframework.view.SMImageView
 import com.brokenpc.smframework.view.SMLabel
 import com.brokenpc.smframework.view.SMTableView
 import com.interpark.app.menu.MenuBar
@@ -79,6 +81,23 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
         _menuNames.add("Controls.")
         _menuNames.add("Etcetera.")
 
+//        val btn = SMButton.create(getDirector(), 0, SMButton.STYLE.SOLID_ROUNDEDRECT, s.width/2 - 200f, s.height/2 - 80f, 400f, 160f)
+//        btn.setButtonColor(STATE.NORMAL, Color4F.XEEEFF1)
+//        btn.setButtonColor(STATE.PRESSED, Color4F.WHITE)
+//        btn.setText("버튼 테스트", 60f)
+//        btn.setTextColor(STATE.NORMAL, MakeColor4F(0x222222, 1.0f))
+//        btn.setTextColor(STATE.PRESSED, MakeColor4F(0xffe1a4, 1.0f))
+//        btn.setOutlineColor(STATE.NORMAL, MakeColor4F(0x222222, 1.0f))
+//        btn.setOutlineColor(STATE.PRESSED, MakeColor4F(0xffe1a4, 1.0f))
+//        btn.setOutlineWidth(4f)
+//        btn.setShapeCornerRadius(80f)
+//        _contentView.addChild(btn)
+
+//        val img = SMImageView.create(getDirector(), "images/defaults2.jpg")
+//        img.setContentSize(_contentView.getContentSize())
+//        img.setScaleType(SMImageView.ScaleType.CENTER)
+//        img.setBackgroundColor(1f, 0f, 0f, 0.4f)
+//        _contentView.addChild(img)
 
         _tableView = SMTableView.create(getDirector(), SMTableView.Orientation.VERTICAL, 0f, 0f, s.width, s.height)!!
         _tableView.setTag(999)

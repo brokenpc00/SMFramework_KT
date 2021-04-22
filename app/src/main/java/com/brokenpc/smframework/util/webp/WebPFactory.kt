@@ -2,15 +2,16 @@ package com.brokenpc.smframework.util.webp
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.brokenpc.smframework.nativeImageProcess.ImageProcessing
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 
 class WebPFactory {
+
+    init {
+    }
 
     companion object {
         @JvmStatic
@@ -80,37 +81,6 @@ class WebPFactory {
             return bitmap
         }
 
-//        @JvmStatic
-//        fun decodeByteArray(data: ByteArray?): Bitmap? {
-//            if (data==null) return null
-//
-//            return null
-////            if (data == null) return null
-////            var bitmap: Bitmap? = null
-////            val dimen = IntArray(2)
-////            if (nativeDecodeBounds(data, dimen)) {
-////                if (dimen[0] > 0 && dimen[1] > 0) {
-////                    bitmap = Bitmap.createBitmap(dimen[0], dimen[1], Bitmap.Config.ARGB_8888)
-////                    if (!nativeDecodeIntoBitmap(data, bitmap)) {
-////                        bitmap.recycle()
-////                        bitmap = null
-////                    }
-////                }
-////            }
-////            if (bitmap == null) {
-////                // 실패하면 BitmapFactory로 읽어본다.
-//////            Log.i("WebPFactory", "[[[[[ data length : " + data.length);
-////                bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-////                //            try {
-//////
-//////            } catch (Exception e) {
-////////                Log.i("WebPFactory", "[[[[[ " + ;)
-//////                e.printStackTrace();
-//////            }
-////            }
-////            return bitmap
-//        }
-
         @JvmStatic
         fun decodeByteArrayScaled(
             data: ByteArray?,
@@ -120,18 +90,6 @@ class WebPFactory {
             if (data == null || scaledWidth <= 0 || scaledHeight <= 0) return null
 
             return decodeByteArray(data, scaledWidth, scaledHeight)
-//            var bitmap =
-//                Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888)
-//            if (!nativeDecodeIntoBitmap(data, bitmap)) {
-//                bitmap!!.recycle()
-//                bitmap = null
-//            }
-//            if (bitmap == null) {
-//                // 실패하면 BitmapFactory로 읽어본다.
-//                bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-//                bitmap = getScaledBitmap(bitmap, scaledWidth, scaledHeight)
-//            }
-//            return bitmap
         }
 
         @JvmStatic
@@ -181,16 +139,6 @@ class WebPFactory {
             return bitmap
         }
 
-//        @JvmStatic
-//        fun decodeBounds(data: ByteArray?, size: IntArray?): Boolean {
-//            if (data != null && size != null && size.size >= 2) {
-//                if (nativeDecodeBounds(data, size)) {
-//                    return true
-//                }
-//            }
-//            return false
-//        }
-
         @JvmStatic
         fun decodeByteArray(encoded: ByteArray?): Bitmap? {
             if (encoded==null) return null
@@ -205,42 +153,8 @@ class WebPFactory {
             val width = intArrayOf(w)
             val height = intArrayOf(h)
 
-            val str = ImageProcessing.stringFromJNI()
-
-//            val decode = decodeRGBAnative(encoded, encoded.size.toLong(), width, height)
-
             return BitmapFactory.decodeByteArray(encoded, 0, encoded.size)
-
-//            if (decode==null || decode.size==0) {
-//                return BitmapFactory.decodeByteArray(encoded, 0, encoded.size)
-//            } else {
-//                val pixel: IntArray = IntArray(decode.size/4)
-//                ByteBuffer.wrap(decode).asIntBuffer().get(pixel)
-//                return Bitmap.createBitmap(pixel, width[0], height[0], Bitmap.Config.ARGB_8888)
-//            }
         }
-
-//        @JvmStatic
-//        external fun testJniCall(): String?
-//
-//        @JvmStatic
-//        external fun decodeRGBAnative(encoded: ByteArray?, encodedLength: Long, width: IntArray?, height: IntArray?): ByteArray?
-
-
-//        @JvmStatic
-//        private external fun nativeDecodeBuffer(data: ByteArray, dimen: IntArray): IntArray?
-//
-//        @JvmStatic
-//        private external fun nativeDecodeBounds(
-//            data: ByteArray,
-//            dimen: IntArray
-//        ): Boolean
-//
-//        @JvmStatic
-//        private external fun nativeDecodeIntoBitmap(
-//            data: ByteArray,
-//            bitmap: Bitmap?
-//        ): Boolean
 
     }
 
