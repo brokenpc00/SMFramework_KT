@@ -1,6 +1,7 @@
 package com.brokenpc.smframework.base.types
 
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 class Dynamics {
     constructor() {
@@ -63,12 +64,12 @@ class Dynamics {
         range: Float
     ): Boolean {
         val standingStill = abs(_velocity) < velocityTolerance
-//        val withinLimits = if (range == 1f) {
-//            _position - positionTolerance < _maxPosition && _position + positionTolerance > _minPosition
-//        } else {
-//            _position * range - positionTolerance < _maxPosition * range && _position * range + positionTolerance > _minPosition * range
-//        }
-        val withinLimits = ((_position*range - positionTolerance < _maxPosition*range)&&(_position*range + positionTolerance > _minPosition*range))
+        val withinLimits = if (range == 1f) {
+            (_position - positionTolerance < _maxPosition) && (_position + positionTolerance > _minPosition)
+        } else {
+            (_position * range - positionTolerance < _maxPosition * range) && (_position * range + positionTolerance > _minPosition * range)
+        }
+//        val withinLimits = ((_position*range - positionTolerance < _maxPosition*range)&&(_position*range + positionTolerance > _minPosition*range))
         return standingStill && withinLimits
     }
 
@@ -97,14 +98,14 @@ class Dynamics {
         _lastTime = now
     }
 
-    fun getDistanceToLimit(): Float {
-        var distanceToLimit = 0f
-        if (_position > _maxPosition) {
-            distanceToLimit = _maxPosition - _position
+    private fun getDistanceToLimit(): Float {
+        return if (_position > _maxPosition) {
+            _maxPosition - _position
         } else if (_position < _minPosition) {
-            distanceToLimit = _minPosition - _position
+            _minPosition - _position
+        } else {
+            0f
         }
-        return distanceToLimit
     }
 
     fun setFriction(friction: Float) {
@@ -113,17 +114,15 @@ class Dynamics {
 
     fun setSpring(stiffness: Float, dampingRatio: Float) {
         _stiffness = stiffness
-        _damping = dampingRatio * 2 * Math.sqrt(stiffness.toDouble()).toFloat()
+        _damping = dampingRatio * 2f * sqrt(stiffness)
     }
 
     fun calculateAcceleration(): Float {
-        val acceleration: Float
         val distanceFromLimit = getDistanceToLimit()
-        acceleration = if (distanceFromLimit != 0.0f) {
+        return if (distanceFromLimit != 0.0f) {
             distanceFromLimit * _stiffness - _damping * _velocity
         } else {
             -_friction * _velocity
         }
-        return acceleration
     }
 }

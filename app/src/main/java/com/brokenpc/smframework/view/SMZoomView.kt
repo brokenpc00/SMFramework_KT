@@ -270,15 +270,16 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
         return super.dispatchTouchEvent(event, view, false)
     }
 
-    override fun dispatchTouchEvent(event: MotionEvent): Int {
+    override fun dispatchTouchEvent(ev: MotionEvent): Int {
+
         if (_mode==Mode.UNDEFINED) {
-            val ret = super.dispatchTouchEvent(event)
+            val ret = super.dispatchTouchEvent(ev)
             if (ret== TOUCH_INTERCEPT) {
                 return ret
             }
         }
 
-        val gv = Vec2(event.x, event.y)
+        val gv = Vec2(ev.x, ev.y)
         val mm = Vec2(_paddingLeft, _paddingBottom)
 
         val point = Vec2(gv.x-mm.x, gv.y-mm.y)
@@ -290,9 +291,9 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
             _velocityTracker = VelocityTracker.obtain()
         }
 
-        _velocityTracker!!.addMovement(event)
+        _velocityTracker!!.addMovement(ev)
 
-        val action = event.action
+        val action = ev.action
         when (action.and(MotionEvent.ACTION_MASK)) {
             MotionEvent.ACTION_DOWN -> {
                 if (_panEnable) {
@@ -309,10 +310,10 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
                 if (_zoomEnable) {
-                    val point2 = Vec2(event.getX(1), event.getY(1))
+                    val point2 = Vec2(ev.getX(1), ev.getY(1))
                     point2.set(point2.x-_paddingLeft, point2.y-_paddingBottom)
 
-                    val distance = spacing(event)
+                    val distance = spacing(ev)
 
                     if (distance>0f) {
                         _prevDistance = distance
@@ -331,24 +332,25 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                if (_mode==Mode.ZOOM) {
+                when (_mode) {
+                    Mode.ZOOM -> {
                     // zoom in/out
-                    val point2 = Vec2(event.getX(1), event.getY(1))
-                    point2.set(point2.x - _paddingLeft, point2.y-_paddingBottom)
+                    val point2 = Vec2(ev.getX(1), ev.getY(1))
+                        point2.set(point2.x - _paddingLeft, point2.y - _paddingBottom)
 
-                    val midPoint = Vec2((point.x+point2.x)/2f, (point.y+point2.y)/2f)
+                        val midPoint = Vec2((point.x + point2.x) / 2f, (point.y + point2.y) / 2f)
 
                     x = midPoint.x
                     y = midPoint.y
 
-                    val dx = (x-_prevTouchX) / _innerSize.width
-                    val dy = (y-_prevTouchY) / _innerSize.height
+                        val dx = (x - _prevTouchX) / _innerSize.width
+                        val dy = (y - _prevTouchY) / _innerSize.height
 
                     _controller.pan(-dx, -dy)
 
-                    val distance = spacing(event)
+                    val distance = spacing(ev)
 
-                    val scale = (distance/_prevDistance) * _prevZoom
+                        val scale = (distance / _prevDistance) * _prevZoom
 
                     _controller.zoom(scale, x / _innerSize.width, y / _innerSize.height)
                     registerUpdate(FLAG_ZOOM_UPDATE)
@@ -358,8 +360,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
 
                     _prevTouchX = x
                     _prevTouchY = y
-
-                } else if (_mode==Mode.PAN) {
+                    }
+                    Mode.PAN -> {
                     // moving
 
                     val dx = (x - _prevTouchX) / _innerSize.width
@@ -375,13 +377,14 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                     _prevTouchX = x
                     _prevTouchY = y
 
-                } else {
+                    }
+                    else -> {
                     if (_panEnable) {
                         val scrollX = _initTouchX - x
                         val scrollY = _initTouchY - y
-                        val distance = sqrt(scrollX*scrollX+scrollY*scrollY)
+                            val distance = sqrt(scrollX * scrollX + scrollY * scrollY)
 
-                        if (distance>AppConst.Config.SCALED_TOUCH_SLOPE) {
+                            if (distance > AppConst.Config.SCALED_TOUCH_SLOPE) {
                             _mode = Mode.PAN
                             registerUpdate(FLAG_ZOOM_UPDATE)
                         }
@@ -394,26 +397,29 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                 _prevTouchY = y
                 }
             }
+            }
             MotionEvent.ACTION_POINTER_UP -> {
                 if (_mode==Mode.ZOOM) {
-                    val index = event.actionIndex
+                    val index = ev.actionIndex
                     if (index==0 || index==1) {
                         // just two finger allowed
                         _mode = Mode.PAN
                         val pt = if (index==1) {
-                            Vec2(event.getX(0) - _paddingLeft, event.getY(0) - _paddingBottom)
+                            Vec2(ev.getX(0) - _paddingLeft, ev.getY(0) - _paddingBottom)
                         } else {
-                            Vec2(event.getX(1) - _paddingLeft, event.getY(1) - _paddingBottom)
+                            Vec2(ev.getX(1) - _paddingLeft, ev.getY(1) - _paddingBottom)
                         }
 
-                        _initTouchX = pt.x.also { _prevTouchX = it }
-                        _initTouchY = pt.y.also { _prevTouchY = it }
+                        _initTouchX = pt.x
+                        _prevTouchX = pt.x
+                        _initTouchY = pt.y
+                        _prevTouchY = pt.y
                     }
                 }
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (_mode==Mode.PAN) {
-                    _velocityTracker!!.computeCurrentVelocity(AppConst.Config.MAX_VELOCITY.toInt(), AppConst.Config.MAX_VELOCITY)
+                    _velocityTracker!!.computeCurrentVelocity(AppConst.Config.MIN_VELOCITY.toInt(), AppConst.Config.MAX_VELOCITY)
                     val vx = _velocityTracker!!.getXVelocity(0)
                     val vy = _velocityTracker!!.getYVelocity(0)
                     _controller.startFling(-vx/_innerSize.width, -vy/_innerSize.height)
