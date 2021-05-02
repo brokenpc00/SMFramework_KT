@@ -10,9 +10,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 class ZoomController(director:IDirector) : Ref(director) {
-    init {
-        reset()
-    }
     private val MIN_ZOOM = 1f
     private val MAX_ZOOM = 20f
     private val REST_VELOCITY_TOLERANCE = 0.1f
@@ -36,6 +33,10 @@ class ZoomController(director:IDirector) : Ref(director) {
     private var _fillMode = false
     private var _viewSize = Size(0f, 0f)
 
+
+    init {
+        reset()
+    }
 
     fun reset() {
         _panDynamicsX.reset()
@@ -69,13 +70,13 @@ class ZoomController(director:IDirector) : Ref(director) {
     fun getZoom():Float {return _zoom}
 
     fun getZoomX():Float {
-        return if (_fillMode) max(_zoom, _zoom*_aspect) else min(_zoom, _zoom * _aspect)
+        return if (_fillMode) _zoom.coerceAtLeast(_zoom*_aspect) else _zoom.coerceAtMost(_zoom*_aspect)
     }
     fun getZoomY():Float {
-        return if (_fillMode) max(_zoom, _zoom / _aspect) else min(_zoom, _zoom * _aspect)
+        return if (_fillMode) _zoom.coerceAtLeast(_zoom/_aspect) else _zoom.coerceAtMost(_zoom/_aspect)
     }
 
-    fun setPanX(panX:Float) {_panY=panX}
+    fun setPanX(panX:Float) {_panX=panX}
     fun setPanY(panY:Float) {_panY=panY}
     fun setZoom(zoom:Float) {_zoom=zoom}
     fun setViewSize(viewSize:Size) {_viewSize.set(viewSize)}
@@ -90,10 +91,6 @@ class ZoomController(director:IDirector) : Ref(director) {
         val preZoomX = getZoomX()
         val preZoomY = getZoomY()
 
-        var deltaZoom = zoom - getZoom()
-        if ((zoom>MAX_ZOOM && deltaZoom>0) || (zoom<MIN_ZOOM && deltaZoom<0)) {
-            deltaZoom *= ZOOM_OUTSIDE_SNAP_FACTOR
-        }
         setZoom(zoom)
         limitZoom()
 
@@ -105,7 +102,7 @@ class ZoomController(director:IDirector) : Ref(director) {
         setPanX(getPanX() + (panX-0.5f)*(1f/preZoomX - 1f/newZoomX))
         setPanY(getPanY() + (panY-0.5f)*(1f/preZoomY - 1f/newZoomY))
 
-        updateLimits()
+        updatePanLimits()
     }
 
     fun zoomImmediate(zoom: Float, panX: Float, panY: Float) {
@@ -114,28 +111,25 @@ class ZoomController(director:IDirector) : Ref(director) {
         setPanY(panY)
 
         _zoomDynamics.setState(zoom, 0f, _director!!.getGlobalTime())
-        _panDynamicsX.setState(panX, 0f, _director!!.getGlobalTime())
         _panDynamicsY.setState(panY, 0f, _director!!.getGlobalTime())
+        _panDynamicsX.setState(panX, 0f, _director!!.getGlobalTime())
 
-        updateLimits()
+        updatePanLimits()
     }
 
     fun pan(dxt:Float, dyt:Float) {
-        var dx:Float = dxt
-        var dy:Float = dyt
+        var dx = dxt / getZoomX()
+        var dy = dyt / getZoomY()
 
-        dx /= getZoomX()
-        dy /= getZoomY()
-
-        if ((getPanX()>_panMaxX && dx>0) || (getPanX()<_panMinX && dx<0)) {
+        if ((getPanX() > _panMaxX && dx > 0) || (getPanX() < _panMinX && dx < 0)) {
             dx *= PAN_OUTSIDE_SNAP_FACTOR
         }
-        if ((getPanY()>_panMaxY && dy>0) || (getPanY()<_panMinY && dy<0)) {
+        if ((getPanY() > _panMaxY && dy > 0) || (getPanY() < _panMinY && dy < 0)) {
             dy *= PAN_OUTSIDE_SNAP_FACTOR
         }
 
-        val newPanX = getPanX() * dx
-        val newPanY = getPanY() * dy
+        val newPanX = getPanX() + dx
+        val newPanY = getPanY() + dy
 
         setPanX(newPanX)
         setPanY(newPanY)
@@ -163,7 +157,7 @@ class ZoomController(director:IDirector) : Ref(director) {
                 }
                 stopFling()
             }
-            updateLimits()
+            updatePanLimits()
         }
 
         return _needUpdate
@@ -187,13 +181,13 @@ class ZoomController(director:IDirector) : Ref(director) {
 
     fun stopFling() {_needUpdate=false }
 
-    fun getMaxPanDelta(zoom: Float):Float {return max(0f, 0.5f * ((zoom-1f)/zoom))}
+    fun getMaxPanDelta(zoom: Float):Float {return 0f.coerceAtLeast(0.5f * ((zoom-1f)/zoom))}
 
     fun limitZoom() {
         if (getZoom() < MIN_ZOOM-0.3f) {
             setZoom(MIN_ZOOM-0.3f)
-        } else if (getZoom() > MAX_ZOOM){
-            setZoom(MAX_ZOOM)
+        } else if (getZoom() > MAX_ZOOM*2f){
+            setZoom(MAX_ZOOM*2f)
         }
     }
 
@@ -208,30 +202,30 @@ class ZoomController(director:IDirector) : Ref(director) {
     }
 
     fun computePanPosition(zoom: Float, pivot:Vec2):Vec2 {
-        val zoomX = min(zoom, getZoomX())
-        val zoomY = min(zoom, getZoomY())
+        val zoomX = zoom.coerceAtMost(getZoomX())
+        val zoomY = zoom.coerceAtMost(getZoomY())
 
         val panMinX = 0.5f - getMaxPanDelta(zoomX)
         val panMaxX = 0.5f + getMaxPanDelta(zoomX)
         val panMinY = 0.5f - getMaxPanDelta(zoomY)
         val panMaxY = 0.5f + getMaxPanDelta(zoomY)
 
-        val x = max(0f, min(1f, pivot.x))
-        val y = max(0f, max(1f, pivot.y))
+        val x = 0f.coerceAtLeast(1f.coerceAtMost(pivot.x))
+        val y = 0f.coerceAtLeast(1f.coerceAtMost(pivot.y))
 
         val pan = Vec2(0f, 0f)
         pan.x = _panX + (x - 0.5f) * (1.0f / getZoomX() - 1.0f / zoomX)
         pan.y = _panY + (y - 0.5f) * (1.0f / getZoomY() - 1.0f / zoomY)
 
-        pan.x = min(panMaxX, max(panMinX, pan.x))
-        pan.y = min(panMaxY, max(panMinY, pan.y))
+        pan.x = panMaxX.coerceAtMost(panMaxX.coerceAtLeast(pan.x))
+        pan.y = panMaxY.coerceAtMost(panMinY.coerceAtLeast(pan.y))
 
         return pan
     }
 
     fun updateLimits() {
         limitZoom()
-        updateLimits()
+        updatePanLimits()
     }
 
     fun isPanning():Boolean {return _needUpdate}

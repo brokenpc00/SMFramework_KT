@@ -392,7 +392,16 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     }
 
     fun zoomDisplay() {
+        val s = _contentView.getContentSize()
 
+        _zoomView = SMZoomView.create(getDirector(), 0f, 0f, s.width, s.height)
+        _contentView.addChild(_zoomView)
+
+        val imageView = SMImageView.create(getDirector(), "images/bigsize.jpg")
+//        imageView.setAnchorPoint(Vec2.MIDDLE)
+//        imageView.setPosition(s.divide(2f))
+//        _contentView.addChild(imageView)
+        _zoomView?.setContentView(imageView)
     }
 
     override fun onPageChangedCallback(view: SMPageView, page: Int) {

@@ -1,5 +1,7 @@
 package com.brokenpc.smframework.base.types
 
+import kotlin.math.abs
+
 class Dynamics {
     constructor() {
         reset()
@@ -60,13 +62,13 @@ class Dynamics {
         positionTolerance: Float,
         range: Float
     ): Boolean {
-        val standingStill = Math.abs(_velocity) < velocityTolerance
-        val withinLimits: Boolean
-        withinLimits = if (range == 1f) {
-            _position - positionTolerance < _maxPosition && _position + positionTolerance > _minPosition
-        } else {
-            _position * range - positionTolerance < _maxPosition * range && _position * range + positionTolerance > _minPosition * range
-        }
+        val standingStill = abs(_velocity) < velocityTolerance
+//        val withinLimits = if (range == 1f) {
+//            _position - positionTolerance < _maxPosition && _position + positionTolerance > _minPosition
+//        } else {
+//            _position * range - positionTolerance < _maxPosition * range && _position * range + positionTolerance > _minPosition * range
+//        }
+        val withinLimits = ((_position*range - positionTolerance < _maxPosition*range)&&(_position*range + positionTolerance > _minPosition*range))
         return standingStill && withinLimits
     }
 

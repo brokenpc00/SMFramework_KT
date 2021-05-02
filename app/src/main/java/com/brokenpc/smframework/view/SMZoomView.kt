@@ -1,5 +1,6 @@
 package com.interpark.smframework.view
 
+import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import com.brokenpc.smframework_kt.BuildConfig
@@ -38,7 +39,7 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
     private var _innerSize = Size(Size.ZERO)
 
     companion object {
-        const val FLAG_ZOOM_UPDATE = 1L
+        const val FLAG_ZOOM_UPDATE = 1L shl 0
 
         @JvmStatic
         fun create(director: IDirector): SMZoomView {
@@ -138,6 +139,13 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
         }
 
         super.setPadding(left, top, right, bottom)
+    }
+
+    override fun setContentSize(width: Float?, height: Float?) {
+        _innerSize.set(width?:0f-_paddingLeft-_paddingRight, height?:0f-_paddingTop-_paddingBottom)
+        super.setContentSize(width, height)
+
+        registerUpdate(FLAG_ZOOM_UPDATE)
     }
 
     override fun setContentSize(size: Size) {
@@ -250,7 +258,9 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
         val x = scale * (-(_panX-0.5f)) * _uiContainer.getContentSize().width
         val y = scale * (-(_panY-0.5f)) * _uiContainer.getContentSize().height
 
-        _uiContainer.setPosition(_paddingLeft+_innerSize.width/2f + x, _paddingBottom+_innerSize.height/2f+y, _interpolate)
+        val moveX = _paddingLeft+_innerSize.width/2f + x
+        val moveY = _paddingBottom+_innerSize.height/2f+y
+        _uiContainer.setPosition(moveX, moveY, _interpolate)
         _uiContainer.setScale(scale, _interpolate)
 
         _interpolate = false
@@ -283,17 +293,19 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
         _velocityTracker!!.addMovement(event)
 
         val action = event.action
-
         when (action.and(MotionEvent.ACTION_MASK)) {
             MotionEvent.ACTION_DOWN -> {
                 if (_panEnable) {
                     _controller.stopFling()
                 }
 
-                _initTouchX = x.also { _prevTouchX = it }
-                _initTouchY = y.also { _prevTouchY = it }
+                _initTouchX = x
+                _initTouchY = y
+                _prevTouchX = x
+                _prevTouchY = y
 
-                _accuX = 0f.also { _accuY }
+                _accuX = 0f
+                _accuY = 0f
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
                 if (_zoomEnable) {
@@ -308,8 +320,10 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                             _mode = Mode.ZOOM
 
                             val midPoint = Vec2((point.x+point2.x)/2f, (point.y+point2.y)/2f)
-                            _initTouchX = midPoint.x.also { _prevTouchX = it }
-                            _initTouchY = midPoint.y.also { _prevTouchY = it }
+                            _initTouchX = midPoint.x
+                            _prevTouchX = midPoint.x
+                            _initTouchY = midPoint.y
+                            _prevTouchY = midPoint.y
 
                             _prevZoom = _controller.getZoom()
                         }
@@ -333,10 +347,17 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                     _controller.pan(-dx, -dy)
 
                     val distance = spacing(event)
+
                     val scale = (distance/_prevDistance) * _prevZoom
 
                     _controller.zoom(scale, x / _innerSize.width, y / _innerSize.height)
                     registerUpdate(FLAG_ZOOM_UPDATE)
+
+                    _accuX += (x - _prevTouchX)
+                    _accuY += (y - _prevTouchY)
+
+                    _prevTouchX = x
+                    _prevTouchY = y
 
                 } else if (_mode==Mode.PAN) {
                     // moving
@@ -346,6 +367,13 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
 
                     _controller.pan(-dx, -dy)
                     registerUpdate(FLAG_ZOOM_UPDATE)
+
+
+                    _accuX += (x - _prevTouchX)
+                    _accuY += (y - _prevTouchY)
+
+                    _prevTouchX = x
+                    _prevTouchY = y
 
                 } else {
                     if (_panEnable) {
@@ -358,13 +386,13 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                             registerUpdate(FLAG_ZOOM_UPDATE)
                         }
                     }
-                }
-                _accuX += x - _prevTouchX
-                _accuY += y - _prevTouchY
+
+                    _accuX += (x - _prevTouchX)
+                    _accuY += (y - _prevTouchY)
 
                 _prevTouchX = x
                 _prevTouchY = y
-
+                }
             }
             MotionEvent.ACTION_POINTER_UP -> {
                 if (_mode==Mode.ZOOM) {
@@ -379,7 +407,7 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                         }
 
                         _initTouchX = pt.x.also { _prevTouchX = it }
-                        _initTouchY = pt.y.also { _prevTouchY = it}
+                        _initTouchY = pt.y.also { _prevTouchY = it }
                     }
                 }
             }
