@@ -12,10 +12,10 @@ import com.brokenpc.smframework.view.*
 import com.interpark.app.menu.MenuBar
 import com.interpark.app.scene.stickerLayer.StickerItemListView
 import com.interpark.app.scene.stickerLayer.StickerLayer
-import com.interpark.smframework.view.RingWave2
-import com.interpark.smframework.view.SMCircularListView
-import com.interpark.smframework.view.SMPageView
-import com.interpark.smframework.view.SMZoomView
+import com.interpark.smframework.base.types.ICircularCell
+import com.interpark.smframework.view.*
+import kotlin.math.abs
+import kotlin.math.floor
 
 class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SMPageView.OnPageChangedCallback {
     private lateinit var _contentView: SMView
@@ -128,6 +128,15 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
             }
             2 -> {
                 pageViewDisplay()
+            }
+            3 -> {
+                circularViewDisplay()
+            }
+            4 -> {
+                tableViewDisplay()
+            }
+            5 -> {
+                kenburnDisplay()
             }
             else -> {
                 imageDisplay()
@@ -479,15 +488,308 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         _verLabel!!.setText(verString)
     }
 
+    private fun circularViewDisplay() {
+        val s = _contentView.getContentSize()
+
+        val pageSize = s.height
+        val listViewSize = Size(s.width+PAGER_PADDING*2f, pageSize)
+        for (i in 0..4) {
+            val cell = CircularImageCellCreate(getDirector(), "images/defaults.jpg")
+            cell.setContentSize(Size(s.width, pageSize))
+            _circularImages.add(cell)
+        }
+
+        _circularOrientation = SMCircularListView.Orientation.HORIZONTAL
+        _circularScrollMode = SMScroller.ScrollMode.PAGER
+        _isCircular = true
+
+        _circularConfig = SMCircularListView.Config()
+        _circularConfig!!.orient = _circularOrientation
+        _circularConfig!!.scrollMode = _circularScrollMode
+        _circularConfig!!.circular = _isCircular
+        _circularConfig!!.cellSize = s.width
+        _circularConfig!!.windowSize = s.width + PAGER_PADDING*2
+        _circularConfig!!.anchorPosition = PAGER_PADDING
+        _circularConfig!!.maxVelocity = 5000f
+        _circularConfig!!.minVelocity = 5000f
+        _circularConfig!!.preloadPadding = 0f
+
+        _circularListview = SMCircularListView.create(getDirector(), _circularConfig!!)
+        _contentView.addChild(_circularListview)
+        _circularListview!!.setContentSize(listViewSize)
+        _circularListview!!.setPositionX(-PAGER_PADDING)
+        _circularListview!!.cellForRowsAtIndex = object : SMCircularListView.CellForRowsAtIndex {
+            override fun cellForRowsAtIndex(index: Int): SMView {
+                val cell = _circularImages[index]
+                cell.setTag(index)
+                return cell
+            }
+        }
+        _circularListview!!.numberOfRows = object : SMCircularListView.NumberOfRows {
+            override fun numberOfRows(): Int {
+                return _circularImages.size
+            }
+        }
+        _circularListview!!.positionCell = object : SMCircularListView.PositionCell {
+            override fun positionCell(cell: SMView, position: Float, created: Boolean) {
+                cell.setPositionX(position)
+            }
+        }
+        _circularListview!!.pageScrollCallback = object : SMCircularListView.PageScrollCallback {
+            override fun pageScrollCallback(pagePosition: Float) {
+                layoutCircularLabel(pagePosition)
+            }
+        }
+    }
+
+    fun layoutCircularLabel(pagePosition: Float) {
+        if (_circularLabel==null) {
+            _circularLabel = SMLabel.Companion.create(getDirector(), "", 67f, Color4F(1f, 0f, 0f, 1f))
+            _circularLabel!!.setAnchorPoint(Vec2.MIDDLE)
+            _circularLabel!!.setPosition(_contentView.getContentSize().width/2f, _circularListview!!.getContentSize().height-275f)
+            _circularLabel!!.setLocalZOrder(999)
+            _contentView.addChild(_circularLabel!!)
+        }
+
+        val pageNo = (floor(pagePosition+0.5f) % _circularImages.size).toInt()
+        val desc = "Circular paging ${pageNo+1}/${_circularImages.size} page"
+        _circularLabel!!.setText(desc)
+    }
+
     override fun onPageChangedCallback(view: SMPageView, page: Int) {
         if (_viewType==2) {
             layoutPageLabel()
-        } else {
+        } else if (_viewType==4) {
+            layoutTableViewLabel()
+        }
+    }
 
+    private fun CircularImageCellCreate(director: IDirector, assetName: String): CircularImageCell {
+        val cell = CircularImageCell(director, assetName)
+        if (cell.getContentSize().width==0f && cell.getContentSize().height==0f) {
+            if (cell.getSprite()!=null) {
+                cell.setContentSize(cell.getSprite()!!.getWidth(), cell.getSprite()!!.getHeight())
+            }
+        }
+
+        return cell
+    }
+
+    class CircularImageCell(director: IDirector, assetName: String): SMImageView(director, assetName), ICircularCell {
+        var _index = 0
+        var _deleted = false
+        var _cellPosition = 0f
+        var _aniSrc = 0f
+        var _aniDst = 0f
+        var _aniIndex = 0
+        var _reuseIndentifier = ""
+
+        override fun getCellIndex(): Int {return _index}
+        override fun getCellPosition(): Float {return _cellPosition}
+        override fun getCellIdentifier(): String {return _reuseIndentifier}
+        override fun markDelete() {_deleted = true}
+        override fun setCellIndex(index: Int) {_index = index}
+        override fun setCellPosition(position: Float) {_cellPosition = position}
+        override fun setReuseIdentifier(identifier: String) {_reuseIndentifier = identifier}
+        override fun setAniSrc(src: Float) {_aniSrc = src}
+        override fun setAniDst(dst: Float) {_aniDst = dst}
+        override fun setAniIndex(index: Int) {_aniIndex = index}
+        override fun isDeleted(): Boolean {return _deleted}
+        override fun getAniSrc(): Float {return _aniSrc}
+        override fun getAniDst(): Float {return _aniDst}
+        override fun getAniIndex(): Int {return _aniIndex}
+    }
+
+    fun tableViewDisplay() {
+        val s = _contentView.getContentSize()
+
+        _tableBgViews = ArrayList()
+        for (i in 0..4) {
+            val bgView = SMView.create(getDirector(), 0, 0f, 0f, s.width, s.height)
+            bgView.setBackgroundColor(getRandomColor4F())
+            _tableBgViews!!.add(bgView)
+
+            val tableView = SMTableView.createMultiColumn(getDirector(), SMTableView.Orientation.VERTICAL, i+1, 0f, 0f, s.width, s.height)
+            bgView.addChild(tableView)
+
+            tableView!!.numberOfRowsInSection = object : SMTableView.NumberOfRowsInSection {
+                override fun numberOfRowsInSection(section: Int): Int {
+                    return 100
     }
     }
+            when (i) {
+                0 -> {
+                    _tableView1 = tableView
+                    tableView.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+                        override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                            val s = _tableView1!!.getContentSize()
+                            val cellID = "CELL${indexPath.getIndex()}"
+                            var cell = _tableView1!!.dequeueReusableCellWithIdentifier(cellID)
+                            if (cell==null) {
+                                val height = randomInt(75, 450).toFloat()
+                                cell = create(getDirector(), i, 0f, 0f, s.width, height)
+                                val r = getRandomColorF()
+                                val g = getRandomColorF()
+                                val b = getRandomColorF()
+                                cell!!.setBackgroundColor(Color4F(r, g, b, 1f))
 
-    class CircularImageCell(director: IDirector): SMImageView(director) {
+                                val textColor = Color4F(abs(1-r), abs(1-g), abs(1-b), 1f)
+                                val label = SMLabel.create(getDirector(), cellID, 52f, textColor)
+                                label.setAnchorPoint(Vec2.MIDDLE)
+                                label.setPosition(cell!!.getContentSize().divide(2f))
+                                cell!!.addChild(label)
+                            }
+                            return cell
+                        }
+                    }
+                }
+                1 -> {
+                    _tableView2 = tableView
+                    tableView.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+                        override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                            val s = _tableView2!!.getContentSize()
+                            val cellID = "CELL${indexPath.getIndex()}"
+                            var cell = _tableView2!!.dequeueReusableCellWithIdentifier(cellID)
+                            if (cell==null) {
+                                val height = randomInt(75, 450).toFloat()
+                                cell = create(getDirector(), 0, 0f, 0f, s.width/2f, height)
+                                val r = getRandomColorF()
+                                val g = getRandomColorF()
+                                val b = getRandomColorF()
+                                cell!!.setBackgroundColor(Color4F(r, g, b, 1f))
 
+                                val textColor = Color4F(abs(1-r), abs(1-g), abs(1-b), 1f)
+                                val label = SMLabel.create(getDirector(), cellID, 52f, textColor)
+                                label.setAnchorPoint(Vec2.MIDDLE)
+                                label.setPosition(cell!!.getContentSize().divide(2f))
+                                cell!!.addChild(label)
+                            }
+                            return cell!!
+                        }
+                    }
+                }
+                2 -> {
+                    _tableView3 = tableView
+                    tableView.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+                        override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                            val s = _tableView3!!.getContentSize()
+                            val cellID = "CELL${indexPath.getIndex()}"
+                            var cell = _tableView3!!.dequeueReusableCellWithIdentifier(cellID)
+                            if (cell==null) {
+                                val height = randomInt(75, 450).toFloat()
+                                cell = create(getDirector(), 0, 0f, 0f, s.width/3f, height)
+                                val r = getRandomColorF()
+                                val g = getRandomColorF()
+                                val b = getRandomColorF()
+                                cell!!.setBackgroundColor(Color4F(r, g, b, 1f))
+
+                                val textColor = Color4F(abs(1-r), abs(1-g), abs(1-b), 1f)
+                                val label = SMLabel.create(getDirector(), cellID, 52f, textColor)
+                                label.setAnchorPoint(Vec2.MIDDLE)
+                                label.setPosition(cell!!.getContentSize().divide(2f))
+                                cell!!.addChild(label)
+                            }
+                            return cell!!
+                        }
+                    }
+                }
+                3 -> {
+                    _tableView4 = tableView
+                    tableView.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+                        override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                            val s = _tableView4!!.getContentSize()
+                            val cellID = "CELL${indexPath.getIndex()}"
+                            var cell = _tableView4!!.dequeueReusableCellWithIdentifier(cellID)
+                            if (cell==null) {
+                                val height = randomInt(75, 450).toFloat()
+                                cell = create(getDirector(), 0, 0f, 0f, s.width/4f, height)
+                                val r = getRandomColorF()
+                                val g = getRandomColorF()
+                                val b = getRandomColorF()
+                                cell!!.setBackgroundColor(Color4F(r, g, b, 1f))
+
+                                val textColor = Color4F(abs(1-r), abs(1-g), abs(1-b), 1f)
+                                val label = SMLabel.create(getDirector(), cellID, 52f, textColor)
+                                label.setAnchorPoint(Vec2.MIDDLE)
+                                label.setPosition(cell!!.getContentSize().divide(2f))
+                                cell!!.addChild(label)
+                            }
+                            return cell!!
+                        }
+                    }
+                }
+                4 -> {
+                    _tableView5 = tableView
+                    tableView.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+                        override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                            val s = _tableView5!!.getContentSize()
+                            val cellID = "CELL${indexPath.getIndex()}"
+                            var cell = _tableView5!!.dequeueReusableCellWithIdentifier(cellID)
+                            if (cell == null) {
+                                val height = randomInt(75, 450).toFloat()
+                                cell = create(getDirector(), 0, 0f, 0f, s.width / 5f, height)
+                                val r = getRandomColorF()
+                                val g = getRandomColorF()
+                                val b = getRandomColorF()
+                                cell!!.setBackgroundColor(Color4F(r, g, b, 1f))
+
+                                val textColor = Color4F(abs(1 - r), abs(1 - g), abs(1 - b), 1f)
+                                val label = SMLabel.create(getDirector(), cellID, 52f, textColor)
+                                label.setAnchorPoint(Vec2.MIDDLE)
+                                label.setPosition(cell!!.getContentSize().divide(2f))
+                                cell!!.addChild(label)
+                            }
+                            return cell!!
+                        }
+                    }
+                }
+            }
+        }
+
+        _tableContainView = SMPageView.Companion.create(getDirector(), SMTableView.Orientation.HORIZONTAL, 0f, 0f, s.width, s.height)
+        _tableContainView!!.numberOfRowsInSection = object : SMTableView.NumberOfRowsInSection {
+            override fun numberOfRowsInSection(section: Int): Int {
+                return _tableBgViews!!.size
+            }
+        }
+        _tableContainView!!.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+            override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                return _tableBgViews!![indexPath.getIndex()]
+            }
+        }
+        _tableContainView!!.setScissorEnable(true)
+        _tableContainView!!.setOnPageChangedCallback(this)
+        _contentView.addChild(_tableContainView!!)
+
+        layoutTableViewLabel()
+    }
+
+    fun layoutTableViewLabel() {
+        if (_tableViewLabel==null) {
+            _tableViewLabel = SMLabel.Companion.create(getDirector(), "", 90f, Color4F.WHITE)
+            _tableViewLabel!!.setAnchorPoint(Vec2.MIDDLE)
+            _tableViewLabel!!.setPosition(_contentView.getContentSize().width/2f, _contentView.getContentSize().height - 300f)
+            _tableViewLabel!!.setLocalZOrder(999)
+            _contentView.addChild(_tableViewLabel)
+        }
+
+        val pagNo = _tableContainView!!.getCurrentPage()+1
+        val desc = "TableView $pagNo / ${_tableBgViews!!.size} page"
+        _tableViewLabel!!.setText(desc)
+    }
+
+    fun kenburnDisplay() {
+        val s = _contentView.getContentSize()
+
+        val imageList:ArrayList<String> = ArrayList()
+        imageList.add("images/ken1.jpg")
+        imageList.add("images/ken2.jpg")
+        imageList.add("images/ken3.jpg")
+
+        val view = SMKenBurnsView.createWithAssets(getDirector(), imageList)
+        view.setContentSize(s)
+        view.setBackgroundColor(Color4F.BLACK)
+        view.startWithDelay(0.0f)
+        _contentView.addChild(view)
     }
 }

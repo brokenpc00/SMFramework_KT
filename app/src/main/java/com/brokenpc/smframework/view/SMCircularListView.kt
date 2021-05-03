@@ -56,6 +56,13 @@ class SMCircularListView(director: IDirector): SMView(director), SMScroller.ALIG
         fun sortFunc(cells: ArrayList<ICircularCell>) {
             cells.sortWith {l, r -> if (l.getCellPosition() > r.getCellPosition()) -1 else if (l.getCellPosition()>r.getCellPosition()) 1 else 0}
         }
+
+        @JvmStatic
+        fun create(director: IDirector, config: Config): SMCircularListView {
+            val listView = SMCircularListView(director)
+            listView.initWithConfig(config)
+            return listView
+        }
     }
 
     fun setCircularConfig(config: Config) {_config = config}

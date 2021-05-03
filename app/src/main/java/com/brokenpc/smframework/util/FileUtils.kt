@@ -142,10 +142,26 @@ class FileUtils {
 
         if (isAbsolutePath(fileName)) return fileName
 
-        val cacheDir: String = _fullPathCache[fileName]!!
-        if (cacheDir.isNotEmpty()) return cacheDir
+        if (_fullPathCache.isNotEmpty() && _fullPathCache[fileName]!=null) {
+            return _fullPathCache[fileName]!!
+        }
+//
+//        val cacheDir: String = _fullPathCache[fileName]!!
+//        if (cacheDir.isNotEmpty()) return cacheDir
 
-//        val newFileName:String = getNew
+        val newFileName = getNewFileName(fileName)
+
+        var fullPath = ""
+
+        for (search in _searchPathArray) {
+            for (resolution in _searchResolutionsOrderArray) {
+                fullPath = getPathForFileName(newFileName, resolution, search)
+                if (!fullPath.isEmpty()) {
+                    _fullPathCache.put(fileName, fullPath)
+                    return fullPath
+                }
+            }
+        }
 
         return ""
     }
@@ -225,7 +241,7 @@ class FileUtils {
         var ret = dirctory
         if (dirctory.isNotEmpty()) {
             val lastChar = dirctory.substring(dirctory.length-1)
-            if (lastChar=="/") {
+            if (lastChar!="/") {
                 ret += "/"
             }
         }

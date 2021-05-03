@@ -4,6 +4,8 @@ import android.util.SparseArray
 import com.brokenpc.smframework_kt.BuildConfig
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 
 open class Scheduler(director: IDirector) : Ref(director) {
 
@@ -28,6 +30,8 @@ open class Scheduler(director: IDirector) : Ref(director) {
     protected var _updateHashLocked: Boolean = false
 
     protected var _functionsToPerform: ArrayList<PERFORM_SEL> = ArrayList(30)
+
+    private val _mutex: Lock = ReentrantLock(true)
 
 
     companion object {
@@ -409,13 +413,12 @@ open class Scheduler(director: IDirector) : Ref(director) {
         _currentTarget = null
 
         if (!_functionsToPerform.isEmpty()!!) {
-            synchronized(_functionsToPerform) {
-                for (i in 0 until _functionsToPerform.size!!) {
-                    var func:PERFORM_SEL = _functionsToPerform.get(i)
-                    func.performSelector()
-                }
-
+            _mutex.lock()
+            val temp: ArrayList<PERFORM_SEL> = _functionsToPerform.clone() as ArrayList<PERFORM_SEL>
                 _functionsToPerform.clear()
+            _mutex.unlock()
+            for (func in temp) {
+                func.performSelector()
             }
         }
     }
@@ -424,15 +427,15 @@ open class Scheduler(director: IDirector) : Ref(director) {
     fun setTimeScale(scale:Float) {_timeScale=scale}
 
     fun performFunctionInMainThread(func: PERFORM_SEL) {
-        synchronized(_functionsToPerform) {
+        _mutex.lock()
             _functionsToPerform.add(func)
-        }
+        _mutex.unlock()
     }
 
     fun removeAllFunctionsToBePerformedInMainThread() {
-        synchronized(_functionsToPerform) {
+        _mutex.lock()
             _functionsToPerform.clear()
-        }
+        _mutex.unlock()
     }
 
     fun pauseTarget(target: Ref) {

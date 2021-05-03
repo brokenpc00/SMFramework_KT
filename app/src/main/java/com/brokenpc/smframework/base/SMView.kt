@@ -212,12 +212,12 @@ open class SMView : Ref {
 
         @JvmStatic
         fun randomInt(min:Int, max:Int):Int {
-            return min + Math.random().toInt()*((max-min) + 1)
+            return min + (Math.random()*((max-min) + 1)).toInt()
         }
 
         @JvmStatic
         fun randomFloat(min: Float, max: Float): Float {
-            return min + Math.random().toFloat()*((max-min) + 1)
+            return min + (Math.random()*((max-min) + 1)).toFloat()
         }
 
         @JvmStatic

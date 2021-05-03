@@ -6,6 +6,7 @@ import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.collections.ArrayList
+import kotlin.concurrent.withLock
 
 class ImageThreadPool {
     constructor(threadCount: Int) {
@@ -27,16 +28,14 @@ class ImageThreadPool {
     fun interrupt() {
         _running = false
 
-        synchronized(_cond) {
+        _mutex.withLock {
             _cond.signalAll()
         }
     }
 
     fun addTask(task: PERFORM_SEL) {
-        synchronized(_queue) {
+        _mutex.withLock {
             _queue.add(task)
-        }
-        synchronized(_cond) {
             _cond.signal()
         }
     }
@@ -45,31 +44,24 @@ class ImageThreadPool {
     private fun threadFunc() {
         while (true) {
             var task: PERFORM_SEL? = null
+
+            _mutex.lock()
+
             if (!_running) {
                 break
             }
 
-            var isEmpty = false
-
-            synchronized(_queue) {
-                isEmpty = _queue.isEmpty()
-            }
-
-            if (!isEmpty) {
-                synchronized(_queue) {
+            if (!_queue.isEmpty()) {
                     task = _queue.poll()
-                }
             } else {
-                synchronized(_cond) {
                     _cond.await()
-                }
-
                 if (!_running) {
-                    break
+                    return
                 }
+                _mutex.unlock()
                 continue
             }
-
+            _mutex.unlock()
             task?.performSelector()
         }
     }
