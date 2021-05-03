@@ -5,10 +5,7 @@ import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.SceneParams
 import com.brokenpc.smframework.base.scroller.SMScroller
-import com.brokenpc.smframework.base.types.Color4F
-import com.brokenpc.smframework.base.types.Rect
-import com.brokenpc.smframework.base.types.Size
-import com.brokenpc.smframework.base.types.Vec2
+import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.shader.ShaderNode
 import com.brokenpc.smframework.util.AppConst
 import com.brokenpc.smframework.view.*
@@ -60,7 +57,7 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     private var _verPageView: SMPageView? = null
     private var _horLabel: SMLabel? = null
     private var _verLabel: SMLabel? = null
-    private var _pageItemCount = 10
+    private val _pageItemCount = 10
     private var _currentHorPage = 0
     private var _currentVerPage = 0
     private val _horImages: ArrayList<SMImageView> = ArrayList()
@@ -121,7 +118,7 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         return true
     }
 
-    fun makeView() {
+    private fun makeView() {
         _viewType = _sceneParam?.getInt("VIEW_TYPE")?:0
 
         when (_viewType) {
@@ -129,13 +126,16 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
                 // zoom view
                 zoomDisplay()
             }
+            2 -> {
+                pageViewDisplay()
+            }
             else -> {
                 imageDisplay()
             }
         }
     }
 
-    fun imageDisplay() {
+    private fun imageDisplay() {
         val s = _contentView.getContentSize()
 
         val fontSize = 35f
@@ -391,21 +391,100 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         }
     }
 
-    fun zoomDisplay() {
+    private fun zoomDisplay() {
         val s = _contentView.getContentSize()
 
         _zoomView = SMZoomView.create(getDirector(), 0f, 0f, s.width, s.height)
         _contentView.addChild(_zoomView)
 
         val imageView = SMImageView.create(getDirector(), "images/bigsize.jpg")
-//        imageView.setAnchorPoint(Vec2.MIDDLE)
-//        imageView.setPosition(s.divide(2f))
-//        _contentView.addChild(imageView)
         _zoomView?.setContentView(imageView)
     }
 
-    override fun onPageChangedCallback(view: SMPageView, page: Int) {
+    private fun pageViewDisplay() {
+        val s = _contentView.getContentSize()
 
+        for (i in 0 until _pageItemCount) {
+            val imgH = SMImageView.create(getDirector(), "images/bigsize.jpg")
+            imgH.setContentSize(s.width, s.height/2f)
+            imgH.setScaleType(SMImageView.ScaleType.FIT_CENTER)
+            imgH.setScissorEnable(true)
+            imgH.setBackgroundColor(1f, 1f, 0f, 0.6f)
+            imgH.setTag(i)
+            _horImages.add(imgH)
+
+            val imgV = SMImageView.create(getDirector(), "images/bigsize.jpg")
+            imgV.setContentSize(s.width, s.height/2f)
+            imgV.setScaleType(SMImageView.ScaleType.FIT_CENTER)
+            imgV.setBackgroundColor(0f, 1f, 1f, 0.6f)
+            imgV.setTag(i)
+            _verImages.add(imgV)
+        }
+
+        _horPageView = SMPageView.Companion.create(getDirector(), SMTableView.Orientation.HORIZONTAL, 0f, 0f, s.width, s.height/2f)
+        _horPageView!!.numberOfRowsInSection = object : SMTableView.NumberOfRowsInSection {
+            override fun numberOfRowsInSection(section: Int): Int {
+                return _horImages.size
+            }
+        }
+        _horPageView!!.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+            override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                return _horImages[indexPath.getIndex()]
+            }
+        }
+        _horPageView!!.setScissorEnable(true)
+        _horPageView!!.setOnPageChangedCallback(this)
+        _contentView.addChild(_horPageView!!)
+
+
+        _verPageView = SMPageView.create(getDirector(), SMTableView.Orientation.VERTICAL, 0f, s.height/2f, s.width, s.height/2f)
+        _verPageView!!.numberOfRowsInSection = object : SMTableView.NumberOfRowsInSection {
+            override fun numberOfRowsInSection(section: Int): Int {
+                return _verImages.size
+            }
+        }
+        _verPageView!!.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+            override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+                return _verImages[indexPath.getIndex()]
+            }
+        }
+        _verPageView!!.setScissorEnable(true)
+        _verPageView!!.setOnPageChangedCallback(this)
+        _contentView.addChild(_verPageView)
+
+        layoutPageLabel()
+    }
+
+    private fun layoutPageLabel() {
+        if (_horLabel==null) {
+            _horLabel = SMLabel.create(getDirector(), "", 52f, Color4F(1f, 0f, 0f, 1f))
+            _horLabel!!.setAnchorPoint(Vec2.MIDDLE)
+            _horLabel!!.setPosition(_contentView.getContentSize().width/2f, _contentView.getContentSize().height/2f - 225f)
+            _horLabel!!.setLocalZOrder(999)
+            _contentView.addChild(_horLabel)
+        }
+
+        if (_verLabel==null) {
+            _verLabel = SMLabel.Companion.create(getDirector(), "", 52f, Color4F(1f, 0f, 0f, 1f))
+            _verLabel!!.setAnchorPoint(Vec2.MIDDLE)
+            _verLabel!!.setPosition(_contentView.getContentSize().width/2f, _contentView.getContentSize().height - 225f)
+            _verLabel!!.setLocalZOrder(999)
+            addChild(_verLabel)
+        }
+
+        val horString = "Horizontal Paging ${_horPageView!!.getCurrentPage()+1} / ${_horImages.size} page"
+        _horLabel!!.setText(horString)
+
+        val verString = "Vertical Paging ${_verPageView!!.getCurrentPage()+1} / ${_verImages.size} page"
+        _verLabel!!.setText(verString)
+    }
+
+    override fun onPageChangedCallback(view: SMPageView, page: Int) {
+        if (_viewType==2) {
+            layoutPageLabel()
+        } else {
+
+    }
     }
 
     class CircularImageCell(director: IDirector): SMImageView(director) {

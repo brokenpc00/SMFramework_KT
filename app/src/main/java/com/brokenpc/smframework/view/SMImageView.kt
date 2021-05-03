@@ -186,7 +186,7 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
     }
 
     fun setSprite(sprite: DrawNode?) {
-        setSprite(sprite, true)
+        setSprite(sprite, false)
     }
 
     fun setSprite(sprite: DrawNode?, fitSize: Boolean) {
@@ -229,11 +229,6 @@ open class SMImageView : UIContainerView, IDownloadProtocol {
 
     override fun setContentSize(width: Float?, height: Float?) {
         super.setContentSize(width, height)
-        registerUpdate(FLAG_CONTENT_SIZE)
-    }
-
-    override fun setContentSize(size: Size, immediate: Boolean) {
-        super.setContentSize(size, immediate)
         registerUpdate(FLAG_CONTENT_SIZE)
     }
 

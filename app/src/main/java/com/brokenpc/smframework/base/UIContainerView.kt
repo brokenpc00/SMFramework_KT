@@ -30,6 +30,10 @@ open class UIContainerView : SMView {
         super.setContentSize(size)
     }
 
+    override fun setContentSize(width: Float?, height: Float?) {
+        setContentSize(Size(width, height))
+    }
+
     override fun setContentSize(size: Size) {
         val innerSize = Size(size.width-_paddingLeft-_paddingRight, size.height-_paddingTop-_paddingBottom)
         val pos = Vec2((_paddingLeft+size.width-_paddingRight)/2, (_paddingBottom+size.height-_paddingTop)/2)

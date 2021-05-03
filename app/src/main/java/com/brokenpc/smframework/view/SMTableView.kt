@@ -334,6 +334,10 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
         return _scroller
     }
 
+    override fun setContentSize(width: Float?, height: Float?) {
+        setContentSize(Size(width, height))
+    }
+
     override fun setContentSize(size: Size) {
         super.setContentSize(size)
         if (isVertical()) {

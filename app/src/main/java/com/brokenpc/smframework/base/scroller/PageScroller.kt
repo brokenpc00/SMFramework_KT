@@ -3,10 +3,13 @@ package com.brokenpc.smframework.base.scroller
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView.Companion.M_PI_2
 import com.brokenpc.smframework.base.SMView.Companion.smoothInterpolate
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.sin
 
 class PageScroller(director:IDirector) : FlexibleScroller(director) {
 
-    private var _bounceBackEnabled:Boolean = false
+    private var _bounceBackEnabled:Boolean = true
     fun setBounceBackEnable(enable: Boolean) {
         _bounceBackEnabled = enable
     }
@@ -94,11 +97,11 @@ class PageScroller(director:IDirector) : FlexibleScroller(director) {
     override fun onTouchFling(velocity: Float, currentPage: Int) {
         var v = velocity
         val maxVelocity = 15000f
-        if (Math.abs(velocity) > maxVelocity) {
+        if (abs(velocity) > maxVelocity) {
             v = _SIGNUM(v) * maxVelocity
         }
-        val position:Float = _newPosition
-        if (position < _minPosition || position > _maxPosition) {
+        val position = _newPosition
+        if (position.toInt() < _minPosition.toInt() || position.toInt() > _maxPosition.toInt()) {
             onTouchUp()
             return
         }
@@ -128,16 +131,14 @@ class PageScroller(director:IDirector) : FlexibleScroller(director) {
         val dt = _director!!.getGlobalTime() - _timeStart
         val rt = dt / _timeDuration
         if (rt < 1) {
-            val f = 1 - Math.sin(rt * M_PI_2).toFloat()
-            val newPosition =
-                decPrecesion(_stopPos + f * (_startPos - _stopPos), true)
+            val f = 1 - sin(rt * M_PI_2).toFloat()
+            val newPosition = decPrecesion(_stopPos + f * (_startPos - _stopPos), true)
             _controller!!.setPanY(newPosition)
         } else {
             _state = STATE.STOP
             _controller!!.setPanY(_stopPos)
             if (pageChangedCallback != null) {
-                val value =
-                    Math.floor(_stopPos / _cellSize.toDouble()).toFloat()
+                val value = floor(_stopPos / _cellSize)
                 pageChangedCallback!!.pageChangedCallback(value.toInt())
             }
         }
