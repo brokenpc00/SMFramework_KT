@@ -498,6 +498,7 @@ open class SMButton : UIContainerView {
 
                     _buttonView!![0] = null
                     _buttonView!![1] = null
+                }
 
                     if (_outlineColor==null) {
                         _outlineColor = ArrayList(stateToInt(STATE.MAX))
@@ -508,7 +509,6 @@ open class SMButton : UIContainerView {
                         _outlineColor!![0] = null
                         _outlineColor!![1] = null
                     }
-                }
 
                 setStateView(_buttonView!!, STATE.PRESSED, outlineView, AppConst.ZOrder.BUTTON_PRESSED, _outlineColor!!)
 

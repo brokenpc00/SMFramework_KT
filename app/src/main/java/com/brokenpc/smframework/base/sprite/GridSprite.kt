@@ -134,7 +134,7 @@ class GridSprite(director:IDirector, texture: Texture, cx: Float, cy: Float, gri
         _numFace = numQuads * 2
 
         size = _numFace * 3 * 2 * ShortSize / ByteSize
-        _indices = ByteBuffer.allocateDirect(10).order(ByteOrder.nativeOrder()).asShortBuffer()
+        _indices = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asShortBuffer()
 
         var vi = 0  // vertex index
         var ll:Short

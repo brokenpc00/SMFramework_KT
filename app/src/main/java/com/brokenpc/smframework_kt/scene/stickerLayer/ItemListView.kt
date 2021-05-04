@@ -21,7 +21,7 @@ open class ItemListView(director: IDirector) : SMTableView(director), SMView.OnC
         const val IMAGE = "image"
         const val LAYOUT = "layout"
         const val PANEL_HEIGHT = 240.0f
-        const val CELL_WIDTH = 351.0f
+        const val CELL_WIDTH = 350.0f
     }
 
     interface OnItemClickListener {

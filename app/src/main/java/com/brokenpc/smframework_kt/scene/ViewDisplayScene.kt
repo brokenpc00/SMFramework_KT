@@ -5,19 +5,30 @@ import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.SceneParams
 import com.brokenpc.smframework.base.scroller.SMScroller
+import com.brokenpc.smframework.base.sprite.BitmapSprite
+import com.brokenpc.smframework.base.sprite.Sprite
 import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.shader.ShaderNode
 import com.brokenpc.smframework.util.AppConst
+import com.brokenpc.smframework.util.ImageManager.IDownloadProtocol
+import com.brokenpc.smframework.util.ImageManager.ImageDownloadTask
 import com.brokenpc.smframework.view.*
 import com.interpark.app.menu.MenuBar
-import com.interpark.app.scene.stickerLayer.StickerItemListView
-import com.interpark.app.scene.stickerLayer.StickerLayer
+import com.interpark.app.scene.stickerLayer.*
 import com.interpark.smframework.base.types.ICircularCell
+import com.interpark.smframework.util.ImageProcess.ImageProcessProtocol
+import com.interpark.smframework.util.ImageProcess.ImageProcessTask
 import com.interpark.smframework.view.*
+import com.interpark.smframework.view.Sticker.StickerCanvasView
+import com.interpark.smframework.view.Sticker.StickerControlView
+import com.interpark.smframework.view.Sticker.StickerItem
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.math.abs
 import kotlin.math.floor
 
-class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SMPageView.OnPageChangedCallback {
+class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SMPageView.OnPageChangedCallback, StickerCanvasView.StickerCanvasListener, StickerControlView.StickerControlListener, StickerItemView.StickerLayoutListener, ItemListView.OnItemClickListener, IDownloadProtocol, ImageProcessProtocol {
     private lateinit var _contentView: SMView
     private var _imageButtonGravityType = false
     // for image
@@ -32,6 +43,7 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     private var _alarmCircle: SMSolidCircleView? = null
     private var _ringFlag = false
     private var _buttunRect = Rect(Rect.ZERO)
+    private var _waveBtn: SMButton? = null
     // for table View
     private var _tableContainView: SMPageView? = null
     private var _tableBgViews:ArrayList<SMView>? = null
@@ -72,6 +84,8 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     private var _scaleBG: SMView? = null
     private var _gravitiBG: SMView? = null
 
+    private val _downloadTask:ArrayList<ImageDownloadTask> = ArrayList()
+    private val _mutex: Lock = ReentrantLock(true)
 
 
     companion object {
@@ -137,6 +151,12 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
             }
             5 -> {
                 kenburnDisplay()
+            }
+            6 -> {
+                ringWaveDisplay()
+            }
+            8 -> {
+                stickerDisplay()
             }
             else -> {
                 imageDisplay()
@@ -791,5 +811,300 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
         view.setBackgroundColor(Color4F.BLACK)
         view.startWithDelay(0.0f)
         _contentView.addChild(view)
+    }
+
+    fun ringWaveDisplay() {
+        val s = _contentView.getContentSize()
+
+        _buttunRect.set(Rect(60f, s.height-AppConst.SIZE.MENUBAR_HEIGHT-30f, s.width-120f, AppConst.SIZE.MENUBAR_HEIGHT))
+
+        _waveBtn = SMButton.create(getDirector(), 0, SMButton.STYLE.SOLID_ROUNDEDRECT, _buttunRect.origin.x, _buttunRect.origin.y, _buttunRect.size.width, _buttunRect.size.height)
+        _waveBtn!!.setShapeCornerRadius(AppConst.SIZE.MENUBAR_HEIGHT/2)
+        _waveBtn!!.setOutlineWidth(ShaderNode.DEFAULT_ANTI_ALIAS_WIDTH*2)
+        _waveBtn!!.setButtonColor(STATE.NORMAL, Color4F.WHITE)
+        _waveBtn!!.setButtonColor(STATE.PRESSED, Color4F.XEEEFF1)
+        _waveBtn!!.setOutlineColor(STATE.NORMAL, Color4F.XDBDCDF)
+        _waveBtn!!.setOutlineColor(STATE.PRESSED, Color4F.XADAFB3)
+        _waveBtn!!.setText("RING FULSE", 82f)
+        _waveBtn!!.setTextColor(STATE.NORMAL, Color4F.TEXT_BLACK)
+        _waveBtn!!.setTextColor(STATE.PRESSED, Color4F.XADAFB3)
+        _contentView.addChild(_waveBtn!!)
+
+        _waveBtn!!.setOnClickListener(object : OnClickListener{
+            override fun onClick(view: SMView?) {
+                val s = _contentView.getContentSize()
+                _ringFlag = !_ringFlag
+                if (_ringView!=null) {
+                    _contentView.removeChild(_ringView)
+                    _ringView = null
+                }
+                if (_alarmCircle!=null) {
+                    _contentView.removeChild(_alarmCircle)
+                    _alarmCircle = null
+                }
+
+                if (_ringFlag) {
+                    _waveBtn!!.setText("RING PULSE2")
+                    _ringView = RingWave2.create(getDirector(), 120f, 150f)
+                    _ringView!!.setAnchorPoint(Vec2.MIDDLE)
+                    _ringView!!.setPosition(s.width/2f, s.height/2f-AppConst.SIZE.MENUBAR_HEIGHT/2f)
+                    _ringView!!.setColor(getRandomColor4F())
+                    _contentView.addChild(_ringView)
+
+                    val src = Rect(_buttunRect)
+                    val dst = Rect(60f, s.height-AppConst.SIZE.MENUBAR_HEIGHT-30f, s.width-120f, AppConst.SIZE.MENUBAR_HEIGHT)
+                    val action = ViewTransitionActionCreate(getDirector(), view!!)
+                    action.setValue(src, dst, 0.3f, 0.1f)
+                    view.runAction(action)
+                } else {
+                    _waveBtn!!.setText("RING PULSE1")
+                    val pulseColor = getRandomColor4F()
+                    _alarmCircle = SMSolidCircleView.create(getDirector())
+
+                    _alarmCircle!!.setContentSize(Size(105f, 105f))
+                    _alarmCircle!!.setColor(pulseColor)
+                    _alarmCircle!!.setAnchorPoint(Vec2.MIDDLE)
+                    _alarmCircle!!.setPosition(s.width/2f, s.height/2f - AppConst.SIZE.MENUBAR_HEIGHT/2f)
+                    _contentView.addChild(_alarmCircle)
+
+                    _alarmCircle!!.setAlpha(0f)
+                    _alarmCircle!!.stopAllActions()
+
+                    val a = TransformAction.create(getDirector())
+                    a.toAlpha(1f).setTimeValue(0.2f, 0f)
+                    _alarmCircle!!.runAction(a)
+
+                    val size = _alarmCircle!!.getContentSize()
+                    RingWave.show(getDirector(), _alarmCircle!!, size.width/2f, size.height/2f, 525f, 0.6f, 0.1f, pulseColor, true)
+
+                    val src = Rect(60f, s.height-AppConst.SIZE.MENUBAR_HEIGHT-30f, s.width-120f, AppConst.SIZE.MENUBAR_HEIGHT)
+                    val dst = Rect(_buttunRect)
+                    val action = ViewTransitionActionCreate(getDirector(), view!!)
+                    action.setValue(src, dst, 0.3f, 0.1f)
+                    view.runAction(action)
+                }
+            }
+        })
+    }
+
+    fun stickerDisplay() {
+        val s = _contentView.getContentSize()
+
+        // zoom layer
+        val borderSize = Size(s.width, s.height-AppConst.SIZE.BOTTOM_MENU_HEIGHT)
+        _stickerLayer = StickerLayer.create(getDirector(), BitmapSprite.createFromAsset(getDirector(), "images/defaults.jpg", false, null), borderSize)
+        _stickerLayer!!.setAnchorPoint(Vec2.MIDDLE)
+        _stickerLayer!!.setPosition(s.width/2f, borderSize.height/2f)
+        _stickerLayer!!.setStickerListener(this, this)
+        _contentView.addChild(_stickerLayer)
+
+        _stickerMenuView = create(getDirector(), 0, 0f, s.height-AppConst.SIZE.BOTTOM_MENU_HEIGHT, s.width, AppConst.SIZE.BOTTOM_MENU_HEIGHT)
+        _stickerMenuView!!.setBackgroundColor(Color4F.WHITE)
+        _contentView.addChild(_stickerMenuView)
+        _stickerMenuView!!.setLocalZOrder(10)
+
+        val bottomUpperLine = create(getDirector(), 0, 0f, 0f, s.width, ShaderNode.DEFAULT_ANTI_ALIAS_WIDTH*1.5f)
+        bottomUpperLine.setBackgroundColor(Color4F.XADAFB3)
+        _stickerMenuView!!.addChild(bottomUpperLine)
+        bottomUpperLine.setLocalZOrder(10)
+
+        _stickerListView = StickerItemListView.create(getDirector())
+        _stickerListView!!.setOnItemClickListener(this)
+        _stickerMenuView!!.addChild(_stickerListView)
+
+        val action = _stickerListView!!.getActionByTag(AppConst.TAG.USER+1)
+        action?.stop()
+
+        _stickerListView!!.setVisible(true)
+    }
+
+    override fun onStickerTouch(view: SMView?, action: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStickerSelected(view: SMView?, select: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStickerRemoveEnd(view: SMView?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStickerRemoveBegin(view: SMView?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStickerMenuClick(sticker: SMView?, menuId: Int) {
+        if (sticker is StickerItemView) {
+            sticker.prepareRemove()
+
+            _stickerLayer?.startGeineRemove(sticker)
+        }
+    }
+
+    override fun onStickerDoubleClicked(view: SMView?, worldPoint: Vec2) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStickerLayout(itemView: StickerItemView, sprite: Sprite?, item: StickerItem, colorIndex: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onItemClick(sender: ItemListView, view: StickerItemThumbView) {
+
+    }
+
+    override fun resetDownload() {
+        _mutex.withLock {
+            for (task in _downloadTask) {
+                if (task.isTargetAlive()) {
+                    if (task.isRunning()) {
+                        task.interrupt()
+                    }
+                }
+            }
+
+            _downloadTask.clear()
+        }
+    }
+
+    override fun removeDownloadTask(task: ImageDownloadTask?) {
+        _mutex.withLock {
+            val iter = _downloadTask.iterator()
+            while (iter.hasNext()) {
+                val t = iter.next()
+                if (!t.isTargetAlive()) {
+                    _downloadTask.remove(t)
+                } else if (task!=null && (t==task || task.getCacheKey().compareTo(t.getCacheKey())==0)) {
+                    task.interrupt()
+                    _downloadTask.remove(t)
+                }
+            }
+        }
+    }
+
+    override fun onImageLoadStart(state: IDownloadProtocol.DownloadStartState) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onImageLoadComplete(sprite: Sprite?, tag: Int, direct: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onImageCacheComplete(success: Boolean, tag: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDataLoadStart() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDataLoadComplete(data: ByteArray, size: Int, tag: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun isDownloadRunning(requestPath: String, requestTag: Int): Boolean {
+        _mutex.withLock {
+            for (t in _downloadTask) {
+                if (t.getRequestPath().compareTo(requestPath)==0 && t.getTag()==requestTag) {
+                    return true
+                }
+            }
+            return false
+        }
+    }
+
+    override fun addDownloadTask(task: ImageDownloadTask?): Boolean {
+        _mutex.withLock {
+            val iter = _downloadTask.iterator()
+            while (iter.hasNext()) {
+                val t = iter.next()
+                if (!t.isTargetAlive()) {
+                    _downloadTask.remove(t)
+                } else if (task!=null && t.isRunning() && (t==task || task.getCacheKey().compareTo(t.getCacheKey())==0)) {
+                    return false
+                }
+            }
+
+            _downloadTask.add(task!!)
+            return true
+        }
+    }
+
+    override var _imageProcessTask: ArrayList<ImageProcessTask>
+        get() = TODO("Not yet implemented")
+        set(value) {
+
+        }
+
+    override fun resetImageProcess() {
+        val iter = _imageProcessTask.iterator()
+        while (iter.hasNext()) {
+            val task = iter.next()
+            if (task.isRunning()) {
+                task.interrupt()
+            }
+        }
+
+        _imageProcessTask.clear()
+    }
+
+    override fun removeImageProcessTask(task: ImageProcessTask) {
+        val iter = _imageProcessTask.iterator()
+        while (iter.hasNext()) {
+            val t = iter.next()
+            if (!t.isTargetAlive()) {
+                _imageProcessTask.remove(t)
+            } else if (t==task) {
+                task.interrupt()
+                _imageProcessTask.remove(t)
+            }
+        }
+    }
+
+    override fun addImageProcessTask(task: ImageProcessTask): Boolean {
+        val iter = _imageProcessTask.iterator()
+        while (iter.hasNext()) {
+            val t = iter.next()
+            if (!t.isTargetAlive()) {
+                _imageProcessTask.remove(t)
+            } else if (task==t && t.isRunning()) {
+                return false
+            }
+        }
+        _imageProcessTask.add(task)
+        return true
+    }
+
+    private fun runSelectSticker(index: Int): StickerItemView? {
+        return runSelectSticker(index, false)
+    }
+
+    private fun runSelectSticker(index: Int, fromTemplate: Boolean): StickerItemView? {
+        return runSelectSticker(index, fromTemplate, 0)
+    }
+
+    private fun runSelectSticker(index: Int, fromTemplate: Boolean, colorIndex: Int): StickerItemView? {
+        return runSelectSticker(index, fromTemplate, colorIndex, -1)
+    }
+
+    private fun runSelectSticker(index: Int, fromTemplate: Boolean, colorIndex: Int, code: Int): StickerItemView? {
+        if (index==0 && code<0) {
+            _stickerLayer?.removeAllStickerWithFly()
+        } else {
+            var sticker: StickerItemView? = null
+            val item = _stickerListView!!.getItem(index)
+            if (item!=null) {
+                sticker = StickerItemView.createWithItem(getDirector(), item, this)
+                _stickerLayer?.addSticker(sticker)
+            }
+            if (sticker!=null) {
+                sticker.setPosition(_stickerLayer!!.getContentSize().divide(2f))
+                _stickerLayer!!.getCanvas().setSelectSticker(sticker)
+            }
+            return sticker
+        }
+
+        return null
     }
 }

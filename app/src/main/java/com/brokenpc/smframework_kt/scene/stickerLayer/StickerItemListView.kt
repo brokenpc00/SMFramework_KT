@@ -57,7 +57,7 @@ class StickerItemListView(director: IDirector) : ItemListView(director) {
                     } else {
                         if (array.size>index) {
                             val m = array[index].getMap()
-                            if (m!=null && name.compareTo(m[NAME].toString())==0) {
+                            if (m!=null && name.compareTo(m[NAME]!!.getString())==0) {
                                 setStickerItem(_items[index], index)
                                 return _items[index]
                             }
@@ -150,9 +150,11 @@ class StickerItemListView(director: IDirector) : ItemListView(director) {
     protected fun getView(indexPath: IndexPath): SMView {
         val index = indexPath.getIndex()
         var thumb:StickerItemThumbView? = if (index==0) {
-            dequeueReusableCellWithIdentifier("NOIMAGE") as StickerItemThumbView
+            val view = dequeueReusableCellWithIdentifier("NOIMAGE")
+            if (view is StickerItemThumbView) view else null
         } else {
-            dequeueReusableCellWithIdentifier("STICKER") as StickerItemThumbView
+            val view = dequeueReusableCellWithIdentifier("STICKER${index}")
+            if (view is StickerItemThumbView) view else null
         }
 
         if (thumb==null) {
@@ -172,7 +174,7 @@ class StickerItemListView(director: IDirector) : ItemListView(director) {
 
         val m = _dict[ITEMS]!!.getList()!![index].getMap()!!
         thumb.setTag(index)
-        val thumbPath = "$_resourceRootPath$THUMB/${m[NAME].toString()}$IMG_EXTEND"
+        val thumbPath = "$_resourceRootPath$THUMB/${m[NAME]!!.getString()}$IMG_EXTEND"
         thumb.setImagePath(thumbPath)
         return thumb
     }

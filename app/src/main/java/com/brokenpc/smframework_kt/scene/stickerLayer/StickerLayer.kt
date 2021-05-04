@@ -69,6 +69,7 @@ class StickerLayer(director: IDirector) : SMView(director), StickerCanvasView.St
 
         _bgImageView.setAnchorPoint(Vec2.MIDDLE)
         if (_gridSprite!=null) {
+            _bgImageView.setSprite(_gridSprite)
             _bgImageView.setContentSize(_gridSprite!!.getContentSize())
             _bgImageView.setPosition(_contentView.getContentSize().divide(2f))
         } else {

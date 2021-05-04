@@ -61,23 +61,21 @@ class RingWave(director: IDirector) : SMView(director) {
         }
         _circle.setAlpha(0f)
 
-        var action: Action
 
-        val wave = EaseOut.create(getDirector(), WaveCircleActionCreate(getDirector(), duration, _circle, size), 0.2f)!!
+        val wave = EaseOut.create(getDirector(), WaveCircleActionCreate(getDirector(), duration, _circle, size), 2.0f)!!
 
         if (_forever) {
-            var reqAction:RepeatForever
-            if (delay>0f) {
-                reqAction = RepeatForever.create(getDirector(), Sequence.create(getDirector(), DelayTime.create(getDirector(), delay), wave, DelayTime.create(getDirector(), 0.1f), null))!!
+            var reqAction = if (delay>0f) {
+                RepeatForever.create(getDirector(), Sequence.create(getDirector(), DelayTime.create(getDirector(), delay), wave, DelayTime.create(getDirector(), 0.1f), null))!!
             } else {
-                reqAction = RepeatForever.create(getDirector(), Sequence.create(getDirector(), wave, DelayTime.create(getDirector(), 0.1f), null))!!
+                RepeatForever.create(getDirector(), Sequence.create(getDirector(), wave, DelayTime.create(getDirector(), 0.1f), null))!!
             }
             runAction(reqAction)
         } else {
-            if (delay>0f) {
-                action = Sequence.create(getDirector(), DelayTime.create(getDirector(), delay), wave, null)!!
+            var action = if (delay>0f) {
+                Sequence.create(getDirector(), DelayTime.create(getDirector(), delay), wave, null)!!
             } else {
-                action = wave
+                wave
             }
             runAction(action)
         }
@@ -99,15 +97,15 @@ class RingWave(director: IDirector) : SMView(director) {
         private var _shape:SMShapeView? = null
         private var _size: Float = 0f
         override fun update(t: Float) {
-            val r1 = (_size * sin(t* M_PI/2f)).toFloat()
-            val r2 = (_size * (1f- cos(t * M_PI / 2f))).toFloat()
+            val r1 = (_size * sin(t * M_PI / 2)).toFloat()
+            val r2 = (_size * (1.0f - cos(t * M_PI / 2))).toFloat()
 
-            val d = r2-r1
+            val d = r1 - r2
             val a = sin(t * M_PI).toFloat()
 
             _shape?.setAlpha(0.7f * a)
-            _shape?.setContentSize(r1, r2)
-            _shape?.setLineWidth(d / 4f)
+            _shape?.setContentSize(Size(r1, r2))
+            _shape?.setLineWidth(d / 4.0f)
 
             if (!_forever) {
                 if (t >= 1) {
