@@ -441,6 +441,7 @@ open class ImageDownloader {
                     if (task.isTargetAlive()) {
                         SMDirector.getDirector().getScheduler().performFunctionInMainThread(object : PERFORM_SEL {
                             override fun performSelector() {
+                                if (task.isTargetAlive()) {
                                 if (task.getConfig().isCacheOnly()) {
                                     task.getTarget()?.onImageCacheComplete(true, task.getTag())
                                 } else {
@@ -448,6 +449,7 @@ open class ImageDownloader {
                                 }
 
                                 task.getTarget()?.removeDownloadTask(task)
+                            }
                             }
                         })
                     }

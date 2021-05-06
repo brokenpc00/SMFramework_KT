@@ -153,7 +153,7 @@ class StickerItemListView(director: IDirector) : ItemListView(director) {
             val view = dequeueReusableCellWithIdentifier("NOIMAGE")
             if (view is StickerItemThumbView) view else null
         } else {
-            val view = dequeueReusableCellWithIdentifier("STICKER${index}")
+            val view = dequeueReusableCellWithIdentifier("STICKER")
             if (view is StickerItemThumbView) view else null
         }
 

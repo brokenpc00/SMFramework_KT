@@ -73,7 +73,7 @@ open class SMTableView(director:IDirector) : BaseTableView(director) {
 
     companion object {
         const val JUMP_ACTION_DURATION:Float = 0.25f
-        const val CLEANUP_FLAG:Boolean = false
+        const val CLEANUP_FLAG:Boolean = true
         const val FLAG_SCROLL_UPDATE:Long = 1L
 
         // member class
