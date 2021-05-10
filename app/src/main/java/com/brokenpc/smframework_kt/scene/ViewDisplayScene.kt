@@ -919,19 +919,19 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     }
 
     override fun onStickerTouch(view: SMView?, action: Int) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onStickerSelected(view: SMView?, select: Boolean) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onStickerRemoveEnd(view: SMView?) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onStickerRemoveBegin(view: SMView?) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onStickerMenuClick(sticker: SMView?, menuId: Int) {
@@ -943,15 +943,15 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     }
 
     override fun onStickerDoubleClicked(view: SMView?, worldPoint: Vec2) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onStickerLayout(itemView: StickerItemView, sprite: Sprite?, item: StickerItem, colorIndex: Int) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onItemClick(sender: ItemListView, view: StickerItemThumbView) {
-
+        runSelectSticker(view.getTag())
     }
 
     override fun resetDownload() {

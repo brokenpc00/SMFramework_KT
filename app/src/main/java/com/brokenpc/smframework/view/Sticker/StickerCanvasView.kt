@@ -20,8 +20,9 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
     private lateinit var _controller: MultiTouchController<SMView>
     private var _selectedView: SMView? = null
     private lateinit var _velocityTracker: VelocityTracker
+
     private var _trackFlyEvent = false
-    private var _flyRemovable = false
+    private var _flyRemovable = true
 
     private var _lastTouchPoint:MultiTouchController.Companion.PointInfo = MultiTouchController.Companion.PointInfo()
     private var _listener:StickerCanvasListener? = null
@@ -58,7 +59,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
         val children = getChildren()
 
         if (BuildConfig.DEBUG && !children.contains(view)) {
-            error("Assertion Failed")
+            error("Assertion Failed - addChild First")
         }
 
         var zorder = 0
@@ -90,16 +91,15 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
             error("Assertion Failed")
         }
 
+        var zorder = -1
+
         val iter = children.listIterator()
-
-        var zorder = 0
-
         while (iter.hasNext()) {
             val child = iter.next()
 
             if (child==_bgView || child==view) continue
 
-            child.setLocalZOrder(--zorder)
+            child.setLocalZOrder(zorder--)
         }
 
         view.setLocalZOrder(0)
@@ -113,9 +113,8 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
             error("Assertion Failed")
         }
 
-        val iter = children.iterator()
         var zorder = 0
-
+        val iter = children.iterator()
         while (iter.hasNext()) {
             val child = iter.next()
 
@@ -138,6 +137,10 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
 
         if (BuildConfig.DEBUG && !children.contains(view)) {
             error("Assertion Failed")
+        }
+
+        if (!children.contains(aboveView) || view==aboveView) {
+            return
         }
 
         var zorder = 0
@@ -167,17 +170,20 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
             return
         }
 
-        val children =getChildren()
+        val children = getChildren()
 
         if (BuildConfig.DEBUG && !children.contains(view)) {
             error("Assertion Failed")
+        }
+
+        if (!children.contains(belowView) || view==belowView) {
+            return
         }
 
         var zorder = 0
         var target = 0
 
         val iter = children.iterator()
-
         while (iter.hasNext()) {
             val child = iter.next()
 
@@ -195,21 +201,9 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
         sortAllChildren()
     }
 
-    override fun addChild(child: SMView?) {
-        addChild(child, 0)
-    }
-
-    override fun addChild(child: SMView?, zOrder: Int) {
-        addChild(child, zOrder, "")
-    }
-
     override fun addChild(child: SMView?, zOrder: Int, name: String) {
         super.addChild(child, zOrder, name)
         setSelectSticker(null)
-    }
-
-    override fun removeChild(child: SMView?) {
-        removeChild(child, true)
     }
 
     override fun removeChild(child: SMView?, cleanup: Boolean) {
@@ -222,7 +216,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
     }
 
     fun setSelectSticker(view: SMView?): Boolean {
-        if (view!=null) {
+        if (view==null) {
             if (_selectedView!=null) {
                 performSelected(_selectedView!!, false)
                 _selectedView = null
@@ -290,8 +284,8 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
                     val vx = _velocityTracker.getXVelocity(0)
                     val vy = _velocityTracker.getYVelocity(0)
 
-                    val radian = atan2(vy, vx).toDouble()
-                    var degrees = toDegrees(radian).toFloat()
+                    val radian = atan2(vy, vx)
+                    var degrees = toDegrees(radian)
                     val speed = sqrt(vx*vx + vy*vy)
 
                     degrees = (degrees+360.0f) % 360.0f
@@ -317,10 +311,10 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
             val child = iter.next()
             if (child==_bgView) continue
 
-            val nodePoint = convertToNodeSpace(worldPoint)
+            val nodePoint = child.convertToNodeSpace(worldPoint)
 
             val size = child.getContentSize()
-            if (!(nodePoint.x<0 || nodePoint.y<0 || nodePoint.x>=size.width || nodePoint.y>=size.height)) {
+            if (!(nodePoint.x<0 || nodePoint.y<0 || nodePoint.x>size.width-1 || nodePoint.y>size.height-1)) {
                 if (child.getActionByTag(AppConst.TAG.ACTION_STICKER_REMOVE)!=null) {
                     return child
                 }
@@ -338,7 +332,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
     override fun getPositionAndScale(view: SMView?, objPosAndScaleOut: MultiTouchController.Companion.PositionAndScale) {
         if (view==null) return
         val pt = view.getPosition() ?: Vec2(Vec2.ZERO)
-        objPosAndScaleOut.set(pt.x, pt.y, true, view.getScale(), false, 1f, 1f, true, toRadians(-view.getRotation()))
+        objPosAndScaleOut.set(pt.x, pt.y, true, view.getScale(), false, 1f, 1f, true, toRadians(-view!!.getRotation()))
     }
 
     override fun setPositionAndScale(view: SMView?, newObjPosAndScale: MultiTouchController.Companion.PositionAndScale, touchPoint: MultiTouchController.Companion.PointInfo): Boolean {
@@ -394,7 +388,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
     }
 
     override fun toCanvasPoint(worldPoint: Vec2): Vec2 {
-        return convertToWorldSpace(worldPoint)
+        return convertToNodeSpace(worldPoint)
     }
 
     fun performSelected(view: SMView?, selected: Boolean) {
@@ -425,8 +419,10 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
         val remove = Spawn.create(getDirector(), moveTo!!, rotateTo, fadeTo!!, null)
         val seq = Sequence.create(getDirector(), remove, CallFuncN.create(getDirector(), object : PERFORM_SEL_N {
             override fun performSelector(view: SMView?) {
-                _listener?.onStickerRemoveEnd(view!!)
-                view!!.removeFromParent()
+                if (view!=null) {
+                    _listener?.onStickerRemoveEnd(view)
+                    view.removeFromParent()
+                }
             }
         }), null)
         seq?.setTag(AppConst.TAG.ACTION_STICKER_REMOVE)
@@ -446,8 +442,8 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
     fun removeChildWithGenieAction(child: SMView, sprite: Sprite?, removeAnchor: Vec2, duration: Float, delay: Float) {
         if (sprite==null) {
             removeChild(child)
+            return
         }
-
 
         if (child.getActionByTag(AppConst.TAG.ACTION_STICKER_REMOVE)!=null) return
 

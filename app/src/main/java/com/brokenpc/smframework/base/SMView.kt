@@ -461,14 +461,11 @@ open class SMView : Ref {
     private var _smoothFlag:Long = 0
     private var _lastTouchLocation: Vec2 = Vec2(0.0f, 0.0f)
     private var _isEnable: Boolean = true
-    private var _clickable: Boolean = false
-    private var _longClickable: Boolean = false
-    private var _doubleClickable: Boolean = false
     private var _scaledDoubleTouchSlope: Float = 0.0f
     private var _enabled:Boolean = true
     private var _initialTouchX: Float = 0.0f
     private var _initialTouchY: Float = 0.0f
-    private var _motionEventTime: Long = 0
+    private var _touchEventTime: Long = 0
     private var _isPressed: Boolean = false
     private var _onSmoothUpdateCallback:SEL_SCHEDULE? = null
     private var _onClickValidateCallback:SEL_SCHEDULE? = null
@@ -913,28 +910,28 @@ open class SMView : Ref {
     interface OnTouchListener {
         fun onTouch(view: SMView?, event: MotionEvent): Int
     }
-    protected var mOnTouchListener: OnTouchListener? = null
+    protected var _onTouchListener: OnTouchListener? = null
 
     interface OnClickListener {
         fun onClick(view: SMView?)
     }
-    protected var mOnClickListener: OnClickListener? = null
+    protected var _onClickListener: OnClickListener? = null
 
     interface OnDoubleClickListener {
         fun onDoubleClick(view: SMView?)
     }
-    protected var mOnDoubleClickListener: OnDoubleClickListener? = null
+    protected var _onDoubleClickListener: OnDoubleClickListener? = null
 
     interface OnLongClickListener {
         fun onLongClick(view: SMView?)
     }
-    private var mOnLongClickListener: OnLongClickListener? = null
+    private var _onLongClickListener: OnLongClickListener? = null
 
     // state change
     interface OnStateChangeListener {
         fun onStateChange(view: SMView?, state: STATE?)
     }
-    private var mOnStateChangeListener: OnStateChangeListener? = null
+    private var _onStateChangeListener: OnStateChangeListener? = null
 
     // render
     open protected fun onSmoothUpdate(flags:Long, dt:Float) {}
@@ -1011,12 +1008,12 @@ open class SMView : Ref {
     fun unscheduleAllCallbacks() {_scheduler?.unscheduleAllForTarget(this)}
 
     protected fun setTouchMask(mask: Long) {
-        _touchMask = _touchMask.or(mask)
+        _touchMask = _touchMask or mask
     }
     protected fun clearTouchMask(mask: Long) {
-        _touchMask = _touchMask.and(mask.inv())
+        _touchMask = _touchMask and mask.inv()
     }
-    protected fun isTouchMask(mask: Long): Boolean {return _touchMask.and(mask)!=0L}
+    protected fun isTouchMask(mask: Long): Boolean {return (_touchMask and mask)!=0L}
 
     open fun isTouchEnable(): Boolean {return _touchMask>0}
 
@@ -1079,12 +1076,7 @@ open class SMView : Ref {
 
     // touch event
     fun setOnTouchListener(listener: OnTouchListener?) {
-        setOnTouchListener(listener, null)
-    }
-    fun setOnTouchListener(listener: OnTouchListener?, eventTarget: SMView?) {
-        mOnTouchListener = listener
-        _eventTargetTouch = eventTarget
-
+        _onTouchListener = listener
         if (listener!=null) {
             setTouchMask(TOUCH_MASK_TOUCH)
         } else {
@@ -1093,13 +1085,7 @@ open class SMView : Ref {
     }
 
     fun setOnClickListener(listener: OnClickListener?) {
-        setOnClickListener(listener, null)
-    }
-    fun setOnClickListener(listener: OnClickListener?, eventTarget: SMView?) {
-        setClickable(true)
-
-        mOnClickListener = listener
-        _eventTargetClick = eventTarget
+        _onClickListener = listener
 
         if (listener!=null) {
             setTouchMask(TOUCH_MASK_CLICK)
@@ -1109,13 +1095,12 @@ open class SMView : Ref {
     }
 
     fun setOnDoubleClickListener(listener: OnDoubleClickListener?) {
-        setOnDoubleClickListener(listener, null)
+        if (listener==null) {
+            if (_onDoubleClickListener!=null) {
+                unscheduleClickValidator()
     }
-    fun setOnDoubleClickListener(listener: OnDoubleClickListener?, eventTarget: SMView?) {
-        setDoubleClickable(true)
-
-        mOnDoubleClickListener = listener
-        _eventTargetDoubleClick = eventTarget
+        }
+        _onDoubleClickListener = listener
 
         if (listener!=null) {
             setTouchMask(TOUCH_MASK_DOUBLECLICK)
@@ -1125,13 +1110,12 @@ open class SMView : Ref {
     }
 
     fun setOnLongClickListener(listener: OnLongClickListener?) {
-        setOnLongClickListener(listener, null)
+        if (listener==null) {
+            if (_onLongClickListener!=null) {
+                unscheduleLongClickValidator()
     }
-    fun setOnLongClickListener(listener: OnLongClickListener?, eventTarget: SMView?) {
-        setLongClickable(true)
-
-        mOnLongClickListener = listener
-        _eventTargetLongPress = eventTarget
+        }
+        _onLongClickListener = listener
 
         if (listener!=null) {
             setTouchMask(TOUCH_MASK_LONGCLICK)
@@ -1141,11 +1125,7 @@ open class SMView : Ref {
     }
 
     fun setOnStateChangeListener(listener: OnStateChangeListener?) {
-        setOnStateChangeListener(listener, null)
-    }
-    fun setOnStateChangeListener(listener: OnStateChangeListener?, eventTarget: SMView?) {
-        mOnStateChangeListener = listener
-        _eventTargetStateChange = eventTarget
+        _onStateChangeListener = listener
     }
 
     // member method
@@ -2000,36 +1980,36 @@ open class SMView : Ref {
         }
     }
 
-    open protected fun onStateChangePressToNormal(event: MotionEvent) {}
-    open protected fun onStateChangeNormalToPress(event: MotionEvent) {}
+    open protected fun onStateChangePressToNormal() {}
+    open protected fun onStateChangeNormalToPress() {}
 
-    private fun stateChangePressToNormal(event: MotionEvent) {
+    private fun stateChangePressToNormal() {
         if (_pressState==STATE.PRESSED) {
             setState(STATE.NORMAL)
 
-            onStateChangePressToNormal(event)
+            onStateChangePressToNormal()
 
-            if (mOnStateChangeListener!=null) {
+            if (_onStateChangeListener!=null) {
                 if (_eventTargetStateChange!=null) {
-                    mOnStateChangeListener?.onStateChange(_eventTargetStateChange, _pressState)
+                    _onStateChangeListener?.onStateChange(_eventTargetStateChange, _pressState)
                 } else {
-                    mOnStateChangeListener?.onStateChange(this, _pressState)
+                    _onStateChangeListener?.onStateChange(this, _pressState)
                 }
             }
         }
     }
 
-    private fun stateChangeNormalToPress(event: MotionEvent) {
+    private fun stateChangeNormalToPress() {
         if (_pressState==STATE.NORMAL) {
             setState(STATE.PRESSED);
 
-            onStateChangeNormalToPress(event)
+            onStateChangeNormalToPress()
 
-            if (mOnStateChangeListener!=null) {
+            if (_onStateChangeListener!=null) {
                 if (_eventTargetStateChange!=null) {
-                    mOnStateChangeListener?.onStateChange(_eventTargetStateChange, _pressState)
+                    _onStateChangeListener?.onStateChange(_eventTargetStateChange, _pressState)
                 } else {
-                    mOnStateChangeListener?.onStateChange(this, _pressState)
+                    _onStateChangeListener?.onStateChange(this, _pressState)
                 }
             }
         }
@@ -2327,6 +2307,10 @@ open class SMView : Ref {
     private fun addChildHelper(child: SMView, zOrder: Int, tag: Int, name: String, setTag: Boolean) {
         var ownNode:Boolean = false
 
+        if (BuildConfig.DEBUG && this==child) {
+            error("Assertion Failed... child same itself")
+        }
+
         var parent = getParent()
         while (parent != null) {
             if (parent === child) {
@@ -2364,67 +2348,36 @@ open class SMView : Ref {
         }
     }
 
-    open fun setClickable(clickable: Boolean) {
-        _clickable = clickable
-    }
-
-    open fun isDoubleClickable(): Boolean {
-        return _doubleClickable
-    }
-
-
-    open fun setDoubleClickable(doubleClickable: Boolean) {
-        if (doubleClickable) {
-            setClickable(true)
-        }
-        _doubleClickable = doubleClickable
-    }
-
-    open fun isLongClickable(): Boolean {
-        return _longClickable
-    }
-
-    open fun setLongClickable(longClickable: Boolean) {
-        if (longClickable) {
-            setClickable(true)
-        }
-        _longClickable = longClickable
-    }
-
     // click 판정시 호출 됨.
-    protected open fun performClick() {
-        if (mOnClickListener != null) {
+    protected open fun performClick(worldPoint: Vec2?) {
+        if (_onClickListener != null) {
             if (_eventTargetClick != null) {
-                mOnClickListener!!.onClick(_eventTargetClick)
+                _onClickListener!!.onClick(_eventTargetClick)
             } else {
-                mOnClickListener!!.onClick(this)
+                _onClickListener!!.onClick(this)
             }
         }
     }
 
     // doublic click 판정시 호출 됨.
     protected open fun performDoubleClick(worldPoint: Vec2?) {
-        if (mOnDoubleClickListener != null) {
+        if (_onDoubleClickListener != null) {
             if (_eventTargetDoubleClick != null) {
-                mOnDoubleClickListener!!.onDoubleClick(_eventTargetDoubleClick)
+                _onDoubleClickListener!!.onDoubleClick(_eventTargetDoubleClick)
             } else {
-                mOnDoubleClickListener!!.onDoubleClick(this)
+                _onDoubleClickListener!!.onDoubleClick(this)
             }
         }
     }
 
     // lonck lick 판정시 호출 됨.
-    protected open fun performLongClick() {
-        if (mOnLongClickListener != null) {
+    protected open fun performLongClick(worldPoint: Vec2?) {
+        if (_onLongClickListener != null) {
             if (_eventTargetLongPress != null) {
-                mOnLongClickListener?.onLongClick(_eventTargetLongPress)
+                _onLongClickListener?.onLongClick(_eventTargetLongPress)
             } else {
-                mOnLongClickListener?.onLongClick(this)
+                _onLongClickListener?.onLongClick(this)
             }
-        }
-        if (_longClickable) {
-            // for vibrator
-//            ((Vibrator)_director.getContext().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(25);
         }
     }
 
@@ -2781,7 +2734,7 @@ open class SMView : Ref {
                 event.action = MotionEvent.ACTION_CANCEL
                 targetView.dispatchTouchEvent(event)
                 targetView._touchHasFirstClicked = false
-                targetView.stateChangePressToNormal(event)
+                targetView.stateChangePressToNormal()
             }
         }
     }
@@ -2870,110 +2823,122 @@ open class SMView : Ref {
         if (!isEnabled()) {
             return SMView.TOUCH_TRUE
         }
-        if (mOnTouchListener != null) {
-            var ret: Int = SMView.TOUCH_FALSE
-            if (_eventTargetTouch != null) {
-                ret = mOnTouchListener!!.onTouch(_eventTargetTouch, event)
-            } else {
-                ret = mOnTouchListener!!.onTouch(this, event)
-            }
-            if (ret != SMView.TOUCH_FALSE) {
+        _lastTouchLocation.set(event.x, event.y)
+
+        if (_onTouchListener != null) {
+            val ret = _onTouchListener!!.onTouch(this, event)
+            if (ret!= TOUCH_FALSE) {
                 return ret
             }
         }
         val action = event.action
-        if (_touchMotionTarget != null) {
-            // motion target이 있으면 (내가 처리할...)
-            if (action == MotionEvent.ACTION_DOWN) {
+        if (_touchMotionTarget!=null) {
+            if (action==MotionEvent.ACTION_DOWN) {
                 _touchMotionTarget = null
             } else {
                 val ret = dispatchTouchEvent(event, _touchMotionTarget!!, false)
-                if (_touchMotionTarget!!._clickable) {
-                    // touch 가능 상태이냐???
-                    if (action == MotionEvent.ACTION_UP) {
-                        // action up일 때
-                        val time =
-                            Math.abs(_director!!.getTickCount() - _touchMotionTarget!!._motionEventTime)
-                        // touch에 걸린시간이 TA_TIMEOUT 보다 작으면(약 0.3초)
-                        if (time < ViewConfig.TAP_TIMEOUT) {
-                            // 유효한 클릭으로 처리
-                            if (_touchMotionTarget!!._doubleClickable) {
-                                // DoubleClick 가능한 상태
+                if (_touchMotionTarget!=null && _touchMotionTarget!!._touchTargeted && _touchMotionTarget!!.isTouchEnable()) {
+                    _touchMotionTarget!!.unscheduleLongClickValidator()
+
+                    val dx = event.x - _touchMotionTarget!!._initialTouchX
+                    val dy = event.y - _touchMotionTarget!!._initialTouchY
+                    val distance = sqrt(dx * dx + dy * dy.toDouble()).toFloat()
+
+                    if (action==MotionEvent.ACTION_UP) {
+                        val gap = (event.eventTime - _touchMotionTarget!!._touchEventTime) / 1000f
+                        if (gap < AppConst.Config.TAP_TIMEOUT) {
+                            if (_touchMotionTarget!!.isTouchMask(TOUCH_MASK_DOUBLECLICK)) {
+                                // enable Double click
                                 if (_touchMotionTarget!!._touchHasFirstClicked) {
                                     _touchMotionTarget!!._touchHasFirstClicked = false
-                                    val dx =
-                                        event.x - _touchMotionTarget!!._initialTouchX
-                                    val dy =
-                                        event.y - _touchMotionTarget!!._initialTouchY
-                                    val slope =
-                                        Math.sqrt(dx * dx + dy * dy.toDouble()).toFloat()
-                                    if (slope < _scaledDoubleTouchSlope) {
-                                        // doublie click로 판정
-                                        _touchMotionTarget!!.performDoubleClick(Vec2(event.x, event.y))
+                                    if (distance<AppConst.Config.SCALED_DOUBLE_TAB_SLOPE) {
+                                        _touchMotionTarget!!.performDoubleClick(_lastTouchLocation)
                                     }
+                                    _touchMotionTarget!!.unscheduleClickValidator()
                                 } else {
-                                    // 두번째 클릭 실패..
+                                    if (distance<AppConst.Config.SCALED_TOUCH_SLOPE) {
+                                        // first click
+                                        _touchMotionTarget!!._touchTargeted = false
                                     _touchMotionTarget!!._touchHasFirstClicked = true
-                                    _touchMotionTarget!!._motionEventTime =
-                                        _director!!.getTickCount().toLong()
+                                        _touchMotionTarget!!._touchEventTime = event.eventTime
+                                        _touchMotionTarget!!.scheduleClickValidator()
+                                    } else {
+                                        // not first click
+                                        _touchMotionTarget!!._touchTargeted = false
+                                        _touchMotionTarget!!._touchHasFirstClicked = false
+                                        _touchMotionTarget!!.unscheduleClickValidator()
                                 }
+                                }
+                                _touchMotionTarget!!.stateChangePressToNormal()
                             } else {
-                                // Click만 가능한 상태면 바로 Click (Doubletap 불가)
+                                // only single click
+                                _touchMotionTarget!!._touchTargeted = false
                                 _touchMotionTarget!!._touchHasFirstClicked = false
-                                if (ret == SMView.TOUCH_FALSE) {
-                                    // 일반 click로 판정
-                                    _touchMotionTarget!!.performClick()
+                                if (ret==TOUCH_FALSE && distance<AppConst.Config.SCALED_TOUCH_SLOPE) {
+                                    // just single click
+                                    _touchMotionTarget!!.performClick(_lastTouchLocation)
                                 }
+                                _touchMotionTarget!!.stateChangePressToNormal()
                             }
                         } else {
-                            // 클릭 시간 타임 아웃... 무효처리
+                            _touchMotionTarget!!._touchTargeted = false
                             _touchMotionTarget!!._touchHasFirstClicked = false
+                            _touchMotionTarget!!.unscheduleClickValidator()
+                            _touchMotionTarget!!.unscheduleLongClickValidator()
+                            _touchMotionTarget!!.stateChangePressToNormal()
+                            _touchMotionTarget = null
                         }
-                    } else if (action == MotionEvent.ACTION_MOVE) {
-                        // 움직이다가 내 영역을 벗어났다면 무효처리
-                        if (!_touchMotionTarget!!.pointInView(event.x, event.y)) {
+                    } else if (action==MotionEvent.ACTION_MOVE) {
+
+                        if (distance > AppConst.Config.SCALED_TOUCH_SLOPE) {
                             _touchMotionTarget!!._touchHasFirstClicked = false
+                            _touchMotionTarget!!.unscheduleClickValidator()
+                            _touchMotionTarget!!.unscheduleLongClickValidator()
                         }
+                    } else if (action==MotionEvent.ACTION_CANCEL) {
+                        // cancel touch
+                        _touchMotionTarget!!._touchHasFirstClicked = false
+                        _touchMotionTarget!!.unscheduleClickValidator()
+                        _touchMotionTarget!!.unscheduleLongClickValidator()
                     }
                 }
 
-                // action up을 위에서 처리하지 못했으면 무효처리.. (타임 아웃 등)
-                if (action == MotionEvent.ACTION_CANCEL ||
-                    action == MotionEvent.ACTION_UP
-                ) {
-                    _touchMotionTarget!!._isPressed = false
-                    _touchMotionTarget!!.stateChangePressToNormal(event)
+                if (action==MotionEvent.ACTION_CANCEL || action==MotionEvent.ACTION_UP) {
                     _touchMotionTarget = null
                 }
-                return if (ret == SMView.TOUCH_INTERCEPT) {
-                    SMView.TOUCH_INTERCEPT
-                } else SMView.TOUCH_TRUE
+
+                if (ret== TOUCH_INTERCEPT) {
+                    return TOUCH_INTERCEPT
+                }
+
+                return TOUCH_TRUE
             }
         } else {
-            // motion target이 없으면 (내가 처리할...) 하위 (자식 뷰)에서 처리한다.
-            if (action == MotionEvent.ACTION_DOWN) {
-                val touchRet: SMView.DispatchChildrenRet = dispatchChildren(event, 0)
+            if (action==MotionEvent.ACTION_DOWN) {
+                val touchRet = dispatchChildren(event, 0)
                 if (touchRet.retB) {
                     return touchRet.retI
                 }
             }
         }
-        return if (isClickable()) {
-            when (event.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> SMView.TOUCH_FALSE
-                else -> SMView.TOUCH_TRUE
+
+        if (isTouchEnable()) {
+            return  when (action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    TOUCH_FALSE
+                }
+                else -> {
+                    TOUCH_TRUE
             }
-        } else SMView.TOUCH_FALSE
+    }
     }
 
-    open fun isClickable(): Boolean {
-        return _clickable
+        return TOUCH_FALSE
     }
-
 
     protected open fun onTouch(event: MotionEvent?): Int {
-        return if (mOnTouchListener != null) {
-            mOnTouchListener!!.onTouch(this, event!!)
+        return if (_onTouchListener != null) {
+            _onTouchListener!!.onTouch(this, event!!)
         } else SMView.TOUCH_FALSE
     }
 
@@ -2993,22 +2958,27 @@ open class SMView : Ref {
         val numChildCount = getChildCount()
         for (i in numChildCount - 1 downTo 0) {
             val child = getChild(i)
-            if (!child!!.isVisible()) continue
+            if (!child!!.isVisible() || !child.isEnabled()) continue
             ret.retI = dispatchTouchEvent(event, child, true)
             if (ret.retI != SMView.TOUCH_FALSE) {
                 _touchMotionTarget = child
                 if (child._touchMotionTarget == null) {
-                    _touchMotionTarget!!._isPressed = true
-                    _touchMotionTarget!!._motionEventTime = _director!!.getTickCount().toLong()
-                    _touchMotionTarget!!.stateChangeNormalToPress(event)
+                    _touchMotionTarget!!._touchTargeted = true
+                    _touchMotionTarget!!._touchEventTime = event.eventTime
+                    _touchMotionTarget!!.stateChangeNormalToPress()
                     if (!_touchMotionTarget!!._touchHasFirstClicked) {
                         _touchMotionTarget!!._initialTouchX = event.x
                         _touchMotionTarget!!._initialTouchY = event.y
+                    } else {
+                        _touchMotionTarget!!.unscheduleClickValidator()
                     }
                     _isPressed = false
                     // 이거 문제되면 빼자.
-                    onStateChangePressToNormal(event)
+//                    onStateChangePressToNormal()
                     _touchHasFirstClicked = false
+                    if (_touchMotionTarget!!.isTouchMask(TOUCH_MASK_LONGCLICK)) {
+                        _touchMotionTarget!!.scheduleLongClickValidator()
+                    }
                 }
                 ret.retB = true
                 return ret
@@ -3018,7 +2988,7 @@ open class SMView : Ref {
         return ret
     }
 
-    open fun dispatchTouchEvent(event: MotionEvent?, view: SMView, checkBounds: Boolean): Int {
+    fun applyMatrix(event: MotionEvent, view: SMView): MotionEvent {
         SMView._matrix.reset()
         SMView._matrix.postTranslate(
             -view.getX() + view._anchorPointInPoints.x,
@@ -3030,11 +3000,19 @@ open class SMView : Ref {
         if (view._rotationZ_X != 0f) {
             SMView._matrix.postRotate(-view._rotationZ_X)
         }
+
         val ev = MotionEvent.obtain(event)
         ev.transform(SMView._matrix)
+        return ev
+    }
+
+    open fun dispatchTouchEvent(event: MotionEvent?, view: SMView, checkBounds: Boolean): Int {
+        val ev = applyMatrix(event!!, view)
+
         val action = ev.action
         val point = Vec2(ev.getX(0), ev.getY(0))
         val isContain = view.containsPoint(point)
+
         view._touchPrevPosition.set(view._touchCurrentPosition)
         view._touchCurrentPosition.set(point)
         if (!view._startPointCaptured) {
@@ -3046,24 +3024,25 @@ open class SMView : Ref {
             view._startPointCaptured = false
         }
         _lastTouchLocation.set(point.x, point.y)
+
         if (action == MotionEvent.ACTION_DOWN) {
             view._touchStartPosition.set(point.x, point.y)
             view._touchStartTime = _director!!.getGlobalTime()
         } else {
             view._touchLastPosition.set(point.x, point.y)
         }
+
         if (view._cancelIfTouchOutside && action == MotionEvent.ACTION_DOWN && !isContain) {
             view.cancel()
         }
+
         var ret = TOUCH_FALSE
         if (!checkBounds || isContain || view === _touchMotionTarget) {
             ret = view.dispatchTouchEvent(ev)
         } else if (view._ignoreTouchBounds && action == MotionEvent.ACTION_DOWN) {
-            val touchRet = view.dispatchChildren(ev, ret)
-            ret = touchRet!!.retI
-            //            view.dispatchChildren(ev);
+            view.dispatchChildren(ev, ret)
         }
-        ev.recycle()
+//        ev.recycle()
         return ret
     }
 
@@ -3348,5 +3327,62 @@ open class SMView : Ref {
         val ptY:Float = _mapPoint[1]
 
         return containsPoint(ptX, ptY)
+    }
+
+    fun scheduleClickValidator() {
+        if (_onClickValidateCallback==null) {
+            _onClickValidateCallback = object : SEL_SCHEDULE {
+                override fun scheduleSelector(t: Float) {
+                    onClickValidator(t)
+                }
+            }
+        }
+
+        if (!isScheduled(_onClickValidateCallback)) {
+            scheduleOnce(_onClickValidateCallback, AppConst.Config.DOUBLE_TAP_TIMEOUT)
+        }
+    }
+
+    fun unscheduleClickValidator() {
+        if (_onClickValidateCallback!=null && isScheduled(_onClickValidateCallback)) {
+            unschedule(_onClickValidateCallback)
+        }
+    }
+
+    fun scheduleLongClickValidator() {
+        if (_onLongClickValidateCallback==null) {
+            _onLongClickValidateCallback = object : SEL_SCHEDULE {
+                override fun scheduleSelector(t: Float) {
+                    onLongClickValidator(t)
+                }
+            }
+        }
+
+        if (!isScheduled(_onLongClickValidateCallback)) {
+            scheduleOnce(_onLongClickValidateCallback, AppConst.Config.LONG_PRESS_TIMEOUT)
+        }
+    }
+
+    fun unscheduleLongClickValidator() {
+        if (_onLongClickValidateCallback!=null && isScheduled(_onLongClickValidateCallback)) {
+            unschedule(_onLongClickValidateCallback)
+        }
+    }
+
+    fun onClickValidator(dt: Float) {
+        if (isTouchMask(TOUCH_MASK_DOUBLECLICK) && _touchHasFirstClicked) {
+            _touchHasFirstClicked = false
+            _touchTargeted = false
+            performClick(_lastTouchLocation)
+        }
+    }
+
+    fun onLongClickValidator(dt: Float) {
+        if (isTouchMask(TOUCH_MASK_LONGCLICK) && !_touchHasFirstClicked) {
+            _touchHasFirstClicked = false
+            _touchTargeted = false
+            stateChangePressToNormal()
+            performLongClick(_lastTouchLocation)
+        }
     }
 }

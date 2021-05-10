@@ -14,7 +14,7 @@ import com.brokenpc.smframework.view.SMSolidCircleView
 import com.interpark.smframework.view.RingWave
 import com.interpark.smframework.view.RingWave2
 
-class StickerControlView(director: IDirector): SMView(director), SMView.OnClickListener, SMView.OnTouchListener {
+class StickerControlView(director: IDirector): SMView(director), SMView.OnClickListener {
     private lateinit var _uiView: SMView
     private lateinit var _borderRect: SMRoundRectView
     private lateinit var _sizeButton: SMButton
@@ -90,7 +90,7 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
         shadow.setAntiAliasWidth(30f)
         shadow.setPosition(135f, 105f)
         _sizeButton.setBackgroundColor(Color4F(0f, 0f, 0f, 0.15f))
-        _sizeButton.setOnTouchListener(this)
+//        _sizeButton.setOnTouchListener(this)
         _uiView.addChild(_sizeButton)
 
         // trash button
@@ -155,34 +155,35 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
         return ret
     }
 
-    override fun onTouch(view: SMView?, event: MotionEvent): Int {
-        val action = event.action
-        val point = Vec2(event.x, event.y)
+//    override fun onTouch(view: SMView?, event: MotionEvent): Int {
 
-        if (view==null) return TOUCH_TRUE
-
-        if (action==MotionEvent.ACTION_DOWN) {
-            val size = view!!.getContentSize()
-            RingWave.show(getDirector(), view!!, size.width/2f, size.height/2f, 200f, 0.25f, 0.0f, WAVE_COLOR)
-        }
-
-
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                _grabPt.set(point)
-                return TOUCH_FALSE
-            }
-            MotionEvent.ACTION_MOVE -> {
-                val pt = (view.getPosition().minus(Vec2(BORDER_MARGIN, BORDER_MARGIN).add(point).minus(_grabPt))).multiply(0.5f)
-                val dist = pt.length()
-
-                // ToDo.... Sticker Moving Action.
-                return TOUCH_TRUE
-            }
-        }
-
-        return TOUCH_FALSE
-    }
+//        val action = event.action
+//        val point = Vec2(event.x, event.y)
+//
+//        if (view==null) return TOUCH_TRUE
+//
+//        if (action==MotionEvent.ACTION_DOWN) {
+//            val size = view!!.getContentSize()
+//            RingWave.show(getDirector(), view!!, size.width/2f, size.height/2f, 200f, 0.25f, 0.0f, WAVE_COLOR)
+//        }
+//
+//
+//        when (action) {
+//            MotionEvent.ACTION_DOWN -> {
+//                _grabPt.set(point)
+//                return TOUCH_FALSE
+//            }
+//            MotionEvent.ACTION_MOVE -> {
+//                val pt = (view.getPosition().minus(Vec2(BORDER_MARGIN, BORDER_MARGIN).add(point).minus(_grabPt))).multiply(0.5f)
+//                val dist = pt.length()
+//
+//                // ToDo.... Sticker Moving Action.
+//                return TOUCH_TRUE
+//            }
+//        }
+//
+//        return TOUCH_FALSE
+//    }
 
     fun linkStickerView(view: SMView?) {
         if (_targetView!=view) {

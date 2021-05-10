@@ -144,7 +144,6 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         _invalid = false
 
         _openGLView = openGLView
-        _winSizeInPoints.set(_openGLView.width.toFloat(), _openGLView.height.toFloat())
 
         _orientationListener = OrientationListener(activity)
 
@@ -260,7 +259,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     }
 
     override fun getWinSize(): Size {
-        return Size(_width, _height)
+        return Size(_winSizeInPoints)
     }
 
     override fun setFrameBufferId(frameBufferId: Int) {
@@ -528,6 +527,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     fun beginProjectionMatrix() {
         _width = BASE_SCREEN_WIDTH
         _height = _deviceHeight * BASE_SCREEN_WIDTH / _deviceWidth
+        _winSizeInPoints.set(_width.toFloat(), _height.toFloat())
         _displayAdjust = (BASE_SCREEN_WIDTH.toFloat() / _deviceWidth)
 
         GLES20.glViewport(0, 0, _deviceWidth, _deviceHeight)
@@ -1322,6 +1322,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
 
         _width = BASE_SCREEN_WIDTH
         _height = _displayRawHeight * (BASE_SCREEN_WIDTH / _displayRawWidth)
+        _winSizeInPoints.set(_width.toFloat(), _height.toFloat())
 
         _displayAdjust = BASE_SCREEN_WIDTH.toFloat() / _displayRawWidth
 
@@ -1495,12 +1496,30 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         }
     }
 
-    override fun convertToUI(glPoint: Vec2): Vec2 {
-        val transform:Mat4 = Mat4()
+    override fun convertToGL(uiPoint: Vec2): Vec2 {
+        val transform = Mat4()
         GLToClipTransform(transform)
 
-        val clipCoord:Vec4 = Vec4()
-        val glCoord:Vec4 = Vec4(glPoint.x, glPoint.y, 0f, 1f)
+        val transformInv = transform.getInversed()
+
+        val zClip = transform.m[14]/transform.m[15]
+
+        val glSize = Size(getWinSize())
+        val clipCoord = Vec4(2.0f*uiPoint.x/glSize.width-1f, 1f-2f*uiPoint.y/glSize.height, zClip, 1f)
+
+        val glCoord = Vec4()
+        transformInv.transformVector(clipCoord, glCoord)
+        val factor = 1f / glCoord.w
+        return Vec2(glCoord.x * factor, glCoord.y * factor)
+    }
+
+    override fun convertToUI(glPoint: Vec2): Vec2 {
+        val transform = Mat4()
+        GLToClipTransform(transform)
+
+
+        val clipCoord = Vec4()
+        val glCoord = Vec4(glPoint.x, glPoint.y, 0f, 1f)
 
         transform.transformVector(glCoord, clipCoord)
 
@@ -1508,7 +1527,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         clipCoord.y = clipCoord.y / clipCoord.w
         clipCoord.z = clipCoord.z / clipCoord.w
 
-        val glSize:Size = getWinSize()
+        val glSize:Size = Size(getWinSize())
         val factor:Float = 1.0f / glCoord.w
 
         return Vec2(glSize.width * (clipCoord.x * 0.5f + 0.5f) * factor, glSize.height * (-clipCoord.y * 0.5f + 0.5f) * factor)

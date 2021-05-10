@@ -1083,11 +1083,11 @@ class MenuBar(director: IDirector): SMView(director), SMView.OnClickListener {
             return true
         }
 
-        override fun onStateChangeNormalToPress(event: MotionEvent) {
+        override fun onStateChangeNormalToPress() {
             setAnimOffset(Vec2(0f, -2f))
         }
 
-        override fun onStateChangePressToNormal(event: MotionEvent) {
+        override fun onStateChangePressToNormal() {
             setAnimOffset(Vec2.ZERO)
         }
     }

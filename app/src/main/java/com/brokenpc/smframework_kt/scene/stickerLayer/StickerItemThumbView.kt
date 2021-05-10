@@ -188,11 +188,11 @@ class StickerItemThumbView(director: IDirector): SMView(director), IDownloadProt
 
     fun getImageView(): SMImageView {return _imageView}
 
-    override fun onStateChangePressToNormal(event: MotionEvent) {
+    override fun onStateChangePressToNormal() {
         setAnimOffset(Vec2.ZERO)
     }
 
-    override fun onStateChangeNormalToPress(event: MotionEvent) {
+    override fun onStateChangeNormalToPress() {
         setAnimOffset(Vec2(0f, 22f))
     }
 

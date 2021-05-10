@@ -68,7 +68,7 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
         _uiContainer.setAnchorPoint(Vec2.ZERO)
         _uiContainer.setPosition(Vec2.ZERO)
         _controller = ZoomController(getDirector())
-        setDoubleClickable(true)
+        setTouchMask(TOUCH_MASK_DOUBLECLICK)
         return true
     }
 
@@ -291,10 +291,7 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
             _velocityTracker = VelocityTracker.obtain()
         }
 
-        _velocityTracker!!.addMovement(ev)
-
-        val action = ev.action
-        when (action.and(MotionEvent.ACTION_MASK)) {
+        when (ev.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 if (_panEnable) {
                     _controller.stopFling()
@@ -307,6 +304,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
 
                 _accuX = 0f
                 _accuY = 0f
+
+                _velocityTracker!!.addMovement(ev)
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
                 if (_zoomEnable) {
@@ -330,6 +329,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                         }
                     }
                 }
+
+                _velocityTracker!!.addMovement(ev)
             }
             MotionEvent.ACTION_MOVE -> {
                 when (_mode) {
@@ -358,6 +359,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                     _accuX += (x - _prevTouchX)
                     _accuY += (y - _prevTouchY)
 
+                        _velocityTracker!!.addMovement(ev)
+
                     _prevTouchX = x
                     _prevTouchY = y
                     }
@@ -373,6 +376,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
 
                     _accuX += (x - _prevTouchX)
                     _accuY += (y - _prevTouchY)
+
+                        _velocityTracker!!.addMovement(ev)
 
                     _prevTouchX = x
                     _prevTouchY = y
@@ -392,6 +397,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
 
                     _accuX += (x - _prevTouchX)
                     _accuY += (y - _prevTouchY)
+
+                        _velocityTracker!!.addMovement(ev)
 
                 _prevTouchX = x
                 _prevTouchY = y
@@ -430,8 +437,8 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                     }
                 }
 
-                _velocityTracker!!.recycle()
-                _velocityTracker = null
+                _velocityTracker!!.clear()
+//                _velocityTracker = null
 
                 _mode = Mode.UNDEFINED
                 registerUpdate(FLAG_ZOOM_UPDATE)

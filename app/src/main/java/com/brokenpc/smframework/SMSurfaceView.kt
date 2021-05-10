@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MotionEvent
 import androidx.fragment.app.FragmentActivity
 import com.brokenpc.smframework.base.SMScene
+import com.brokenpc.smframework.base.types.Size
 
 class SMSurfaceView : GLSurfaceView {
 

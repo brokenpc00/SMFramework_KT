@@ -138,10 +138,12 @@ interface IDirector {
     fun getPreviousScene(): SMScene?
     fun getSceneStackCount(): Int
 
-    fun convertToUI(glPoint: Vec2): Vec2
 
     fun pause()
     fun resume()
     fun isPaused(): Boolean
+
+    fun convertToGL(uiPoint: Vec2): Vec2
+    fun convertToUI(glPoint: Vec2): Vec2
 
 }

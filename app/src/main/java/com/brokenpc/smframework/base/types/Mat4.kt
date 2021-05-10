@@ -367,8 +367,23 @@ class Mat4 {
             m31, m32, m33, m34,
             m41, m42, m43, m44)
     }
-    constructor(m:Mat4) {
-        set(m)
+    constructor(mat4:Mat4) {
+        m[0] = mat4.m[0]
+        m[1] = mat4.m[1]
+        m[2] = mat4.m[2]
+        m[3] = mat4.m[3]
+        m[4] = mat4.m[4]
+        m[5] = mat4.m[5]
+        m[6] = mat4.m[6]
+        m[7] = mat4.m[7]
+        m[8] = mat4.m[8]
+        m[9] = mat4.m[9]
+        m[10] = mat4.m[10]
+        m[11] = mat4.m[11]
+        m[12] = mat4.m[12]
+        m[13] = mat4.m[13]
+        m[14] = mat4.m[14]
+        m[15] = mat4.m[15]
     }
 
     fun set(m:FloatArray) {

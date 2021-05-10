@@ -28,7 +28,7 @@ open class SMButton : UIContainerView {
         setContentSize(width, height)
         setTag(tag)
 
-        setClickable(true)
+//        setClickable(true)
         initWithStyle(style)
     }
 
@@ -202,7 +202,7 @@ open class SMButton : UIContainerView {
         setTargetColor(targetColor, colorType)
     }
 
-    override fun onStateChangeNormalToPress(event: MotionEvent) {
+    override fun onStateChangeNormalToPress() {
         if (_pushDownOffset.x!=0.0f || _pushDownOffset.y!=0.0f) {
             _uiContainer.setAnimOffset(_pushDownOffset)
         }
@@ -230,7 +230,7 @@ open class SMButton : UIContainerView {
         }
     }
 
-    override fun onStateChangePressToNormal(event: MotionEvent) {
+    override fun onStateChangePressToNormal() {
         _uiContainer.setAnimOffset(Vec2.ZERO)
         _uiContainer.setAnimScale(1.0f)
         _uiContainer.setAnimRotate(0.0f)
@@ -351,9 +351,9 @@ open class SMButton : UIContainerView {
         return true
     }
 
-    override fun isClickable(): Boolean {
-        return true
-    }
+//    override fun isClickable(): Boolean {
+//        return true
+//    }
 
     override fun setContentSize(size: Size) {
         super.setContentSize(size)
