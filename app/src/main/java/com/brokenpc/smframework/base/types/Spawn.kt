@@ -1,6 +1,7 @@
 package com.interpark.smframework.base.types
 
 import com.brokenpc.smframework.IDirector
+import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.*
 
 class Spawn(director: IDirector) : ActionInterval(director) {
@@ -102,5 +103,39 @@ class Spawn(director: IDirector) : ActionInterval(director) {
         }
 
         return ret
+    }
+
+    override fun Clone(): ActionInterval? {
+        if (_one!=null && _two!=null) {
+            return Spawn.createWithTwoActions(getDirector(), _one!!.Clone(), _two!!.Clone())
+        } else {
+            return null
+        }
+    }
+
+    override fun startWithTarget(target: SMView?) {
+        if (target==null || _one==null || _two==null) return
+
+        super.startWithTarget(target)
+        _one!!.startWithTarget(target)
+        _two!!.startWithTarget(target)
+    }
+
+    override fun stop() {
+        _one?.stop()
+        _two?.stop()
+        super.stop()
+    }
+
+    override fun update(dt: Float) {
+        _one?.update(dt)
+        _two?.update(dt)
+    }
+
+    override fun reverse(): ActionInterval? {
+        if (_one!=null && _two!=null) {
+            return Spawn.createWithTwoActions(getDirector(), _one!!.reverse(), _two!!.reverse())
+        }
+        return null
     }
 }

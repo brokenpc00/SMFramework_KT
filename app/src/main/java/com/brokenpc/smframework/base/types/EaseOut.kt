@@ -26,7 +26,7 @@ class EaseOut(director: IDirector) : EaseRateAction(director) {
     }
 
     override fun update(time: Float) {
-        _inner?.update(tweenfunc.easeInOut(time, _rate))
+        _inner?.update(tweenfunc.easeOut(time, _rate))
     }
 
     override fun reverse(): ActionInterval? {

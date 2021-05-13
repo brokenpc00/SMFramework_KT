@@ -212,12 +212,12 @@ open class SMView : Ref {
 
         @JvmStatic
         fun randomInt(min:Int, max:Int):Int {
-            return min + (Math.random()*((max-min) + 1)).toInt()
+            return min + (Math.random()*(max-min)).toInt()
         }
 
         @JvmStatic
         fun randomFloat(min: Float, max: Float): Float {
-            return min + (Math.random()*((max-min) + 1)).toFloat()
+            return min + (Math.random()*(max-min)).toFloat()
         }
 
         @JvmStatic
@@ -289,13 +289,13 @@ open class SMView : Ref {
         fun toRadians(degrees:Double):Double {return (degrees*M_PI) / 180f}
 
         @JvmStatic
-        fun toRadians(degrees: Float):Float {return ((degrees*M_PI) / 180f).toFloat()}
+        fun toRadians(degrees: Float):Float {return degrees * 0.01745329252f}
 
         @JvmStatic
         fun toDegrees(radian:Double):Double {return (radian*180f) / M_PI}
 
         @JvmStatic
-        fun toDegrees(radian: Float): Float {return (radian*180f / M_PI).toFloat()}
+        fun toDegrees(radian: Float): Float {return radian * 57.29577951f}
 
         @JvmStatic
         fun round(value:Float):Int {return (value+0.5f).toInt()}
@@ -391,7 +391,6 @@ open class SMView : Ref {
     protected var _scheduler:Scheduler? = null
     protected var _actionManager:ActionManager? = null
     protected var _touchTargeted:Boolean = false
-    protected var _eventTargetTouch:SMView? = null
     protected var _eventTargetClick:SMView? = null
     protected var _eventTargetLongPress:SMView? = null
     protected var _eventTargetDoubleClick:SMView? = null
@@ -1430,8 +1429,8 @@ open class SMView : Ref {
     fun getOriginY():Float {return _position.y - _anchorPointInPoints.y}
 
     fun updateRotationQuat() {
-        val halfRadx:Float = toRadians(_rotationX/2.0).toFloat()
-        val halfRady:Float = toRadians(_rotationY/2.0).toFloat()
+        val halfRadx:Float = toRadians(_rotationX/2.0f)
+        val halfRady:Float = toRadians(_rotationY/2.0f)
         val halfRadz:Float = if (_rotationZ_X==_rotationZ_Y) -toRadians(_rotationZ_X/2.0).toFloat() else 0f
 
         val coshalfRadx:Float = cos(halfRadx)
@@ -1919,6 +1918,7 @@ open class SMView : Ref {
         _inverseDirty = true
 
         _rotationZ_X = rotationX
+        updateRotationQuat()
     }
 
     fun setRotationSkewY(rotationY: Float) {
@@ -1929,6 +1929,7 @@ open class SMView : Ref {
         _inverseDirty = true
 
         _rotationZ_Y = rotationY
+        updateRotationQuat()
     }
 
     fun setRotation(rotate: Float) {setRotation(rotate, true)}
@@ -1948,6 +1949,8 @@ open class SMView : Ref {
                 _transformDirty = true
                 _transformUpdated = true
                 _inverseDirty = true
+
+                updateRotationQuat()
             }
         } else {
             if (_newRotation.z==rotateZ) return
@@ -1970,7 +1973,7 @@ open class SMView : Ref {
             _rotationY = rotate3D.y
             _rotationZ_X = rotate3D.z
             _rotationZ_Y = rotate3D.z
-
+            updateRotationQuat()
         } else {
             if (_newRotation.equal(rotate)) return
 
@@ -2768,18 +2771,20 @@ open class SMView : Ref {
     open fun visit(parentTransform:Mat4, parentFlags:Int) {
         if (!_visible) return
 
+        val flags = parentFlags //processParentFlags(parentTransform, parentFlags)
+
         _director?.pushMatrix(IDirector.MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW)
 
         val currentMatrix:FloatArray = _director?.getMatrix(IDirector.MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW)?.m!!
         transformMatrix(currentMatrix)
         _director?.loadMatrix(IDirector.MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW, Mat4(currentMatrix))
+//        _director?.loadMatrix(IDirector.MATRIX_STACK_TYPE.MATRIX_STACK_MODELVIEW, _modelViewTransform)
 
 
         if (_scissorEnable) {
             enableScissorTest(true)
         }
 
-        val flags:Int = parentFlags
         // draw first me!!
         if (renderOwn(_modelViewTransform, flags)) {
 //            var i:Int =0
@@ -2936,12 +2941,6 @@ open class SMView : Ref {
         return TOUCH_FALSE
     }
 
-    protected open fun onTouch(event: MotionEvent?): Int {
-        return if (_onTouchListener != null) {
-            _onTouchListener!!.onTouch(this, event!!)
-        } else SMView.TOUCH_FALSE
-    }
-
     class DispatchChildrenRet {
         var retB = false
         var retI: Int = SMView.TOUCH_TRUE
@@ -2999,6 +2998,9 @@ open class SMView : Ref {
         }
         if (view._rotationZ_X != 0f) {
             SMView._matrix.postRotate(-view._rotationZ_X)
+            Mat4.createRotation(_rotationQuat, _transform)
+
+            //Mat4::createRotation(_rotationQuat, &_transform);
         }
 
         val ev = MotionEvent.obtain(event)
@@ -3040,7 +3042,8 @@ open class SMView : Ref {
         if (!checkBounds || isContain || view === _touchMotionTarget) {
             ret = view.dispatchTouchEvent(ev)
         } else if (view._ignoreTouchBounds && action == MotionEvent.ACTION_DOWN) {
-            view.dispatchChildren(ev, ret)
+            val touchRet = view.dispatchChildren(ev, ret)
+            ret = touchRet.retI
         }
 //        ev.recycle()
         return ret

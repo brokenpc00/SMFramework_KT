@@ -14,7 +14,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: Float, lineType: LineType) : DrawNode(director) {
+open class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: Float, lineType: LineType) : DrawNode(director) {
     protected var _uv:FloatBuffer
     private val _vertices:FloatArray
     private val _texcoord:FloatArray
@@ -59,17 +59,17 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: F
     fun setSize(width:Float, height:Float, cornerRadius:Float) {
         val inR = cornerRadius - _thickness/2f
         val outR = cornerRadius + _thickness/2f
-        val w = width/2-cornerRadius
-        val h = height/2-cornerRadius
-        val textureRoundLength = ((0.25f*2*cornerRadius*PI)/_thickness).toFloat()
-        val textureWidthLength = ((width-2*cornerRadius)/_thickness)
-        val textureHeightLength = ((height-2*cornerRadius)/_thickness)
+        val w = width/2f-cornerRadius
+        val h = height/2f-cornerRadius
+        val textureRoundLength = (0.25f*2f*cornerRadius*PI).toFloat()/_thickness
+        val textureWidthLength = ((width-2f*cornerRadius)/_thickness)
+        val textureHeightLength = ((height-2f*cornerRadius)/_thickness)
         val stepRoundLength = textureRoundLength / CORNER_SEGMENT
 
         var index = 0
         var tu = 0f
         for (i in 0 .. CORNER_SEGMENT) {
-            val rad:Float = (i* PI*0.5f/ CORNER_SEGMENT).toFloat()
+            val rad = (i* PI*0.5f/ CORNER_SEGMENT).toFloat()
             val ca:Float = cos(rad)
             val sa:Float = sin(rad)
 
@@ -80,56 +80,61 @@ class PrimitiveRoundRectLine(director:IDirector, texture: Texture?, thickness: F
 
             // left top
             index = i*4
-            _vertices[index] = -w-inA
+            _vertices[index  ] = -w-inA
             _vertices[index+1] = -h-inB
             _vertices[index+2] = -w-outA
             _vertices[index+3] = -h-outB
             if (_lineType==LineType.DASH) {
-                tu += i*stepRoundLength
-                _texcoord[index] = tu.also { _texcoord[index+2] = it }
+                tu = i*stepRoundLength
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
             }
 
             // right top
             index += (CORNER_SEGMENT+1)*4
-            _vertices[index] = w+inB
+            _vertices[index  ] = +w+inB
             _vertices[index+1] = -h-inA
-            _vertices[index+2] = w+outB
+            _vertices[index+2] = +w+outB
             _vertices[index+3] = -h-outA
             if (_lineType==LineType.DASH) {
                 tu += textureWidthLength+textureRoundLength
-                _texcoord[index] = tu.also { _texcoord[index+2] = it }
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
             }
 
             // right bottom
             index += (CORNER_SEGMENT+1)*4
-            _vertices[index] = w+inA
-            _vertices[index+1] = h+inB
-            _vertices[index+2] = w+outA
-            _vertices[index+3] = h+outB
+            _vertices[index  ] = +w+inA
+            _vertices[index+1] = +h+inB
+            _vertices[index+2] = +w+outA
+            _vertices[index+3] = +h+outB
             if (_lineType==LineType.DASH) {
                 tu += textureHeightLength+textureRoundLength
-                _texcoord[index] = tu.also { _texcoord[index+2] = it }
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
             }
 
             // left bottom
             index += (CORNER_SEGMENT+1)*4
-            _vertices[index] = -w-inB
-            _vertices[index+1] = h+inA
+            _vertices[index  ] = -w-inB
+            _vertices[index+1] = +h+inA
             _vertices[index+2] = -w-outB
-            _vertices[index+3] = h+outA
+            _vertices[index+3] = +h+outA
             if (_lineType==LineType.DASH) {
                 tu += textureWidthLength+textureRoundLength
-                _texcoord[index] = tu.also { _texcoord[index+2] = it }
+                _texcoord[index] = tu
+                _texcoord[index+2] = tu
             }
         }
         index += 4
-        _vertices[index] = _vertices[0]
+        _vertices[index  ] = _vertices[0]
         _vertices[index+1] = _vertices[1]
         _vertices[index+2] = _vertices[2]
         _vertices[index+3] = _vertices[3]
         if (_lineType==LineType.DASH) {
             tu += textureHeightLength
-            _texcoord[index] = tu.also { _texcoord[index+2] = it }
+            _texcoord[index] = tu
+            _texcoord[index+2] = tu
         }
 
         _v!!.put(_vertices)

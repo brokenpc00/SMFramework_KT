@@ -107,9 +107,7 @@ class Vec2 : Cloneable {
         return (x*x+y*y)
     }
     fun length(): Float {
-        val x2 = x*x
-        val y2 = y*y
-        return sqrt(x2*x2+y2*y2)
+        return sqrt(x*x+y*y)
     }
     fun negative() {
         x = -x

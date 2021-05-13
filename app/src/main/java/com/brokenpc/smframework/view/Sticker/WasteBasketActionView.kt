@@ -25,6 +25,7 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         fun show(director: IDirector, parent: SMView, from: Vec2, to: Vec2): WasteBasketActionView {
             val view = WasteBasketActionView(director)
             view.initWithParam(parent, from, to)
+            parent.addChild(view)
             return view
         }
 
@@ -32,6 +33,7 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         fun showForList(director: IDirector, parent: SMView, from: Vec2, to: Vec2): WasteBasketActionView {
             val view = WasteBasketActionView(director)
             view.initWithParam2(parent, from, to)
+            parent.addChild(view)
             return view
         }
 
@@ -39,6 +41,7 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         fun showForUtil(director: IDirector, parent: SMView, from: Vec2, to: Vec2): WasteBasketActionView {
             val view = WasteBasketActionView(director)
             view.initWithParam3(parent, from, to)
+            parent.addChild(view)
             return view
         }
     }
@@ -71,7 +74,7 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         val icon1 = SMImageView.create(getDirector(), "images/delete_top.png")
         val icon2 = SMImageView.create(getDirector(), "images/delete_body.png")
         icon1.setAnchorPoint(TRASH_TOP_ANCHOR)
-        icon2.setPosition(TRASH_TOP_POS)
+        icon1.setPosition(TRASH_TOP_POS)
         icon2.setPosition(TRASH_BODY_POS)
         addChild(icon1)
         addChild(icon2)
@@ -81,6 +84,7 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         val move = EaseSineInOut.create(getDirector(), MoveTo.create(getDirector(), MOVE_DURATION, to))
         val scale = ScaleTo.create(getDirector(), MOVE_DURATION, 1.5f)
         val step1 = Spawn.create(getDirector(), move, scale, null)
+
         val open = EaseIn.create(getDirector(), RotateTo.create(getDirector(), OPEN_DURATION, -30f), 1.0f)
         val close = RotateTo.create(getDirector(), 0.05f, 0f)
         val step2 = Sequence.create(getDirector(), DelayTime.create(getDirector(), MOVE_DURATION+0.1f), open, DelayTime.create(getDirector(), 0.7f), close, null)
@@ -88,7 +92,12 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
 
         val bounce = EaseInOut.create(getDirector(), ScaleSine.create(getDirector(), 0.4f, 1.5f), 2.0f)
         val exit = Spawn.create(getDirector(), EaseIn.create(getDirector(), ScaleTo.create(getDirector(), EXIT_DURATION, 0.7f), 3.0f), FadeTo.create(getDirector(), EXIT_DURATION, 0f), null)
-        val seq = Sequence.create(getDirector(), step1, DelayTime.create(getDirector(), 1.0f), bounce, exit, CallFuncN.create(getDirector(), object : PERFORM_SEL_N {
+        val seq = Sequence.create(getDirector(),
+                                                step1,
+                                                DelayTime.create(getDirector(), 1.0f),
+                                                bounce,
+                                                exit,
+                                                CallFuncN.create(getDirector(), object : PERFORM_SEL_N {
             override fun performSelector(view: SMView?) {
                 _removeSelfOnExit = true
                 view?.removeFromParent()
@@ -118,8 +127,9 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         val icon1 = SMImageView.create(getDirector(), "images/delete_top.png")
         val icon2 = SMImageView.create(getDirector(), "images/delete_body.png")
         icon1.setAnchorPoint(12f/75f, (75f-20f)/75f)
-        icon2.setPosition(Vec2(60f-(37.5f-12f), 60f+(37.5f-20f)))
-        icon2.setPosition(60f, 60f)
+        icon1.setPosition(55f-(32.5f-18f), TRASH_SIZE-(65f+10.5f))
+        icon2.setAnchorPoint(Vec2.MIDDLE)
+        icon2.setPosition(55f, 65f)
         addChild(icon1)
         addChild(icon2)
 
@@ -167,21 +177,28 @@ class WasteBasketActionView(director: IDirector): SMView(director) {
         val icon1 = SMImageView.create(getDirector(), "images/delete_top.png")
         val icon2 = SMImageView.create(getDirector(), "images/delete_body.png")
         icon1.setAnchorPoint(12f/75f, (75f-20f)/75f)
-        icon2.setPosition(60f-(37.5f-18f), 60f+37.5f)
-        icon2.setPosition(60f, 60f)
+        icon1.setPosition(55f-(32.5f-18f), TRASH_SIZE-(65f+10.5f))
+        icon2.setAnchorPoint(Vec2.MIDDLE)
+        icon2.setPosition(55f, 65f)
         addChild(icon1)
         addChild(icon2)
 
         setPosition(from)
 
-        val scale = ScaleTo.create(getDirector(), 0.1f, 1.2f)
         val open = EaseIn.create(getDirector(), RotateTo.create(getDirector(), OPEN_DURATION, -30f), 1.0f)
         val close = RotateTo.create(getDirector(), 0.05f, 0f)
         val step2 = Sequence.create(getDirector(), open, DelayTime.create(getDirector(), 0.4f), close, null)
         icon1.runAction(step2!!)
 
-        val exit = Spawn.create(getDirector(), EaseIn.create(getDirector(), ScaleTo.create(getDirector(), EXIT_DURATION, 0.7f), 3.0f), FadeTo.create(getDirector(), EXIT_DURATION, 0f), null)
-        val seq = Sequence.create(getDirector(), scale, DelayTime.create(getDirector(), 0.8f), exit, CallFuncN.create(getDirector(), object : PERFORM_SEL_N {
+        val scale = ScaleTo.create(getDirector(), 0.1f, 1.2f)
+        val exit = Spawn.create(getDirector(), EaseIn.create(getDirector(), ScaleTo.create(getDirector(), EXIT_DURATION, 0.7f), 3.0f),
+                                                FadeTo.create(getDirector(), EXIT_DURATION, 1f),
+                                                null)
+        val seq = Sequence.create(getDirector(),
+                                    scale,
+                                    DelayTime.create(getDirector(), 0.6f),
+                                    exit,
+                                    CallFuncN.create(getDirector(), object : PERFORM_SEL_N {
             override fun performSelector(view: SMView?) {
                 _removeSelfOnExit = true
                 view?.removeFromParent()

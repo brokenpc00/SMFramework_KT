@@ -55,7 +55,7 @@ class StickerItemView(director: IDirector): Sticker(director), ImageProcessProto
         }
 
         // ToDo delete color for test
-        setBackgroundColor(Color4F(1f, 0f, 0f, 0.4f))
+//        setBackgroundColor(Color4F(1f, 0f, 0f, 0.4f))
 
         return true
     }

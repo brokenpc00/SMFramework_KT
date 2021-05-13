@@ -30,7 +30,6 @@ class SMRoundRectView : SMShapeView {
     }
     constructor(director: IDirector, thickness:Float, type:LineType, round: Float) : super(director) {
         _lineTexture = director.getTextureManager().createTextureFromResource(R.raw.dash_line_2)
-        _round = 0f
 
         _type = type
         _lineWidth = thickness*10.0f
@@ -40,13 +39,13 @@ class SMRoundRectView : SMShapeView {
     }
     constructor(director: IDirector, thickness:Float, type:LineType, round: Float, color: Color4F) : super(director) {
         _lineTexture = director.getTextureManager().createTextureFromResource(R.raw.dash_line_2)
-        _round = 0f
 
         _type = type
         _lineWidth = thickness*10.0f
         _bgShape = PrimitiveRoundRectLine(director, _lineTexture, _lineWidth, type)
 
         _round = round
+
         setColor(color)
     }
 

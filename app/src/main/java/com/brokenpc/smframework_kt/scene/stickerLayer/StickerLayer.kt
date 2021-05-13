@@ -242,7 +242,7 @@ class StickerLayer(director: IDirector) : SMView(director), StickerCanvasView.St
             _bgImageView.setPosition(s.divide(2f))
         }
         // ToDo... delete this after check.
-        _bgImageView.setBackgroundColor(1f, 0f, 0f, 0.4f)
+//        _bgImageView.setBackgroundColor(1f, 0f, 0f, 0.4f)
 
         _contentView.addChild(_bgImageView)
 

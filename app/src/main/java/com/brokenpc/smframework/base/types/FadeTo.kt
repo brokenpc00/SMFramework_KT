@@ -16,14 +16,12 @@ open class FadeTo(director: IDirector) : ActionInterval(director) {
         }
     }
 
-    override fun initWithDuration(d: Float): Boolean {
-        _toAlpha = 1f
-        return super.initWithDuration(d)
-    }
-
     fun initWithDuration(d: Float, a: Float) : Boolean {
+        if (super.initWithDuration(d)) {
         _toAlpha = a
-        return super.initWithDuration(d)
+            return true
+        }
+        return false
     }
 
     override fun startWithTarget(target: SMView?) {
@@ -38,8 +36,7 @@ open class FadeTo(director: IDirector) : ActionInterval(director) {
     }
 
     override fun update(dt: Float) {
-        val delta = _toAlpha - _fromAlpha
-        _target?.setAlpha(_fromAlpha + delta*dt)
+        _target?.setAlpha(_fromAlpha + (_toAlpha-_fromAlpha)*dt)
     }
 
     override fun reverse(): ActionInterval? {

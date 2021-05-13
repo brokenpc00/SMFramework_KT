@@ -350,11 +350,15 @@ open class Scheduler(director: IDirector) : Ref(director) {
         }
 
         var entry:tListEntry? = null
+        var tmp:ArrayList<tListEntry?>? = null
 
         // priority negative list update
         if (_updatesNegList!=null) {
-            for (i in 0 until _updatesNegList!!.size) {
-                entry = _updatesNegList!![i]
+
+            tmp = ArrayList(_updatesNegList!!)
+            val iter = tmp.iterator()
+            while (iter.hasNext()) {
+                entry = iter.next()
                 if (entry!=null && !entry.paused && !entry.markedForDeletion) {
                     entry.callback?.scheduleSelector(dt)
                 }
@@ -363,8 +367,10 @@ open class Scheduler(director: IDirector) : Ref(director) {
 
         // priority 0 list update
         if (_updates0List!=null) {
-            for (i in 0 until _updates0List!!.size) {
-                entry = _updates0List!![i]
+            tmp = ArrayList(_updates0List!!)
+            val iter = tmp.iterator()
+            while (iter.hasNext()) {
+                entry = iter.next()
                 if (entry!=null && !entry.paused && !entry.markedForDeletion) {
                     entry.callback?.scheduleSelector(dt)
                 }
@@ -373,8 +379,10 @@ open class Scheduler(director: IDirector) : Ref(director) {
 
         // priority positive list udpate
         if (_updatesPosList!=null) {
-            for (i in 0 until _updatesPosList!!.size) {
-                entry = _updatesPosList!![i]
+            tmp = ArrayList(_updatesPosList!!)
+            val iter = tmp.iterator()
+            while (iter.hasNext()) {
+                entry = iter.next()
                 if (entry!=null && !entry.paused && !entry.markedForDeletion) {
                     entry.callback?.scheduleSelector(dt)
                 }

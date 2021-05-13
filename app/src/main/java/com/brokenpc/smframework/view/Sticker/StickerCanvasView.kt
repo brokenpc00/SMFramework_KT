@@ -203,7 +203,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
 
     override fun addChild(child: SMView?, zOrder: Int, name: String) {
         super.addChild(child, zOrder, name)
-        setSelectSticker(null)
+        setSelectedSticker(null)
     }
 
     override fun removeChild(child: SMView?, cleanup: Boolean) {
@@ -215,7 +215,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
         super.removeChild(child, cleanup)
     }
 
-    fun setSelectSticker(view: SMView?): Boolean {
+    fun setSelectedSticker(view: SMView?): Boolean {
         if (view==null) {
             if (_selectedView!=null) {
                 performSelected(_selectedView!!, false)
@@ -315,7 +315,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
 
             val size = child.getContentSize()
             if (!(nodePoint.x<0 || nodePoint.y<0 || nodePoint.x>size.width-1 || nodePoint.y>size.height-1)) {
-                if (child.getActionByTag(AppConst.TAG.ACTION_STICKER_REMOVE)!=null) {
+                if (child.getActionByTag(AppConst.TAG.ACTION_STICKER_REMOVE)==null) {
                     return child
                 }
             }
@@ -408,11 +408,13 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
         val pt = view.getPosition()
         val dist = speed / 10f
 
-        val deltaX = dist * cos(toRadians(degrees))
-        val deltaY = dist * sin(toRadians(degrees))
+        val radian = ( degrees * M_PI ).toFloat() / 180.0f
+
+        val deltaX = dist * cos(radian)
+        val deltaY = dist * sin(radian)
         val rotate = speed / 100.0f
 
-        val direction = if (degrees>90 && degrees<270) -1 else 1
+        val direction = if (degrees>90 && degrees<270) -1f else 1f
         val moveTo = EaseOut.create(getDirector(), MoveBy.create(getDirector(), FLY_DURATION, Vec2(deltaX, deltaY)), 3.0f)
         val rotateTo = RotateBy.create(getDirector(), FLY_DURATION, direction * rotate)
         val fadeTo = Sequence.create(getDirector(), DelayTime.create(getDirector(), FLY_DURATION/2f), FadeOut.create(getDirector(), FLY_DURATION/2f), null)
@@ -533,7 +535,7 @@ class StickerCanvasView(director: IDirector): SMView(director), MultiTouchContro
 
     override fun cancel() {
         if (_selectedView!=null) {
-            setSelectSticker(null)
+            setSelectedSticker(null)
         }
         super.cancel()
     }

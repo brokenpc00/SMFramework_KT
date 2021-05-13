@@ -1100,7 +1100,7 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
             }
             if (sticker!=null) {
                 sticker.setPosition(_stickerLayer!!.getContentSize().divide(2f))
-                _stickerLayer!!.getCanvas().setSelectSticker(sticker)
+                _stickerLayer!!.getCanvas().setSelectedSticker(sticker)
             }
             return sticker
         }

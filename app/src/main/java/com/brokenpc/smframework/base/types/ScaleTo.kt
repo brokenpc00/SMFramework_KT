@@ -54,7 +54,7 @@ open class ScaleTo(director: IDirector) : ActionInterval(director) {
 
         _deltaX = _endScaelX - _startScaleX
         _deltaY = _endScaleY - _startScaleY
-        _deltaZ = _endScaleY - _startScaleY
+        _deltaZ = _endScaleZ - _startScaleZ
     }
 
     override fun update(dt: Float) {
@@ -65,23 +65,32 @@ open class ScaleTo(director: IDirector) : ActionInterval(director) {
 
 
     protected fun initWithDuration(duration: Float, s: Float): Boolean {
-        _endScaelX = s.also { _endScaleY = it }.also { _endScaleZ = it }
+        if (super.initWithDuration(duration)) {
+            _endScaelX = s
+            _endScaleY = s
+            _endScaleY = s
         return true
+    }
+        return false
     }
 
     protected fun initWithDuration(duration: Float, sx: Float, sy: Float): Boolean {
-        super.initWithDuration(duration)
+        if (super.initWithDuration(duration)) {
         _endScaelX = sx
         _endScaleY = sy
-        _endScaleZ = 1f
+            _endScaleY = 1f
         return true
+    }
+        return false
     }
 
     protected fun initWithDuration(duration: Float, sx: Float, sy: Float, sz: Float): Boolean {
-        super.initWithDuration(duration)
+        if (super.initWithDuration(duration)) {
         _endScaelX = sx
         _endScaleY = sy
-        _endScaleZ = sz
+        _endScaleY = sz
         return true
+    }
+        return false
     }
 }

@@ -361,17 +361,17 @@ class tweenfunc {
 
         @JvmStatic
         fun easeIn(time: Float, rate: Float): Float {
-            return Math.pow(time.toDouble(), rate.toDouble()).toFloat()
+            return time.toDouble().pow(rate.toDouble()).toFloat()
         }
 
         @JvmStatic
         fun easeOut(time: Float, rate: Float): Float {
-            return Math.pow(time.toDouble(), 1 / rate.toDouble()).toFloat()
+            return time.toDouble().pow(1f / rate.toDouble()).toFloat()
         }
 
         @JvmStatic
-        fun easeInOut(time: Float, rate: Float): Float {
-            var time = time
+        fun easeInOut(timev: Float, rate: Float): Float {
+            var time = timev
             time *= 2f
             return if (time < 1) {
                 0.5f * Math.pow(time.toDouble(), rate.toDouble()).toFloat()

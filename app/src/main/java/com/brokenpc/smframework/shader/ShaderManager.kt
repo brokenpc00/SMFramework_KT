@@ -2,11 +2,13 @@ package com.brokenpc.smframework.shader
 
 import android.content.Context
 import android.opengl.GLES20
+import android.util.Log
 import android.util.SparseArray
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.util.IOUtils
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.RuntimeException
 
 class ShaderManager {
 
@@ -27,6 +29,10 @@ class ShaderManager {
             GLES20.glGetShaderiv(shaderId, GLES20.GL_COMPILE_STATUS, compiled, 0)
 
             if (compiled[0]==0) {
+                val info = GLES20.glGetShaderInfoLog(shaderId)
+                GLES20.glDeleteShader(shaderId)
+                throw RuntimeException("Could not compile shader $shaderType : $info")
+
                 return 0
             }
 

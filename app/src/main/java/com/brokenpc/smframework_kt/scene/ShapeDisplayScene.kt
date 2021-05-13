@@ -302,6 +302,7 @@ class ShapeDisplayScene(director: IDirector): SMMenuTransitionScene(director), S
             _shapeScale = scale
         } else if (slider==_rotateSlider) {
             _shapeRotate = 360.0f * value
+//            _shapeRotate = (-180f + 360.0f * value) + 360f
         } else if (slider==_colorRSlider) {
             _shapeColor.r = value
         } else if (slider==_colorGSlider) {

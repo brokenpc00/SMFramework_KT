@@ -336,6 +336,7 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
                 when (_mode) {
                     Mode.ZOOM -> {
                     // zoom in/out
+                        if (ev.historySize>0) {
                     val point2 = Vec2(ev.getX(1), ev.getY(1))
                         point2.set(point2.x - _paddingLeft, point2.y - _paddingBottom)
 
@@ -363,6 +364,7 @@ class SMZoomView(director: IDirector): UIContainerView(director) {
 
                     _prevTouchX = x
                     _prevTouchY = y
+                    }
                     }
                     Mode.PAN -> {
                     // moving
