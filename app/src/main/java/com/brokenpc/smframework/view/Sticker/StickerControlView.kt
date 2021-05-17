@@ -26,15 +26,14 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
     private var _targetView: SMView? = null
     private val _targetSize = Size(Size.ZERO)
     private val _grabPt = Vec2(Vec2.ZERO)
-    private val _deltaPt = Vec2(Vec2.ZERO)
     private var _reset = false
 
     private var _listener: StickerControlListener? = null
     private var _utilButtonMode = -1
     private var _sizeButtonIndicator: SMView? = null
-    private var _highlightSizeButton = false
-
-    fun highlightSizeButton() {_highlightSizeButton = true}
+//    private var _highlightSizeButton = false
+//
+//    fun highlightSizeButton() {_highlightSizeButton = true}
 
     companion object {
         private const val SIZE_BTN_TAG = 100
@@ -99,6 +98,8 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
         _sizeButton.setOnTouchListener(this)
         _uiView.addChild(_sizeButton)
 
+
+
         // trash button
         _utilButton = SMButton.create(getDirector(), 0, SMButton.STYLE.SOLID_CIRCLE, 0f, 0f, 210f, 210f, 0.5f, 0.5f)
         _utilButton.setPadding(45f)
@@ -113,6 +114,7 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
         _uiView.addChild(_utilButton)
 
         _uiView.setVisible(false)
+
 
         _utilButtonMode = UTIL_BUTTON_MODE_NONE
 
@@ -169,23 +171,25 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
                 return TOUCH_FALSE
             }
             MotionEvent.ACTION_MOVE -> {
-//                val pt = view.getPosition().minus(Vec2(BORDER_MARGIN, BORDER_MARGIN)).add(point).minus(_grabPt)
-                val pt = view.getPosition().add(point).minus(_grabPt).minus(Vec2(BORDER_MARGIN/2f, BORDER_MARGIN/2f)).multiply(0.5f)
-                val dist = pt.length()
+                // _targetView : sticker
+                // this : control
+                // view : size & rotate button
+                // _uiView : view's parent
 
-//                val ppt = _uiView.convertToWorldSpace(pt).minus(_uiView.convertToWorldSpace(_utilButton.getPosition()))
-                val ppt = _uiView.convertToWorldSpace(pt).minus(_uiView.convertToWorldSpace(_utilButton.getPosition()))
+                val touchPoint = Vec2(view.getPosition().minus(BORDER_MARGIN).add(point).minus(_grabPt))
+                val ppt = _uiView.convertToWorldSpace(touchPoint).minus(_uiView.convertToWorldPos(Vec2.ZERO))
                 val rot = atan2(ppt.y, ppt.x)
-//                val dx = (view.getPosition().x-point.x-BORDER_MARGIN-_grabPt.x)/2f
-//                val dy = (view.getPosition().y-point.y- BORDER_MARGIN-_grabPt.y)/2f
-//                val rot = atan2(dy, dx)
-
                 val tsize = _targetView!!.getContentSize()
-                val ww = tsize.width/2f
-                val hh = tsize.height/2f
+                val ww = tsize.width
+                val hh = tsize.height
                 var baseDist = sqrt(ww*ww + hh*hh)
-                var baseRot = atan2(-hh, ww)
+                val baseRot = atan2(-hh, ww)
+                val newRot = get360Degree(rot-baseRot)
+//                _sizeButton.setPosition(touchPoint)
+                Log.i("STICKER", "[[[[[ rotate : $newRot")
+                _targetView!!.setRotation(newRot)
 
+                val dist = touchPoint.length()
                 var canvasScale = 1f
                 var p = _targetView!!.getParent()
                 while (p!=null) {
@@ -208,14 +212,81 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
                 }
 
                 _targetView!!.setScale(scale)
-                var rotate = toDegrees(rot-baseRot)
-                rotate = getShortestAngle(rotate)
-                val newRotate = -get360Degree(rot-baseRot)
-//                val newRot = -toDegrees(rot-baseRot)
-//                val rotate = get360Degree(newRot)
-                Log.i("STICKER", "[[[[[ rot : $rot, baseRot : $baseRot, rotate : $rotate, newRotate  $newRotate")
+//                val O = _uiView.getPosition()
+//                val curTouchPoint = view.getPosition().minus(BORDER_MARGIN).add(point).minus(_grabPt).divide(2f)
+////                val A = _uiView.convertToWorldSpace(curTouchPoint)
+//                val cornerPoint = Vec2(0f, _uiView.getContentSize().height)
+//                val ppt = _uiView.convertToWorldPos(curTouchPoint).minus(_uiView.convertToWorldPos(cornerPoint))
+//
+//                val dist = curTouchPoint.length()
+//
+//                val rot = atan2(ppt.y, ppt.x)
+//
+//                val tsize = _targetView!!.getContentSize()
+//                val ww = tsize.width/2f
+//                val hh = tsize.height/2f
+//                val baseRot = atan2(-hh, ww)
+//
+//                val rotate = toDegrees(rot-baseRot)
+//
+//                Log.i("STICKER", "[[[[[ rotate : $rotate")
 //                _targetView!!.setRotation(rotate)
+
+//                (cos theta = (a^2+b^2-c^2)/(2ab)
+//                var oldRotate = _targetView!!.getRotation()
+//                if (oldRotate>360f) oldRotate = 0f
+//                oldRotate += 1f
+//                Log.i("STICKER", "[[[[[ rotate : $oldRotate")
+//                _targetView!!.setRotation(oldRotate)
                 return TOUCH_TRUE
+////                val pt = view.getPosition().minus(Vec2(BORDER_MARGIN, BORDER_MARGIN)).add(point).minus(_grabPt)
+//                val diff = point.minus(_grabPt)
+//                val pt = view.getPosition().add(point).minus(_grabPt).minus(Vec2(BORDER_MARGIN/2f, BORDER_MARGIN/2f)).multiply(0.5f)
+//                val dist = pt.length()
+//
+////                val ppt = _uiView.convertToWorldSpace(pt).minus(_uiView.convertToWorldSpace(_utilButton.getPosition()))
+//                val ppt = _uiView.convertToWorldSpace(pt).minus(_uiView.convertToWorldSpace(_utilButton.getPosition()))
+//                val rot = atan2(ppt.y, ppt.x)
+////                val dx = (view.getPosition().x-point.x-BORDER_MARGIN-_grabPt.x)/2f
+////                val dy = (view.getPosition().y-point.y- BORDER_MARGIN-_grabPt.y)/2f
+////                val rot = atan2(dy, dx)
+//
+//                val tsize = _targetView!!.getContentSize()
+//                val ww = tsize.width/2f
+//                val hh = tsize.height/2f
+//                var baseDist = sqrt(ww*ww + hh*hh)
+//                var baseRot = atan2(-hh, ww)
+//
+//                var canvasScale = 1f
+//                var p = _targetView!!.getParent()
+//                while (p!=null) {
+//                    canvasScale *= p.getScale()
+//                    p = p.getParent()
+//                }
+//
+//                var controlScale = 1f
+//                p = getParent()
+//                while (p!=null) {
+//                    controlScale *= p.getScale()
+//                    p = p.getParent()
+//                }
+//
+//                baseDist *= canvasScale / controlScale
+//
+//                var scale = dist / baseDist
+//                if (scale * tsize.width <= BORDER_MARGIN || scale * tsize.height <= BORDER_MARGIN) {
+//                    scale = ((1+ BORDER_MARGIN) / tsize.width).coerceAtLeast((1+ BORDER_MARGIN) / tsize.height)
+//                }
+//
+//                _targetView!!.setScale(scale)
+//                var rotate = toDegrees(rot-baseRot)
+//                rotate = getShortestAngle(rotate)
+//                val newRotate = -get360Degree(rot-baseRot)
+////                val newRot = -toDegrees(rot-baseRot)
+////                val rotate = get360Degree(newRot)
+//                Log.i("STICKER", "[[[[[ rot : $rot, baseRot : $baseRot, rotate : $rotate, newRotate  $newRotate")
+////                _targetView!!.setRotation(rotate)
+//                return TOUCH_TRUE
             }
         }
 
@@ -233,6 +304,16 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
     fun linkStickerView(view: SMView?) {
         if (_targetView!=view) {
             _targetView = view
+
+            if (view!=null) {
+                val viewSize = Size(view!!.getContentSize())
+                _sizeButton.setPosition(viewSize.width, 0f)
+                _utilButton.setPosition(0f, viewSize.height)
+                val targetPosition = Vec2(_targetView!!.getParent()!!.convertToWorldSpace(_targetView!!.getPosition()))
+                val position = convertToNodeSpace(targetPosition)
+                _uiView.setPosition(position)
+            }
+
             if (view!=null) {
                 _uiView.setVisible(true)
 
@@ -261,14 +342,14 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
 
                     registerUpdate(USER_VIEW_FLAG(1L))
 
-                    if (_highlightSizeButton) {
-                        _highlightSizeButton = false
-
-                        val ringWave = RingWave2.create(getDirector(), 90f, 153f)
-                        ringWave.setColor(MakeColor4F(0xff9a96, 1f))
-                        _sizeButton.addChild(ringWave)
-                        _sizeButtonIndicator = ringWave
-                    }
+//                    if (_highlightSizeButton) {
+//                        _highlightSizeButton = false
+//
+//                        val ringWave = RingWave2.create(getDirector(), 90f, 153f)
+//                        ringWave.setColor(MakeColor4F(0xff9a96, 1f))
+//                        _sizeButton.addChild(ringWave)
+//                        _sizeButtonIndicator = ringWave
+//                    }
                 }
             } else {
                 _uiView.setVisible(false)
@@ -287,6 +368,9 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
 
         var localScale = getScale()
         var localRotation = getRotation()
+        if (localRotation!=0f) {
+            Log.i("STICKER", "[[[[[ rotate : $localRotation")
+        }
         var p = getParent()
         while (p!=null) {
             localScale *= p.getScale()
@@ -294,10 +378,17 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
 
             p = p.getParent()
         }
+        if (localRotation!=0f) {
+            Log.i("STICKER", "[[[[[ rotate : $localRotation")
+        }
 
         val targetPosition = Vec2(_targetView!!.getParent()!!.convertToWorldSpace(_targetView!!.getPosition()))
         var targetScale = _targetView!!.getScale()
         var targetRotation = _targetView!!.getRotation()
+        if (targetRotation!=0f) {
+            Log.i("STICKER", "[[[[[ rotate : $localRotation")
+        }
+
         p = _targetView!!.getParent()
         while (p!=null) {
             targetScale *= p.getScale()
@@ -318,7 +409,7 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
             val viewSize = size.add(Size(BORDER_MARGIN, BORDER_MARGIN))
             _uiView.setContentSize(viewSize)
             _borderRect.setContentSize(viewSize)
-            _borderRect.setPosition(viewSize.width/2f, viewSize.height/2f)
+            _borderRect.setPosition(viewSize.divide(2f))
 //            _sizeButton.setPosition(viewSize)
 //            _utilButton.setPosition(Vec2.ZERO)
             _sizeButton.setPosition(viewSize.width, 0f)
@@ -326,7 +417,12 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
         }
 
         _uiView.setPosition(position)
-        _uiView.setRotation(rotation)
-        _utilButton.setRotation(-rotation)
+//        tttt++
+//        if (tttt>360) tttt = 0f
+//        _uiView.setRotation(tttt)
+//        _uiView.setRotation(rotation)
+//        _utilButton.setRotation(-rotation)
     }
+
+    var tttt = 0f
 }

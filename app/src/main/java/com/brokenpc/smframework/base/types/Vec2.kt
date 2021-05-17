@@ -49,6 +49,16 @@ class Vec2 : Cloneable {
         y = yy.toFloat()
     }
 
+    constructor(pt: Float) {
+        x = pt
+        y = pt
+    }
+
+    constructor(pt : Int) {
+        x = pt.toFloat()
+        y = pt.toFloat()
+    }
+
     constructor(xx: Float, yy: Float) {
         x = xx
         y = yy
@@ -150,6 +160,15 @@ class Vec2 : Cloneable {
             pt.y + y
         )
     }
+
+    fun add(pt: Float): Vec2 {
+        return Vec2(x+pt, y+pt)
+    }
+
+    fun add(pt: Int): Vec2 {
+        return Vec2(x+pt, y+pt)
+    }
+
     fun addLocal(pt: Vec2) {
         x += pt.x
         y += pt.y
@@ -169,6 +188,15 @@ class Vec2 : Cloneable {
             y - pt.y
         )
     }
+
+    fun minus(pt: Float): Vec2 {
+        return Vec2(x-pt, y-pt)
+    }
+
+    fun minus(pt: Int): Vec2 {
+        return Vec2(x-pt, y-pt)
+    }
+
     fun minusLocal(pt: Vec2) {
         x -= pt.x
         y -= pt.y
