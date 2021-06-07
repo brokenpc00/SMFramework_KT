@@ -63,6 +63,20 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
 
         val s = getContentSize()
 
+//        _contentView = SMView.create(getDirector(), 999, 0f, 0f, s.width, s.height)
+//        addChild(_contentView)
+//
+//        _contentView.setBackgroundColor(Color4F.MINT)
+//
+//        val a = SMView.create(getDirector(), 1, 100f, 100f, s.width-200f, s.height-200f)
+//        a.setBackgroundColor(Color4F(1f, 0f, 0f, 0.3f))
+//        _contentView.addChild(a)
+//
+//        val b = SMView.create(getDirector(), 2, a.getContentSize().width/2f, 0f, a.getContentSize().width-200f, a.getContentSize().height-200f, 0.5f, 0.5f)
+//        b.setBackgroundColor(Color4F(1f, 0f, 1f, 0.3f))
+//        a.addChild(b)
+
+
         _mainScene = this
 
         _menuBar = MenuBar.create(getDirector())
@@ -81,24 +95,48 @@ class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.Ce
         _menuNames.add("Controls.")
         _menuNames.add("Etcetera.")
 
-//        val btn = SMButton.create(getDirector(), 0, SMButton.STYLE.SOLID_ROUNDEDRECT, s.width/2 - 200f, s.height/2 - 80f, 400f, 160f)
-//        btn.setButtonColor(STATE.NORMAL, Color4F.XEEEFF1)
-//        btn.setButtonColor(STATE.PRESSED, Color4F.WHITE)
-//        btn.setText("버튼 테스트", 60f)
-//        btn.setTextColor(STATE.NORMAL, MakeColor4F(0x222222, 1.0f))
-//        btn.setTextColor(STATE.PRESSED, MakeColor4F(0xffe1a4, 1.0f))
-//        btn.setOutlineColor(STATE.NORMAL, MakeColor4F(0x222222, 1.0f))
-//        btn.setOutlineColor(STATE.PRESSED, MakeColor4F(0xffe1a4, 1.0f))
-//        btn.setOutlineWidth(4f)
-//        btn.setShapeCornerRadius(80f)
-//        _contentView.addChild(btn)
-
-//        val img = SMImageView.create(getDirector(), "images/defaults2.jpg")
-//        img.setContentSize(_contentView.getContentSize())
-//        img.setScaleType(SMImageView.ScaleType.CENTER)
-//        img.setBackgroundColor(1f, 0f, 0f, 0.4f)
-//        _contentView.addChild(img)
-
+//        _tableView = SMTableView.createMultiColumn(getDirector(), SMTableView.Orientation.VERTICAL, 1, 0f, 0f, _contentView.getContentSize().width, _contentView.getContentSize().height)!!
+//        _tableView.numberOfRowsInSection = object : SMTableView.NumberOfRowsInSection {
+//            override fun numberOfRowsInSection(section: Int): Int {
+//                return 200
+//            }
+//        }
+//
+//        _tableView.cellForRowAtIndexPath = object : SMTableView.CellForRowAtIndexPath {
+//            override fun cellForRowAtIndexPath(indexPath: IndexPath): SMView {
+//                val index = indexPath.getIndex()
+//                var cell = _tableView.dequeueReusableCellWithIdentifier("CELLID")
+//                val s = _tableView.getContentSize()
+//                if (cell==null) {
+//                    cell = create(getDirector(), index, 0f, 0f, s.width, 30f)
+//                    cell!!.setBackgroundColor(getRandomColor4F())
+//                }
+//
+//                return cell
+//            }
+//        }
+//
+//        _contentView.addChild(_tableView)
+//        _tableView.setScissorEnable(true)
+////
+////        val btn = SMButton.create(getDirector(), 0, SMButton.STYLE.SOLID_ROUNDEDRECT, s.width/2 - 200f, s.height/2 - 80f, 400f, 160f)
+////        btn.setButtonColor(STATE.NORMAL, Color4F.XEEEFF1)
+////        btn.setButtonColor(STATE.PRESSED, Color4F.WHITE)
+////        btn.setText("버튼 테스트", 60f)
+////        btn.setTextColor(STATE.NORMAL, MakeColor4F(0x222222, 1.0f))
+////        btn.setTextColor(STATE.PRESSED, MakeColor4F(0xffe1a4, 1.0f))
+////        btn.setOutlineColor(STATE.NORMAL, MakeColor4F(0x222222, 1.0f))
+////        btn.setOutlineColor(STATE.PRESSED, MakeColor4F(0xffe1a4, 1.0f))
+////        btn.setOutlineWidth(4f)
+////        btn.setShapeCornerRadius(80f)
+////        _contentView.addChild(btn)
+//
+////        val img = SMImageView.create(getDirector(), "images/defaults2.jpg")
+////        img.setContentSize(_contentView.getContentSize())
+////        img.setScaleType(SMImageView.ScaleType.CENTER)
+////        img.setBackgroundColor(1f, 0f, 0f, 0.4f)
+////        _contentView.addChild(img)
+//
         _tableView = SMTableView.create(getDirector(), SMTableView.Orientation.VERTICAL, 0f, 0f, s.width, s.height)!!
         _tableView.setTag(999)
         _tableView.numberOfRowsInSection = object : SMTableView.NumberOfRowsInSection {

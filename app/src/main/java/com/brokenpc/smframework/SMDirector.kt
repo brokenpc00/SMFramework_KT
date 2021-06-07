@@ -1201,13 +1201,13 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         _projection = projection
     }
 
-    fun popProjectionMatrix(index: Int) {
-        _projectionMatrixStackList[index].pop()
-    }
+//    fun popProjectionMatrix(index: Int) {
+//        _projectionMatrixStackList[index].pop()
+//    }
 
-    fun loadProjectionIdentityMatrix(index: Int) {
-        _projectionMatrixStackList[index][_projectionMatrixStackList[index].size-1] = Mat4(Mat4.IDENTITY)
-    }
+//    fun loadProjectionIdentityMatrix(index: Int) {
+//        _projectionMatrixStackList[index][_projectionMatrixStackList[index].size-1] = Mat4(Mat4.IDENTITY)
+//    }
 
     override fun getTickCount(): Long {
         return _currentTime

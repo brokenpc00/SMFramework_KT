@@ -61,7 +61,7 @@ class StickerLayer(director: IDirector) : SMView(director), StickerCanvasView.St
             val sprite = sticker.getSprite() as Sprite
 
             _controlView.startGeineRemove(view)
-            _canvasView.removeChildWithGenieAction(sticker, sprite, Vec2(0f, 1f), 0.5f, 0.01f)
+            _canvasView.removeChildWithGenieAction(sticker, sprite, Vec2(0f, 0f), 0.5f, 0.01f)
         }
     }
 

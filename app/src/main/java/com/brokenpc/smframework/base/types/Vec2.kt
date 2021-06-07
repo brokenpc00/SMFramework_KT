@@ -1,9 +1,8 @@
 package com.brokenpc.smframework.base.types
 
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
+import com.brokenpc.smframework.base.SMView
+import com.brokenpc.smframework.base.SMView.Companion.M_PI
+import kotlin.math.*
 
 class Vec2 : Cloneable {
     companion object {
@@ -246,4 +245,43 @@ class Vec2 : Cloneable {
         }
     }
 
+    fun rotate(point: Vec2, angle: Float) {
+        val sinAngle = sin(angle)
+        val cosAngle = cos(angle)
+        if (point.isZero()) {
+            val tempX = x * cosAngle - y * sinAngle
+            y = y * cosAngle + x * sinAngle
+            x = tempX
+        } else {
+            val tempX = x - point.x
+            val tempY = y - point.y
+
+            x = tempX * cosAngle - tempY * sinAngle + point.x
+            y = tempY * cosAngle + tempX * sinAngle + point.y
+        }
+    }
+
+    fun rotate(src: Vec2, point: Vec2, angle: Float): Vec2 {
+        val sinAngle = sin(angle)
+        val cosAngle = cos(angle)
+        if (point.isZero()) {
+            val tempX = src.x * cosAngle - src.y * sinAngle
+            src.y = src.y * cosAngle + src.x * sinAngle
+            src.x = tempX
+        } else {
+            val tempX = src.x - point.x
+            val tempY = src.y - point.y
+
+            src.x = tempX * cosAngle - tempY * sinAngle + point.x
+            src.y = tempY * cosAngle + tempX * sinAngle + point.y
+        }
+        return src
+    }
+
+    fun rotate(p: Vec2, theta: Float, base: Vec2): Vec2 {
+        val ret = Vec2(ZERO)
+        ret.x = ((p.x - base.x) * cos(theta * M_PI / 180f) - (p.y - base.y) * sin(theta*M_PI / 180f) + base.x).toFloat()
+        ret.y = ((p.x - base.x) * sin(theta * M_PI / 180f) + (p.y - base.y) * sin(theta* M_PI / 180f) + base.y).toFloat()
+        return ret
+    }
 }

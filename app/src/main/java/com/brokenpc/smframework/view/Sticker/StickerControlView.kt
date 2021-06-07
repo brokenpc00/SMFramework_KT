@@ -398,31 +398,52 @@ class StickerControlView(director: IDirector): SMView(director), SMView.OnClickL
 
         val scale = targetScale / localScale
         val rotation = targetRotation - localRotation
+
+
+        val x = targetPosition.x
+        val y = targetPosition.y
+        val hw = _targetView!!.getContentSize().width*scale*0.5f
+        val hh = _targetView!!.getContentSize().height*scale*0.5f
+
+        val radius = sqrt(hw*hw + hh*hh)
+        var slope = atan2(-hh, hw) + toRadians(rotation)
+
+        var px = (radius * cos(slope))
+        var py = (radius * sin(slope))
+        val sizePos = _uiView.convertToNodeSpace(Vec2(x+px, y+py))
+        _sizeButton.setPosition(sizePos)
+
+        slope = atan2(hh, -hw) + toRadians(rotation)
+        px = (radius * cos(slope))
+        py = (radius * sin(slope))
+        sizePos.set(_uiView.convertToNodeSpace(Vec2(x+px, y+py)))
+        _utilButton.setPosition(sizePos)
+
+
         val position = convertToNodeSpace(targetPosition)
 
+
+//
         val size = _targetView!!.getContentSize().multiply(scale)
-
+//
         if (_reset || size.width!=_targetSize.width || size.height != _targetSize.height) {
-            _reset = false
-            _targetSize.set(size)
-
+//            _reset = false
+//            _targetSize.set(size)
+//
             val viewSize = size.add(Size(BORDER_MARGIN, BORDER_MARGIN))
             _uiView.setContentSize(viewSize)
             _borderRect.setContentSize(viewSize)
             _borderRect.setPosition(viewSize.divide(2f))
 //            _sizeButton.setPosition(viewSize)
 //            _utilButton.setPosition(Vec2.ZERO)
-            _sizeButton.setPosition(viewSize.width, 0f)
-            _utilButton.setPosition(0f, viewSize.height)
+////            _sizeButton.setPosition(viewSize.width, 0f)
+////            _utilButton.setPosition(0f, viewSize.height)
         }
-
+//
         _uiView.setPosition(position)
-//        tttt++
-//        if (tttt>360) tttt = 0f
-//        _uiView.setRotation(tttt)
-//        _uiView.setRotation(rotation)
+////        _uiView.setRotation(rotation)
+        _borderRect.setRotation(rotation)
 //        _utilButton.setRotation(-rotation)
     }
 
-    var tttt = 0f
 }

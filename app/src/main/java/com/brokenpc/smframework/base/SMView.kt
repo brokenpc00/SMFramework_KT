@@ -2988,6 +2988,7 @@ open class SMView : Ref {
     }
 
     fun applyMatrix(event: MotionEvent, view: SMView): MotionEvent {
+
         SMView._matrix.reset()
         SMView._matrix.postTranslate(
             -view.getX() + view._anchorPointInPoints.x,
@@ -2998,11 +2999,45 @@ open class SMView : Ref {
         }
         if (view._rotationZ_X != 0f) {
             SMView._matrix.postRotate(-view._rotationZ_X)
-            Mat4.createRotation(_rotationQuat, _transform)
-
-            //Mat4::createRotation(_rotationQuat, &_transform);
+//            Mat4.createRotation(_rotationQuat, _transform)
         }
 
+//        if (!_anchorPointInPoints.isZero()) {
+//
+//        }
+//        _matrix.postTranslate(-view._anchorPointInPoints.x, -view._anchorPointInPoints.y)
+
+/*
+        if (matrix!=null) {
+            if (BuildConfig.DEBUG && matrix.size!=16) {
+                error("Assertion Failed... matrix size must be 16")
+        }
+            // set current x, y, z
+            android.opengl.Matrix.translateM(matrix, 0, _position.x, _position.y, _positionZ)
+
+            // scale
+            if (_scaleX!=1f || _scaleY!=1f || _scaleZ!=1f) {
+                android.opengl.Matrix.scaleM(matrix, 0, _scaleX, _scaleY, _scaleZ)
+            }
+
+            // rotate
+            if (_rotationX!=0f) {
+                android.opengl.Matrix.rotateM(matrix, 0, _rotationX, 1f, 0f, 0f)
+            }
+            if (_rotationY!=0f) {
+                android.opengl.Matrix.rotateM(matrix, 0, _rotationY, 0f, 1f, 0f)
+            }
+            if (_rotationZ_X!=0f) {
+                android.opengl.Matrix.rotateM(matrix, 0, _rotationZ_X, 0f, 0f, 1f)
+            }
+
+            if (!_anchorPointInPoints.equal(Vec2.ZERO)) {
+                matrix[12] += matrix[0] * -_anchorPointInPoints.x + matrix[4] * -_anchorPointInPoints.y
+                matrix[13] += matrix[1] * -_anchorPointInPoints.x + matrix[5] * -_anchorPointInPoints.y
+                matrix[14] += matrix[2] * -_anchorPointInPoints.x + matrix[6] * -_anchorPointInPoints.y
+            }
+        }
+ */
         val ev = MotionEvent.obtain(event)
         ev.transform(SMView._matrix)
         return ev
@@ -3010,9 +3045,9 @@ open class SMView : Ref {
 
     open fun dispatchTouchEvent(event: MotionEvent?, view: SMView, checkBounds: Boolean): Int {
         val ev = applyMatrix(event!!, view)
-
         val action = ev.action
         val point = Vec2(ev.getX(0), ev.getY(0))
+
         val isContain = view.containsPoint(point)
 
         view._touchPrevPosition.set(view._touchCurrentPosition)
