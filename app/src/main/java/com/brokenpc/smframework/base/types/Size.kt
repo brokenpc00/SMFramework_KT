@@ -45,6 +45,11 @@ class Size : Cloneable {
         this.height = v.y
     }
 
+    fun set(width: Int, height: Int) {
+        this.width = width.toFloat()
+        this.height = height.toFloat()
+    }
+
     fun set(width: Float, height: Float) {
         this.width = width
         this.height = height

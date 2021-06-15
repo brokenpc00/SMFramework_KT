@@ -38,6 +38,9 @@ import com.brokenpc.smframework.util.OpenGlUtils.Companion.getPerspectiveMatrix
 import com.brokenpc.smframework.view.EdgeSwipeForDismiss
 import com.brokenpc.smframework.view.EdgeSwipeLayerForPushBack
 import com.brokenpc.smframework.view.EdgeSwipeLayerForSideMenu
+import com.brokenpc.smframework.view.Popup
+import com.interpark.smframework.base.types.FadeIn
+import com.interpark.smframework.base.types.FadeOut
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -123,6 +126,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     protected val _textureMatrixStack:Stack<Mat4> = Stack()
     protected var _paused:Boolean = false
 
+    private var _popupView:PopupView
 
     var _touchEventDispather:Boolean = false
 
@@ -151,6 +155,8 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
         for (i in 0 until enumToIntForSharedLayer(SharedLayer.POPUP)+1) {
             _sharedLayer.add(null)
         }
+
+        _popupView = PopupView(this)
 
         _instance = this
     }
@@ -1557,5 +1563,93 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
 
     override fun stopSceneAnimation() {
         _invalid = true
+    }
+
+    override fun openPopupView(view: Popup) {
+        openPopupView(view, Popup.POPUP_DEFAULT_FADEVALUE)
+    }
+
+    override fun openPopupView(view: Popup, fadeValue: Float) {
+        openPopupView(view, fadeValue, false)
+    }
+
+    override fun openPopupView(view: Popup, fadeValue: Float, immediate: Boolean) {
+        _popupView.addChild(view)
+        view.setVisible(immediate)
+        if (!immediate) {
+            _popupView.setBackgroundColor(Color4F(0f, 0f, 0f, fadeValue), Popup.POPUP_SHOW_TIMEMILLIS)
+        }
+        val show = FadeIn.create(this, 0.2f)
+        view.runAction(show)
+    }
+
+    override fun closePopupView(view: Popup) {
+        if (_popupView.getChildCount() > 0) {
+            val numPopup = _popupView.getChildCount()
+            var remainCount = numPopup
+            for (i in numPopup downTo 0) {
+                val popup = _popupView.getChild(i) as Popup
+                if (popup==view) {
+                    remainCount--
+                    if (isGLThread()) {
+                        val hide = FadeOut.create(getDirector(), 0.2f)!!
+                        popup.runAction(hide)
+                    } else {
+                        run {
+                            val hide = FadeOut.create(getDirector(), 0.2f)!!
+                            popup.runAction(hide)
+                        }
+                    }
+                }
+            }
+            if (remainCount<=0) {
+                _popupView.setBackgroundColor(Color4F(0f, 0f, 0f, 0f), Popup.POPUP_HIDE_TIMEMILLIS)
+            }
+        }
+    }
+
+    override fun findPopupViewByClass(popupClass: Class<*>?): SMView? {
+        val numpopup = _popupView.getChildCount()
+        for (i in numpopup-1 downTo 0) {
+            val popup = _popupView.getChild(i) as Popup
+            if (popup.isVisible()) {
+                return popup
+            }
+        }
+
+        return null
+    }
+
+    class PopupView(director: IDirector) : SMView(director), BackPressable {
+        override fun onBackPressed(): Boolean {
+            if (getChildCount()>0) {
+                val popup = getChild(getChildCount()-1) as Popup
+                if (popup.onBackPressed()) {
+                    return true
+                }
+                run {
+                    getDirector().closePopupView(popup)
+                }
+
+                return true
+            }
+
+            return false
+        }
+
+        override fun init(): Boolean {
+            setContentSize(getDirector().getWinSize().width, getDirector().getWinSize().height)
+            return super.init()
+        }
+
+        override fun dispatchTouchEvent(event: MotionEvent?, view: SMView, checkBounds: Boolean): Int {
+            if (getChildCount()>0) {
+                super.dispatchTouchEvent(event, view, checkBounds)
+                return TOUCH_TRUE
+            }
+
+            return TOUCH_FALSE
+        }
+
     }
 }

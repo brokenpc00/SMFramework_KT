@@ -14,6 +14,7 @@ import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.shader.ShaderManager
 import com.brokenpc.smframework.shader.ShaderManager.ProgramType
 import com.brokenpc.smframework.shader.ShaderProgram
+import com.brokenpc.smframework.view.Popup
 
 
 interface IDirector {
@@ -146,4 +147,9 @@ interface IDirector {
     fun convertToGL(uiPoint: Vec2): Vec2
     fun convertToUI(glPoint: Vec2): Vec2
 
+    fun openPopupView(view: Popup)
+    fun openPopupView(view: Popup, fadeValue: Float)
+    fun openPopupView(view: Popup, fadeValue: Float, immediate: Boolean)
+    fun closePopupView(view: Popup)
+    fun findPopupViewByClass(popupClass: Class<*>?): SMView?
 }

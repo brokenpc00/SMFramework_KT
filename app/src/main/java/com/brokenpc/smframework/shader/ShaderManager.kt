@@ -85,7 +85,8 @@ class ShaderManager {
         AdjustColor(15, "glsl/sprite.vsh", "glsl/adjust_color.fsh", ProgAdjustColor()),
         RadialAlpha(16, "glsl/sprite.vsh", "glsl/radial_alpha.fsh", ProgRadialAlpha()),
         ShapeSurface(17, "glsl/sprite.vsh", "glsl/shape_surface.fsh", ProgPrimitiveSolidRect()),
-        FishEyeCircle(18, "glsl/sprite.vsh", "glsl/fisheye_circle.fsh", ProgSprite());
+        FishEyeCircle(18, "glsl/sprite.vsh", "glsl/fisheye_circle.fsh", ProgSprite()),
+        Stencil(19, "glsl/noMVP_vert.vsh", "glsl/coloralphaTest.fsh", ProgStencil());
 
 
         private val _key:Int = key

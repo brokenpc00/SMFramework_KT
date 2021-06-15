@@ -106,7 +106,7 @@ open class Sprite : DrawNode {
         }
     }
 
-    fun removeTexture() {
+    open fun removeTexture() {
         if (_texture!=null) {
             if (_director!!.getTextureManager().removeTexture(_texture)) {
                 _texture = null
