@@ -1,5 +1,6 @@
 package com.interpark.app.scene
 
+import android.util.Log
 import android.view.View
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
@@ -13,6 +14,7 @@ import com.brokenpc.smframework.util.AppConst
 import com.brokenpc.smframework.util.ImageManager.IDownloadProtocol
 import com.brokenpc.smframework.util.ImageManager.ImageDownloadTask
 import com.brokenpc.smframework.view.*
+import com.brokenpc.smframework_kt.scene.AniTestView
 import com.interpark.app.menu.MenuBar
 import com.interpark.app.scene.stickerLayer.*
 import com.interpark.smframework.base.types.ICircularCell
@@ -87,6 +89,8 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
     private val _downloadTask:ArrayList<ImageDownloadTask> = ArrayList()
     private val _mutex: Lock = ReentrantLock(true)
 
+    // for animation 1
+    private var _testView:AniTestView? = null
 
     companion object {
         @JvmStatic
@@ -157,6 +161,9 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
             }
             8 -> {
                 stickerDisplay()
+            }
+            10 -> {
+                animation1Display()
             }
             else -> {
                 imageDisplay()
@@ -1107,4 +1114,19 @@ class ViewDisplayScene(director: IDirector): SMMenuTransitionScene(director), SM
 
         return null
     }
+
+    fun animation1Display() {
+        Log.i("SMFRAMEWORK", "animation1Display")
+//        _testView = AniTestView.show(getDirector(), this)
+        val s = _contentView.getContentSize()
+        _testView = AniTestView.create(getDirector(), 0f, 0f, s.width, s.height, null)
+        _contentView.addChild(_testView)
+    }
+
+//    override fun onExit() {
+//        if (_testView?.getParent()!=null) {
+//            _testView?.removeFromParent()
+//        }
+//        super.onExit()
+//    }
 }

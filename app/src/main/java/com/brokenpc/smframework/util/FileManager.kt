@@ -19,6 +19,7 @@ class FileManager() {
 
         const val DATA_ROOT_PATH = "Data/"
         const val IMAGE_ROOT = "Images/"
+        const val SPRITE_BUILDER = "SpriteBuilder/"
         const val DOC_ROOT = "Doc/"
         const val SNAPSHOT_ROOT = "SnapShot/"
         const val ZIP_ROOT = "Zip/"
@@ -64,6 +65,7 @@ class FileManager() {
 
     enum class FileType {
         Image,
+        SpriteBuilder,
         Doc,
         SnapShot,
         ZIP,
@@ -83,6 +85,7 @@ class FileManager() {
         }
 
         getFullPath(FileType.Image)
+        getFullPath(FileType.SpriteBuilder)
         getFullPath(FileType.Doc)
         getFullPath(FileType.SnapShot)
         getFullPath(FileType.ZIP)
@@ -119,6 +122,7 @@ class FileManager() {
     fun getLocalPath(type: FileType): String {
         return DATA_ROOT_PATH + when (type) {
             FileType.Image -> IMAGE_ROOT
+            FileType.SpriteBuilder -> SPRITE_BUILDER
             FileType.Doc -> DOC_ROOT
             FileType.SnapShot -> SNAPSHOT_ROOT
             FileType.ZIP -> ZIP_ROOT

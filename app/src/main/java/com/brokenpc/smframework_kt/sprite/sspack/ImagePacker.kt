@@ -1,16 +1,19 @@
 package com.brokenpc.smframework_kt.sprite.sspack
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Point
-import android.graphics.Rect
+import android.content.res.Resources
+import android.graphics.*
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.util.SMAsyncTask
-import java.util.*
+import com.interpark.smframework.util.FileManager
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.lang.StringBuilder
 import kotlin.collections.ArrayList
 
 class ImagePacker(director: IDirector,
@@ -66,8 +69,29 @@ class ImagePacker(director: IDirector,
 
 
         @JvmStatic
-        fun loadRawResourceBitmap(context: Context, resId: Int): Bitmap {
+        fun loadRawResourceBitmap(context: Context, resId: Int): Bitmap? {
+            var bitmap: Bitmap? = null
+            var IS: InputStream? = null
+            val option = BitmapFactory.Options()
+            option.inPreferredConfig = Bitmap.Config.ARGB_8888
 
+            try {
+                IS = context.resources.openRawResource(resId)
+                bitmap = BitmapFactory.decodeStream(IS, null, option)
+            } catch (e: OutOfMemoryError) {
+
+            } catch (e: Resources.NotFoundException) {
+
+            } finally {
+                try {
+                    IS!!.close()
+                } catch (e: IOException) {
+
+        }
+                IS = null
+            }
+
+            return bitmap
         }
     }
 
@@ -253,38 +277,162 @@ class ImagePacker(director: IDirector,
 
     fun saveBitmap(context: Context, name: String, textureId: Int, width: Int, height: Int, infos: ArrayList<ResInfo>): Bitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        for (info in _infos) {
+            val b = loadRawResourceBitmap(context, info.resId)
+            if (b!=null) {
+                canvas.drawBitmap(b, info.rect!!.left.toFloat(), info.rect!!.top.toFloat(), null)
+                b.recycle()
+            }
+        }
+
+        try {
+            val filePath = FileManager.getInstance().getFullFilePath(FileManager.FileType.SpriteBuilder, "$name$textureId.png")
+            val fos = FileOutputStream(File(filePath))
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, fos)
+            fos.flush()
+            fos.close()
+            Log.i("TextureBuilder", "$filePath : (${bitmap.width}, ${bitmap.height}) saved.")
+        } catch (e: Exception) {
+            Log.e("TextureBuilder", e.toString())
+        }
+
+        return bitmap
     }
 
     fun writeResourceFile(context: Context, infos: ArrayList<ResInfo>) {
+        var os: FileOutputStream? = null
+        try {
+            val filePath = FileManager.getInstance().getFullFilePath(FileManager.FileType.SpriteBuilder, "$RESOURCE_FILE_NAME.java")
+            val file = File(filePath)
+            file.delete()
 
+            os = FileOutputStream(filePath, true)
+            os.write(RESOURCE_HEADER.toByteArray(Charsets.UTF_8))
+
+            var index = 0
+            for (info in _infos) {
+                if (info.texId>=0) {
+                    val names = context.resources.getResourceName(info.resId).split("/")
+                    os.write("\tval ${names[names.size-1]}:Int = ${Integer.toHexString(index)}".toByteArray(Charsets.UTF_8))
+                    index++
+                }
+            }
+            os.write(RESOURCE_FOOTER.toByteArray(Charsets.UTF_8))
+            os.flush()
+        } catch (e: Exception) {
+            error("[[[[[ Failed to write resource file")
+        } finally {
+            if (os!=null) {
+                try {
+                    os.close()
+                    os = null
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     fun writeSourceFile(context: Context, infos: ArrayList<ResInfo>) {
+        var os:FileOutputStream? = null
+        try {
+            val filePath = FileManager.getInstance().getFullFilePath(FileManager.FileType.SpriteBuilder, "$SOURCE_FILE_NAME.java")
+            val file = File(filePath)
+            file.delete()
 
+            os = FileOutputStream(file, true)
+            os.write(SOURCE_HEADER.toByteArray(Charsets.UTF_8))
+
+            for (info in _infos) {
+                if (info.texId>=0) {
+                    os.write(getInfoString(info).toByteArray(Charsets.UTF_8))
+                }
+            }
+
+            os.write(SOURCE_FOOTER.toByteArray(Charsets.UTF_8))
+            os.flush()
+        } catch (e: Exception) {
+            error("[[[[[ Failed to write source file")
+        } finally {
+            if (os!=null) {
+                try {
+                    os.close()
+                    os = null
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     fun getAlignX(align: Int, width: Int): Float {
-
+        return when (align and 0x0f) {
+            ResInfo.Align.LEFT -> {
+                0f
+            }
+            ResInfo.Align.RIGHT -> {
+                width.toFloat()
+            }
+            else -> {
+                width/2f
+            }
+        }
     }
 
     fun getAlignY(align: Int, height: Int): Float {
-
+        return when (align and 0xf0) {
+            ResInfo.Align.TOP -> {
+                0f
+            }
+            ResInfo.Align.BOTTOM -> {
+                height.toFloat()
+            }
+            ResInfo.Align.CENTER_VERTICAL -> {
+                height/2f
+            }
+            else -> 0f
+        }
     }
 
     fun getInfoString(info: ResInfo): String {
+        val sb = StringBuilder()
 
+        sb.append("new SpriteInfo(")
+        sb.append(info.texId)
+        sb.append(", ")
+        sb.append(info.rect!!.left)
+        sb.append(", ")
+        sb.append(info.rect!!.top)
+        sb.append(", ")
+        sb.append(info.width)
+        sb.append(", ")
+        sb.append(info.height)
+        sb.append(", ")
+        sb.append(getAlignX(info.align, info.width))
+        sb.append("f, ")
+        sb.append(getAlignY(info.align, info.height))
+        sb.append("f ), \n")
+
+        return sb.toString()
     }
 
     override fun doInBackground(vararg params: Void?): Void? {
-
+        packImage()
+        return null
     }
 
     override fun onPreExecute() {
-
+        publishLog("----------------------------------------------")
+        publishLog("                   시작")
+        publishLog("----------------------------------------------")
     }
 
     override fun onPostExecute(result: Void?) {
-
+        publishLog("----------------------------------------------")
+        publishLog("                   종료")
+        publishLog("----------------------------------------------")
     }
 
 }

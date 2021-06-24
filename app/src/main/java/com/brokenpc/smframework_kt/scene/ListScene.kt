@@ -61,6 +61,7 @@ class ListScene(director: IDirector) : SMMenuTransitionScene(director), SMTableV
                 _menuNames.add("STENCIL VIEW")
                 _menuNames.add("STICKER VIEW")
                 _menuNames.add("SWIPE VIEW")
+                _menuNames.add("ANIMATION1")
             }
             2 -> {
                 _menuNames.add("LABEL")

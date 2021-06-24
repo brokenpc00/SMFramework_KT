@@ -126,7 +126,7 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
     protected val _textureMatrixStack:Stack<Mat4> = Stack()
     protected var _paused:Boolean = false
 
-    private var _popupView:PopupView
+    private var _popupView:SMView
 
     var _touchEventDispather:Boolean = false
 
@@ -156,7 +156,9 @@ class SMDirector : IDirector, GLSurfaceView.Renderer {
             _sharedLayer.add(null)
         }
 
-        _popupView = PopupView(this)
+        _popupView = SMView.create(this)
+
+        setSharedLayer(SharedLayer.POPUP, _popupView)
 
         _instance = this
     }
