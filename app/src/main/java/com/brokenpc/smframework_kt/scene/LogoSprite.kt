@@ -5,6 +5,7 @@ import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.sprite.Sprite
 import com.brokenpc.smframework.base.sprite.Sprite3D
 import com.brokenpc.smframework.base.texture.Texture
+import com.brokenpc.smframework.shader.ProgSprite
 import com.brokenpc.smframework.shader.ProgSprite3D
 import com.brokenpc.smframework.shader.ShaderManager
 import java.nio.ByteBuffer
@@ -156,12 +157,30 @@ class LogoSprite : Sprite {
                 _colorUtil!![4 * i + 2] = 1f
                 _colorUtil!![4 * i + 3] = 1f
 
+                _colorUtil2!![4 * i + 0] = 0f
+                _colorUtil2!![4 * i + 1] = 0f
+                _colorUtil2!![4 * i + 2] = 0f
+                _colorUtil2!![4 * i + 3] = 0f
+            } else if (d1<0f || t<=0f || d1> BEND_RADIUS* PI) {
+                val d2 = d1 + d1 - BEND_RADIUS * PI
+                x = ix + d2*ca
+                y = iy * d2*sa
+                z = (2.0 * BEND_RADIUS)
+
+                _colorUtil!![4 * i + 0] = 1f
+                _colorUtil!![4 * i + 1] = 1f
+                _colorUtil!![4 * i + 2] = 1f
+                _colorUtil!![4 * i + 3] = 1f
+
+
                 _colorUtil2!![4 * i + 0] = 1f
                 _colorUtil2!![4 * i + 1] = 1f
                 _colorUtil2!![4 * i + 2] = 1f
                 _colorUtil2!![4 * i + 3] = 1f
+
             } else {
-                val f = d1 / PI* BEND_RADIUS
+                // curved point
+                val f = d1 / (PI* BEND_RADIUS)
                 val beta = PI * f
                 val d2 = d1 - BEND_RADIUS * sin(beta)
 
@@ -176,7 +195,7 @@ class LogoSprite : Sprite {
                 _colorUtil!![4 * i + 2] = cl
                 _colorUtil!![4 * i + 3] = 1f
 
-                cl = (f*2).coerceAtMost(1.0).toFloat()
+                cl = (f*2f).coerceAtMost(1.0).toFloat()
                 _colorUtil2!![4 * i + 0] = cl
                 _colorUtil2!![4 * i + 1] = cl
                 _colorUtil2!![4 * i + 2] = cl

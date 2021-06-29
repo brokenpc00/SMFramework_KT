@@ -82,6 +82,8 @@ class AniTestView(director: IDirector, listener: AniTestListener?) : Popup(direc
 
     private var _listener: AniTestListener? = listener
 
+    private var _testSprite:Sprite? = null
+
     override fun init(): Boolean {
         if (!super.init()) {
             return false
@@ -89,25 +91,33 @@ class AniTestView(director: IDirector, listener: AniTestListener?) : Popup(direc
 
         val s = getContentSize()
 
-        val contentView = SMView.create(getDirector(), 0f, 0f, s.width, s.height)
-        addChild(contentView)
-        contentView.setBackgroundColor(Color4F(1f, 1f, 0f, 0.3f))
-
+//        val contentView = SMView.create(getDirector(), 0f, 0f, s.width, s.height)
+//        addChild(contentView)
+//        contentView.setBackgroundColor(Color4F(1f, 1f, 0f, 0.3f))
         val white = BitmapSprite.createFromAsset(getDirector(), "images/intro_logo02.png", false, null)
         val black = BitmapSprite.createFromAsset(getDirector(), "images/intro_logo01.png", false, null)
         _introLogo = LogoSprite(getDirector(), white!!.getTexture()!!, black!!.getTexture()!!)
+
+        val tex = getDirector().getTextureManager().createTextureFromResource(R.raw.intro_logo01)
+//
+        _testSprite = Sprite(getDirector(), tex, tex.getWidth()/2f, tex.getHeight()/2f)
+
+//        _introLogoImg = SMImageView.create(getDirector(), _introLogo!!)
+
+
         _introText = BitmapSprite.createFromAsset(getDirector(), "images/intro_logo_text.png", false, null)
-
-        _introLogoImg = SMImageView.create(getDirector(), _introLogo!!)
-        _introTextImg = SMImageView.create(getDirector(), _introText!!)
-        contentView.addChild(_introLogoImg)
-
-        val x = getContentSize().width/2f
-        val y = getContentSize().height * 0.35f
-        _introLogoImg!!.setContentSize(_introLogo!!.getWidth(), _introLogo!!.getHeight())
-        _introLogoImg!!.setPosition(x-_introLogoImg!!.getContentSize().width/2f, y- _introLogoImg!!.getContentSize().height /2f)
-
-        return true
+//
+//        _introLogoImg = SMImageView.create(getDirector(), _introLogo!!)
+//        _introTextImg = SMImageView.create(getDirector(), _introText!!)
+//        contentView.addChild(_introLogoImg)
+////
+//        val x = getContentSize().width/2f
+//        val y = getContentSize().height * 0.35f
+////        _introLogoImg!!.setContentSize(_introLogo!!.getWidth(), _introLogo!!.getHeight())
+//        _introLogoImg!!.setContentSize(_introLogo!!.getContentSize())
+//        _introLogoImg!!.setPosition(x-_introLogoImg!!.getContentSize().width/2f, y- _introLogoImg!!.getContentSize().height /2f)
+////
+//        return true
 
 //
 ////        setBackgroundColor(MakeColor4F(0xffD339, 1f))
@@ -130,7 +140,7 @@ class AniTestView(director: IDirector, listener: AniTestListener?) : Popup(direc
 ////
 //////        runAction(sequence!!)
 //
-//        return true
+        return true
     }
 
     override fun onExit() {
@@ -144,6 +154,42 @@ class AniTestView(director: IDirector, listener: AniTestListener?) : Popup(direc
         _scissor1?.removeTexture()
         _scissor2?.removeTexture()
         }
+
+    // update flag가 갱신 되어야만 호출됨.
+    override fun onUpdateOnVisit() {
+//        var x = getContentSize().width/2f
+//        var y = getContentSize().height/2f
+////        var width = _introLogo?.getWidth() ?: 0f
+////        var height = _introLogo?.getHeight() ?: 0f
+//////        _introLogo?.transform(0f, 0.8f)
+//////        _introLogo?.setDrawFront()
+//////        _introLogo?.draw(x-width/2f, y-height/2f)
+////        _introLogo?.transform(2f, 0.8f)
+////        _introLogo?.setDrawBack()
+////        getDirector().setColor(1f, 1f, 1f,1f)
+//////        getDirector().setColor(_displayedColor.r, _displayedColor.g, _displayedColor.b, _displayedColor.a)
+////        _introLogo?.draw(x-_introLogo!!.getWidth()/2f, y-_introLogo!!.getHeight()/2f)
+//
+//        getDirector().setColor(0f, 0f, 0f, 1f)
+////        _testSprite?.draw(x, y)
+//        _introText!!.draw(x-_introText!!.getWidth()/2f, y+100f)
+    }
+
+    override fun draw(m: Mat4, flags: Int) {
+        super.draw(m, flags)
+        var x = getContentSize().width/2f
+        var y = getContentSize().height/2f
+        var width = _introLogo!!.getWidth()
+        var height = _introLogo!!.getHeight()
+//        getDirector().setColor(0f, 0f, 0f, 1f)
+//        _introText!!.draw(x-_introText!!.getWidth()/2f, y+100f)
+        getDirector().setColor(1f, 1f, 1f,1f)
+        _testSprite?.draw(x, y-400f)
+        getDirector().setColor(0f, 0f, 0f,1f)
+        _introLogo!!.transform(2f, 0.8f)
+        _introLogo!!.setDrawBack()
+        _introLogo!!.draw(x-width/2f, y-height/2f)
+    }
 
 //    override fun visit(parentTransform: Mat4, parentFlags: Int) {
 //        var x = getContentSize().width/2f
