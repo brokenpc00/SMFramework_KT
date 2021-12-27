@@ -1,4 +1,4 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -11,7 +11,7 @@ import com.brokenpc.smframework.base.types.TransformAction
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.AppConst
 import com.brokenpc.smframework.util.tweenfunc
-import com.interpark.smframework.base.types.ICircularCell
+import com.brokenpc.smframework.base.types.ICircularCell
 import cz.msebera.android.httpclient.cookie.SM
 import java.util.*
 import kotlin.collections.ArrayList

@@ -1,4 +1,4 @@
-package com.interpark.smframework.view.Sticker
+package com.brokenpc.smframework.view.Sticker
 
 import android.util.Log
 import android.view.MotionEvent
@@ -13,8 +13,8 @@ import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.view.SMButton
 import com.brokenpc.smframework.view.SMRoundRectView
 import com.brokenpc.smframework.view.SMSolidCircleView
-import com.interpark.smframework.view.RingWave
-import com.interpark.smframework.view.RingWave2
+import com.brokenpc.smframework.view.RingWave
+import com.brokenpc.smframework.view.RingWave2
 import kotlin.math.*
 
 class StickerControlView(director: IDirector): SMView(director), SMView.OnClickListener, SMView.OnTouchListener {

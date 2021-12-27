@@ -1,4 +1,4 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.util.Log
 import android.view.MotionEvent
@@ -10,7 +10,7 @@ import com.brokenpc.smframework.base.UIContainerView
 import com.brokenpc.smframework.base.scroller.ZoomController
 import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.util.AppConst
-import com.interpark.smframework.base.types.EaseSineInOut
+import com.brokenpc.smframework.base.types.EaseSineInOut
 import kotlin.Exception
 import kotlin.math.abs
 import kotlin.math.sqrt

@@ -1,4 +1,4 @@
-package com.interpark.app.scene.stickerLayer
+package com.brokenpc.app.scene.stickerLayer
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
@@ -10,12 +10,12 @@ import com.brokenpc.smframework.base.types.Color4F
 import com.brokenpc.smframework.base.types.Size
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.ImageManager.ImageDownloader
-import com.interpark.smframework.util.ImageProcess.ImageProcessProtocol
-import com.interpark.smframework.util.ImageProcess.ImageProcessTask
-import com.interpark.smframework.util.ImageProcess.ImageProcessor
-import com.interpark.smframework.util.ImageProcess.ImgPrcSimpleCapture
-import com.interpark.smframework.view.Sticker.Sticker
-import com.interpark.smframework.view.Sticker.StickerItem
+import com.brokenpc.smframework.util.ImageProcess.ImageProcessProtocol
+import com.brokenpc.smframework.util.ImageProcess.ImageProcessTask
+import com.brokenpc.smframework.util.ImageProcess.ImageProcessor
+import com.brokenpc.smframework.util.ImageProcess.ImgPrcSimpleCapture
+import com.brokenpc.smframework.view.Sticker.Sticker
+import com.brokenpc.smframework.view.Sticker.StickerItem
 
 class StickerItemView(director: IDirector): Sticker(director), ImageProcessProtocol {
     override var _imageProcessTask: ArrayList<ImageProcessTask> = ArrayList()

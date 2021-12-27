@@ -1,4 +1,4 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import android.media.Image
 import com.brokenpc.smframework.IDirector

@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.ImageProcess
+package com.brokenpc.smframework.util.ImageProcess
 
 import com.brokenpc.smframework.base.SceneParams
 import com.brokenpc.smframework.base.sprite.Sprite

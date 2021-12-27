@@ -1,12 +1,12 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.view.SMCircleView
 import com.brokenpc.smframework.view.SMShapeView
-import com.interpark.smframework.base.types.EaseOut
-import com.interpark.smframework.base.types.RepeatForever
+import com.brokenpc.smframework.base.types.EaseOut
+import com.brokenpc.smframework.base.types.RepeatForever
 import kotlin.math.cos
 import kotlin.math.sin
 

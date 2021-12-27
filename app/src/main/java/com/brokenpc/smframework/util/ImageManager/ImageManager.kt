@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.ImageManager
+package com.brokenpc.smframework.util.ImageManager
 
 import android.content.Context
 import android.database.Cursor

@@ -1,8 +1,6 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
 import com.brokenpc.smframework.IDirector
-import com.brokenpc.smframework.base.types.ActionEase
-import com.brokenpc.smframework.base.types.ActionInterval
 import com.brokenpc.smframework.util.tweenfunc
 
 class EaseQuadraticActionInOut(director: IDirector) : ActionEase(director) {
@@ -18,7 +16,7 @@ class EaseQuadraticActionInOut(director: IDirector) : ActionEase(director) {
     }
 
     override fun Clone(): ActionInterval? {
-        return EaseQuadraticActionInOut.create(getDirector(), _inner?.Clone())
+        return create(getDirector(), _inner?.Clone())
     }
 
     override fun update(time: Float) {
@@ -26,6 +24,6 @@ class EaseQuadraticActionInOut(director: IDirector) : ActionEase(director) {
     }
 
     override fun reverse(): ActionInterval? {
-        return EaseQuadraticActionInOut.create(getDirector(), _inner?.reverse())
+        return create(getDirector(), _inner?.reverse())
     }
 }

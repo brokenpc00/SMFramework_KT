@@ -1,4 +1,4 @@
-package com.interpark.app.scene
+package com.brokenpc.app.scene
 
 import android.util.Log
 import android.view.View
@@ -15,15 +15,15 @@ import com.brokenpc.smframework.util.ImageManager.IDownloadProtocol
 import com.brokenpc.smframework.util.ImageManager.ImageDownloadTask
 import com.brokenpc.smframework.view.*
 import com.brokenpc.smframework_kt.scene.AniTestView
-import com.interpark.app.menu.MenuBar
-import com.interpark.app.scene.stickerLayer.*
-import com.interpark.smframework.base.types.ICircularCell
-import com.interpark.smframework.util.ImageProcess.ImageProcessProtocol
-import com.interpark.smframework.util.ImageProcess.ImageProcessTask
-import com.interpark.smframework.view.*
-import com.interpark.smframework.view.Sticker.StickerCanvasView
-import com.interpark.smframework.view.Sticker.StickerControlView
-import com.interpark.smframework.view.Sticker.StickerItem
+import com.brokenpc.app.menu.MenuBar
+import com.brokenpc.app.scene.stickerLayer.*
+import com.brokenpc.smframework.base.types.ICircularCell
+import com.brokenpc.smframework.util.ImageProcess.ImageProcessProtocol
+import com.brokenpc.smframework.util.ImageProcess.ImageProcessTask
+import com.brokenpc.smframework.view.*
+import com.brokenpc.smframework.view.Sticker.StickerCanvasView
+import com.brokenpc.smframework.view.Sticker.StickerControlView
+import com.brokenpc.smframework.view.Sticker.StickerItem
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

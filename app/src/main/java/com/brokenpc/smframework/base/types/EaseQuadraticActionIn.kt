@@ -1,4 +1,4 @@
-package com.interpark.smframework.base.types
+package com.brokenpc.smframework.base.types
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.types.ActionEase

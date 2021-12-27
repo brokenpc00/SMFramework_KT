@@ -1,4 +1,4 @@
-package com.interpark.app.scene
+package com.brokenpc.app.scene
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMScene
@@ -11,8 +11,8 @@ import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.AppConst
 import com.brokenpc.smframework.view.SMLabel
 import com.brokenpc.smframework.view.SMTableView
-import com.interpark.app.menu.MenuBar
-import com.interpark.smframework.view.SMRoundLine
+import com.brokenpc.app.menu.MenuBar
+import com.brokenpc.smframework.view.SMRoundLine
 
 class ListScene(director: IDirector) : SMMenuTransitionScene(director), SMTableView.CellForRowAtIndexPath, SMTableView.NumberOfRowsInSection {
 

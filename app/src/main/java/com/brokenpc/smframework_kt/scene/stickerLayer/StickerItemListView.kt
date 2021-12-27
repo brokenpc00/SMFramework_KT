@@ -1,4 +1,4 @@
-package com.interpark.app.scene.stickerLayer
+package com.brokenpc.app.scene.stickerLayer
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
@@ -7,7 +7,7 @@ import com.brokenpc.smframework.base.types.IndexPath
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.ImageManager.ImageDownloader
 import com.brokenpc.smframework.view.SMLabel
-import com.interpark.smframework.view.Sticker.StickerItem
+import com.brokenpc.smframework.view.Sticker.StickerItem
 
 class StickerItemListView(director: IDirector) : ItemListView(director) {
     protected val _items:ArrayList<StickerItem> = ArrayList()

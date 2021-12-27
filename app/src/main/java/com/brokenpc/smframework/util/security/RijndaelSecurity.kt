@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.security
+package com.brokenpc.smframework.util.security
 
 import android.util.Base64
 import java.io.UnsupportedEncodingException

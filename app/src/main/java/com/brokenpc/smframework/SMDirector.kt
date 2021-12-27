@@ -39,8 +39,8 @@ import com.brokenpc.smframework.view.EdgeSwipeForDismiss
 import com.brokenpc.smframework.view.EdgeSwipeLayerForPushBack
 import com.brokenpc.smframework.view.EdgeSwipeLayerForSideMenu
 import com.brokenpc.smframework.view.Popup
-import com.interpark.smframework.base.types.FadeIn
-import com.interpark.smframework.base.types.FadeOut
+import com.brokenpc.smframework.base.types.FadeIn
+import com.brokenpc.smframework.base.types.FadeOut
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10

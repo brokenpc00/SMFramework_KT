@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.ImageProcess
+package com.brokenpc.smframework.util.ImageProcess
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

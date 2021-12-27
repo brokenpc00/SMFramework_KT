@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.security
+package com.brokenpc.smframework.util.security
 
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset

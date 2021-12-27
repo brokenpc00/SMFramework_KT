@@ -1,4 +1,4 @@
-package com.interpark.app.scene.stickerLayer
+package com.brokenpc.app.scene.stickerLayer
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView

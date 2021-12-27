@@ -1,4 +1,4 @@
-package com.interpark.app.scene.stickerLayer
+package com.brokenpc.app.scene.stickerLayer
 
 import android.view.MotionEvent
 import com.brokenpc.smframework.IDirector
@@ -11,9 +11,9 @@ import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.shader.ShaderNode
 import com.brokenpc.smframework.view.SMImageView
 import com.brokenpc.smframework.view.SMRectView
-import com.interpark.smframework.view.SMZoomView
-import com.interpark.smframework.view.Sticker.StickerCanvasView
-import com.interpark.smframework.view.Sticker.StickerControlView
+import com.brokenpc.smframework.view.SMZoomView
+import com.brokenpc.smframework.view.Sticker.StickerCanvasView
+import com.brokenpc.smframework.view.Sticker.StickerControlView
 import kotlin.math.atan2
 
 class StickerLayer(director: IDirector) : SMView(director), StickerCanvasView.StickerCanvasListener, StickerControlView.StickerControlListener {

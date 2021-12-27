@@ -1,4 +1,4 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.shape.PrimitiveTriangle

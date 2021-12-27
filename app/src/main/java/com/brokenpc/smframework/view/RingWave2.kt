@@ -1,12 +1,12 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.util.tweenfunc
 import com.brokenpc.smframework.view.SMCircleView
-import com.interpark.smframework.base.types.FadeIn
-import com.interpark.smframework.base.types.RepeatForever
+import com.brokenpc.smframework.base.types.FadeIn
+import com.brokenpc.smframework.base.types.RepeatForever
 
 class RingWave2(director: IDirector): SMView(director) {
     var _circle:SMCircleView? = null

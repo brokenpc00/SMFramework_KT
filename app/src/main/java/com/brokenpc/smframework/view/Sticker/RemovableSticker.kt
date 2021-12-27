@@ -1,4 +1,4 @@
-package com.interpark.smframework.view.Sticker
+package com.brokenpc.smframework.view.Sticker
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.view.SMImageView

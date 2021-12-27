@@ -1,10 +1,10 @@
-package com.interpark.app.scene
+package com.brokenpc.app.scene
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMScene
 import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.types.Size
-import com.interpark.app.menu.MenuBar
+import com.brokenpc.app.menu.MenuBar
 
 open class SMMenuTransitionScene(director: IDirector): SMScene(director) {
     protected var _menuBar:MenuBar? = null

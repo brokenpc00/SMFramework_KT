@@ -14,9 +14,9 @@ import com.brokenpc.smframework.view.SMButton
 import com.brokenpc.smframework.view.SMImageView
 import com.brokenpc.smframework.view.SMLabel
 import com.brokenpc.smframework.view.SMTableView
-import com.interpark.app.menu.MenuBar
-import com.interpark.app.scene.ListScene
-import com.interpark.smframework.view.SMRoundLine
+import com.brokenpc.app.menu.MenuBar
+import com.brokenpc.app.scene.ListScene
+import com.brokenpc.smframework.view.SMRoundLine
 
 class HelloBrokenpcScene(director:IDirector) : SMScene(director), SMTableView.CellForRowAtIndexPath, SMTableView.NumberOfRowsInSection, SMView.OnClickListener {
     private var _mainScene:HelloBrokenpcScene? = null

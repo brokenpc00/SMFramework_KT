@@ -8,7 +8,7 @@ import com.brokenpc.smframework.util.cache.ImageCacheEntry
 import com.brokenpc.smframework.util.cache.ImageLRUCache
 import com.brokenpc.smframework.util.cache.MemoryCacheEntry
 import com.brokenpc.smframework.util.cache.MemoryLRUCache
-import com.interpark.smframework.util.ImageManager.FileCacheWriteTask
+import com.brokenpc.smframework.util.ImageManager.FileCacheWriteTask
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 

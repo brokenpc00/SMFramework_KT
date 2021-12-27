@@ -1,4 +1,4 @@
-package com.interpark.app.scene.stickerLayer
+package com.brokenpc.app.scene.stickerLayer
 
 import android.view.MotionEvent
 import com.brokenpc.smframework.IDirector
@@ -13,8 +13,8 @@ import com.brokenpc.smframework.util.ImageManager.ImageDownloadTask
 import com.brokenpc.smframework.util.ImageManager.ImageDownloader
 import com.brokenpc.smframework.view.SMImageView
 import com.brokenpc.smframework.view.SMRectView
-import com.interpark.smframework.base.types.FadeIn
-import com.interpark.smframework.view.LoadingSprite
+import com.brokenpc.smframework.base.types.FadeIn
+import com.brokenpc.smframework.view.LoadingSprite
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.cos

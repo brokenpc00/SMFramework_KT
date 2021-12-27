@@ -1,7 +1,7 @@
-package com.interpark.smframework.util.ImageManager
+package com.brokenpc.smframework.util.ImageManager
 
 import com.brokenpc.smframework.util.cache.MemoryCacheEntry
-import com.interpark.smframework.util.FileManager
+import com.brokenpc.smframework.util.FileManager
 
 class FileCacheWriteTask() {
     private var _cacheEntry:MemoryCacheEntry? = null

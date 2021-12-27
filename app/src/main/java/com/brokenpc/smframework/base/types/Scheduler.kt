@@ -45,7 +45,7 @@ open class Scheduler(director: IDirector) : Ref(director) {
     }
 
     open fun schedule(selector: SEL_SCHEDULE, target: Ref, interval: Float, paused: Boolean) {
-        schedule(selector, target, interval, (UInt.MAX_VALUE- 1u).toLong(), 0.0f, paused)
+        schedule(selector, target, interval, (Int.MAX_VALUE - 1).toLong(), 0.0f, paused)
     }
 
     open fun schedule(selector: SEL_SCHEDULE, target: Ref?, interval: Float, repeat: Long, delay:Float, paused:Boolean) {

@@ -1,4 +1,4 @@
-package com.interpark.smframework.view.Sticker
+package com.brokenpc.smframework.view.Sticker
 
 import android.util.Log
 import android.view.MotionEvent

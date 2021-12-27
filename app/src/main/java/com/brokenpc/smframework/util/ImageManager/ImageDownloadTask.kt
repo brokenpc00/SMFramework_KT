@@ -14,10 +14,10 @@ import com.brokenpc.smframework.util.FileUtils
 import com.brokenpc.smframework.util.cache.ImageCacheEntry
 import com.brokenpc.smframework.util.cache.MemoryCacheEntry
 import com.brokenpc.smframework.util.webp.WebPFactory
-import com.interpark.smframework.util.FileManager
-import com.interpark.smframework.util.ImageManager.ImageManager
-import com.interpark.smframework.util.ImageManager.PhoneAlbum
-import com.interpark.smframework.util.ImageManager.PhonePhoto
+import com.brokenpc.smframework.util.FileManager
+import com.brokenpc.smframework.util.ImageManager.ImageManager
+import com.brokenpc.smframework.util.ImageManager.PhoneAlbum
+import com.brokenpc.smframework.util.ImageManager.PhonePhoto
 import java.io.File
 import java.lang.Exception
 import java.lang.ref.WeakReference

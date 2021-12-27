@@ -11,7 +11,7 @@ import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.view.Popup
 import com.brokenpc.smframework.view.SMImageView
 import com.brokenpc.smframework_kt.R
-import com.interpark.smframework.base.types.FadeTo
+import com.brokenpc.smframework.base.types.FadeTo
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos

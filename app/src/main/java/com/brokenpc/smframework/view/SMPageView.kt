@@ -1,4 +1,4 @@
-package com.interpark.smframework.view
+package com.brokenpc.smframework.view
 
 import com.brokenpc.smframework_kt.BuildConfig
 import com.brokenpc.smframework.IDirector

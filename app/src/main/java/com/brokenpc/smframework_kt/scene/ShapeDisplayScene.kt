@@ -1,4 +1,4 @@
-package com.interpark.app.scene
+package com.brokenpc.app.scene
 
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.base.SMView
@@ -8,10 +8,10 @@ import com.brokenpc.smframework.base.types.Size
 import com.brokenpc.smframework.base.types.Vec2
 import com.brokenpc.smframework.util.AppConst
 import com.brokenpc.smframework.view.*
-import com.interpark.app.menu.MenuBar
-import com.interpark.smframework.view.SMRoundLine
-import com.interpark.smframework.view.SMSlider
-import com.interpark.smframework.view.SMTriangleView
+import com.brokenpc.app.menu.MenuBar
+import com.brokenpc.smframework.view.SMRoundLine
+import com.brokenpc.smframework.view.SMSlider
+import com.brokenpc.smframework.view.SMTriangleView
 
 class ShapeDisplayScene(director: IDirector): SMMenuTransitionScene(director), SMSlider.OnSliderListener {
 

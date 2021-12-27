@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.ImageProcess
+package com.brokenpc.smframework.util.ImageProcess
 
 import com.brokenpc.smframework.base.SMView
 import java.lang.ref.WeakReference

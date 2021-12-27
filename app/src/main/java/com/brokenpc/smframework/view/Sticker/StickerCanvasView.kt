@@ -1,4 +1,4 @@
-package com.interpark.smframework.view.Sticker
+package com.brokenpc.smframework.view.Sticker
 
 import android.os.Build
 import android.view.MotionEvent
@@ -9,7 +9,7 @@ import com.brokenpc.smframework.base.SMView
 import com.brokenpc.smframework.base.sprite.Sprite
 import com.brokenpc.smframework.base.types.*
 import com.brokenpc.smframework.util.AppConst
-import com.interpark.smframework.base.types.*
+import com.brokenpc.smframework.base.types.*
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin

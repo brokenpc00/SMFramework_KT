@@ -8,7 +8,7 @@ import android.os.Looper
 import android.util.Log
 import com.brokenpc.smframework.IDirector
 import com.brokenpc.smframework.util.SMAsyncTask
-import com.interpark.smframework.util.FileManager
+import com.brokenpc.smframework.util.FileManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

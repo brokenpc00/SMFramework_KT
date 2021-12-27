@@ -1,4 +1,4 @@
-package com.interpark.smframework.util
+package com.brokenpc.smframework.util
 
 import android.util.Log
 import com.brokenpc.smframework.util.AppUtil
@@ -26,8 +26,8 @@ class FileManager() {
         const val XML_ROOT = "XML/"
         const val PRELOAD_ROOT = "Preload/"
         const val DB_ROOT = "DB/"
-        const val EPUB_DOWN_ROOT = "InterparkEBook/Downloads/"
-        const val EPUB_EXTRACT_ROOT = "InterparkEBook/Extract/"
+        const val EPUB_DOWN_ROOT = "Brokenpc00EBook/Downloads/"
+        const val EPUB_EXTRACT_ROOT = "Brokenpc00EBook/Extract/"
 
 
         private var _instance:FileManager? = null

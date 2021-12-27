@@ -1,4 +1,4 @@
-package com.interpark.smframework.util.ImageManager
+package com.brokenpc.smframework.util.ImageManager
 
 class PhoneAlbum() {
     private var id: Int = -1
